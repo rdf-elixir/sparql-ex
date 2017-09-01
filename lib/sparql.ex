@@ -1,18 +1,6 @@
 defmodule SPARQL do
   @moduledoc """
-  Documentation for SPARQL.
+  An implementation of the [SPARQL](http://www.w3.org/TR/sparql11-overview/) standard for Elixir.
   """
 
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> SPARQL.hello
-      :world
-
-  """
-  def hello do
-    :world
-  end
 end

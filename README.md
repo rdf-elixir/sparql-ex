@@ -1,21 +1,32 @@
-# SPARQL
+# SPARQL.ex
 
-**TODO: Add description**
+An implementation of the [SPARQL] standard for Elixir.
+
+## Features
+
+- fully compatible with the following [SPARQL 1.1 specifications](http://www.w3.org/TR/sparql11-overview/):
+
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `sparql` to your list of dependencies in `mix.exs`:
+The [SPARQL.ex] Hex package can be installed as usual, by adding `sparql` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
-  [
-    {:sparql, "~> 0.1.0"}
-  ]
+  [{:sparql, "~> 0.1"}]
 end
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/sparql](https://hexdocs.pm/sparql).
+## Contributing
 
+see [CONTRIBUTING](CONTRIBUTING.md) for details.
+
+
+## License and Copyright
+
+(c) 2017 Marcel Otto. MIT Licensed, see [LICENSE](LICENSE.md) for details.
+
+
+[SPARQL]:               http://www.w3.org/TR/sparql11-overview/
+[SPARQL.ex]:            https://hex.pm/packages/sparql
+[RDF.ex]:               https://hex.pm/packages/rdf
