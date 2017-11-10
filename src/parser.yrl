@@ -332,15 +332,15 @@ triplesSameSubjectPath -> varOrTerm propertyListPathNotEmpty .
 triplesSameSubjectPath -> triplesNodePath propertyListPath .
 triplesSameSubjectPath -> triplesNodePath .
 propertyListPath -> propertyListPathNotEmpty .
-%% PropertyListPathNotEmpty -> ( VerbPath | VerbSimple ) ObjectListPath ( ';' ( ( VerbPath | VerbSimple ) ObjectList )? )*
+%% PropertyListPathNotEmpty -> ( VerbPath | VerbSimple ) ObjectListPath ( ';' ( ( VerbPath | VerbSimple ) ObjectListPath )? )*
 propertyListPathNotEmpty -> verbPath objectListPath propertyListPathNotEmptyVerbObjectListSeq .
 propertyListPathNotEmpty -> verbSimple objectListPath propertyListPathNotEmptyVerbObjectListSeq .
 propertyListPathNotEmpty -> verbPath objectListPath .
 propertyListPathNotEmpty -> verbSimple objectListPath .
 propertyListPathNotEmptyVerbObjectListSeq -> ';' verbObjectList propertyListPathNotEmptyVerbObjectListSeq .
 propertyListPathNotEmptyVerbObjectListSeq -> ';' propertyListPathNotEmptyVerbObjectListSeq .
-verbObjectList -> verbPath objectList .
-verbObjectList -> verbSimple objectList .
+verbObjectList -> verbPath objectListPath .
+verbObjectList -> verbSimple objectListPath .
 verbPath -> path .
 verbSimple -> var .
 objectListPath -> objectPath ',' objectListPath .
