@@ -41,7 +41,7 @@ defmodule SPARQL.Mixfile do
       maintainers: ["Marcel Otto"],
       licenses: ["MIT"],
       links: %{"GitHub" => @repo_url},
-      files: ~w[lib src priv mix.exs README.md LICENSE.md VERSION]
+      files: ~w[lib src priv mix.exs README.md CHANGELOG.md LICENSE.md VERSION]
     ]
   end
 
@@ -55,6 +55,9 @@ defmodule SPARQL.Mixfile do
   defp deps do
     [
       {:rdf, "~> 0.3"},
+      {:poison, "~> 3.1"},
+
+      # Development
       {:dialyxir, "~> 0.5",       only: [:dev, :test], runtime: false},
       {:credo, "~> 0.8",          only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.16",        only: :dev, runtime: false},
