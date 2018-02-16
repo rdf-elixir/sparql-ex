@@ -56,6 +56,7 @@ defmodule SPARQL.Mixfile do
     [
       {:rdf, "~> 0.3"},
       {:poison, "~> 3.1"},
+      {:nimble_csv, "~> 0.4"},
 
       # Development
       {:dialyxir, "~> 0.5",       only: [:dev, :test], runtime: false},
