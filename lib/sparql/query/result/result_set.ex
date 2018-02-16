@@ -1,6 +1,6 @@
 defmodule SPARQL.Query.ResultSet do
 
-  defstruct results: []
+  defstruct variables: nil, results: []
 
   @type t :: module
 

@@ -3,14 +3,21 @@ defmodule SPARQL.Query.Result.JSON.Decoder do
 
   use SPARQL.Query.Result.Format.Decoder
 
+
   def decode(content, _opts \\ []) do
-    with {:ok, raw} <- Poison.decode(content) do
-      {:ok, decode_results(raw) }
+    with {:ok, object} <- Poison.decode(content) do
+      {:ok, decode_results(object)}
     end
   end
 
   defp decode_results(%{"boolean" => boolean}) do
     %ResultSet{results: boolean}
+  end
+
+  defp decode_results(%{"head" => %{"vars" => variables}} = object) do
+    %ResultSet{Map.delete(object, "head") |> decode_results() |
+      variables: variables
+    }
   end
 
   defp decode_results(%{"results" => %{"bindings" => bindings}}) do
