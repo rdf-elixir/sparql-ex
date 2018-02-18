@@ -5,7 +5,7 @@ defmodule SPARQL.Query.Result.JSON.Decoder do
 
 
   def decode(content, _opts \\ []) do
-    with {:ok, object} <- Poison.decode(content) do
+    with {:ok, object} <- Jason.decode(content) do
       {:ok, decode_results(object)}
     end
   end
