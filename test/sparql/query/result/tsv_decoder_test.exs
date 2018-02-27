@@ -1,6 +1,6 @@
-defmodule SPARQL.Query.Result.CSV.DecoderTest do
+defmodule SPARQL.Query.Result.TSV.DecoderTest do
   use ExUnit.Case
-  doctest SPARQL.Query.Result.CSV.Decoder
+  doctest SPARQL.Query.Result.TSV.Decoder
 
   import RDF.Sigils
 
@@ -11,7 +11,7 @@ defmodule SPARQL.Query.Result.CSV.DecoderTest do
     setup context do
       {:ok,
         result_string:
-          (context.test_case <> ".csv")
+          (context.test_case <> ".tsv")
           |> SPARQL.W3C.TestSuite.file({"1.1", "csv-tsv-res"})
           |> File.read!()
       }
@@ -19,7 +19,7 @@ defmodule SPARQL.Query.Result.CSV.DecoderTest do
 
     @tag test_case: "csvtsv01"
     test "csvtsv01: SELECT * WHERE { ?S ?P ?O }", %{result_string: result_string} do
-      assert Query.Result.CSV.decode(result_string) == {:ok,
+      assert Query.Result.TSV.decode(result_string) == {:ok,
         %Query.ResultSet{
           variables: ~w[s p o],
           results: [
@@ -41,17 +41,17 @@ defmodule SPARQL.Query.Result.CSV.DecoderTest do
             %Query.Result{bindings: %{
               "s" => ~I<http://example.org/s4>,
               "p" => ~I<http://example.org/p4>,
-              "o" => ~L"4"
+              "o" => RDF.Integer.new(4)
             }},
             %Query.Result{bindings: %{
               "s" => ~I<http://example.org/s5>,
               "p" => ~I<http://example.org/p5>,
-              "o" => ~L"5.5"
+              "o" => RDF.Literal.new("5.5", datatype: "http://www.w3.org/2001/XMLSchema#decimal")
             }},
             %Query.Result{bindings: %{
               "s" => ~I<http://example.org/s6>,
               "p" => ~I<http://example.org/p6>,
-              "o" => ~B<a>
+              "o" => ~B<b0>
             }}
           ]
         }
@@ -61,7 +61,7 @@ defmodule SPARQL.Query.Result.CSV.DecoderTest do
     @tag test_case: "csvtsv02"
     test "csvtsv02: SELECT with OPTIONAL (i.e. not all vars bound in all results)",
           %{result_string: result_string} do
-      assert Query.Result.CSV.decode(result_string) == {:ok,
+      assert Query.Result.TSV.decode(result_string) == {:ok,
         %Query.ResultSet{
           variables: ~w[s p o p2 o2],
           results: [
@@ -89,21 +89,21 @@ defmodule SPARQL.Query.Result.CSV.DecoderTest do
             %Query.Result{bindings: %{
               "s" => ~I<http://example.org/s4>,
               "p" => ~I<http://example.org/p4>,
-              "o" => ~L"4",
+              "o" => RDF.Integer.new(4),
               "p2" => nil,
               "o2" => nil
             }},
             %Query.Result{bindings: %{
               "s" => ~I<http://example.org/s5>,
               "p" => ~I<http://example.org/p5>,
-              "o" => ~L"5.5",
+              "o" => RDF.Literal.new("5.5", datatype: "http://www.w3.org/2001/XMLSchema#decimal"),
               "p2" => nil,
               "o2" => nil
             }},
             %Query.Result{bindings: %{
               "s" => ~I<http://example.org/s6>,
               "p" => ~I<http://example.org/p6>,
-              "o" => ~B<a>,
+              "o" => ~B<b0>,
               "p2" => nil,
               "o2" => nil
             }},
@@ -115,7 +115,7 @@ defmodule SPARQL.Query.Result.CSV.DecoderTest do
     @tag test_case: "csvtsv03"
     test "csvtsv03: SELECT * WHERE { ?S ?P ?O } with some corner cases of typed literals",
           %{result_string: result_string} do
-      assert Query.Result.CSV.decode(result_string) == {:ok,
+      assert Query.Result.TSV.decode(result_string) == {:ok,
         %Query.ResultSet{
           variables: ~w[s p o],
           results: [
@@ -127,12 +127,12 @@ defmodule SPARQL.Query.Result.CSV.DecoderTest do
             %Query.Result{bindings: %{
               "s" => ~I<http://example.org/s2>,
               "p" => ~I<http://example.org/p2>,
-              "o" => ~L"2.2"
+              "o" => RDF.Literal.new("2.2", datatype: "http://www.w3.org/2001/XMLSchema#decimal")
             }},
             %Query.Result{bindings: %{
               "s" => ~I<http://example.org/s3>,
               "p" => ~I<http://example.org/p3>,
-              "o" => ~L"-3"
+              "o" => RDF.Literal.new("-3", datatype: "http://www.w3.org/2001/XMLSchema#negativeInteger")
             }},
             %Query.Result{bindings: %{
               "s" => ~I<http://example.org/s4>,
@@ -142,41 +142,57 @@ defmodule SPARQL.Query.Result.CSV.DecoderTest do
             %Query.Result{bindings: %{
               "s" => ~I<http://example.org/s5>,
               "p" => ~I<http://example.org/p5>,
-              "o" => ~L"5,5"
+              "o" => RDF.Literal.new("5,5", datatype: "http://example.org/myCustomDatatype")
             }},
             %Query.Result{bindings: %{
               "s" => ~I<http://example.org/s6>,
               "p" => ~I<http://example.org/p6>,
-              "o" => ~L"1.0E6"
+              "o" => RDF.Double.new("1.0e6")
             }},
             %Query.Result{bindings: %{
               "s" => ~I<http://example.org/s7>,
               "p" => ~I<http://example.org/p7>,
-              "o" => ~L"a7"
+              "o" => RDF.Literal.new("a7", datatype: "http://www.w3.org/2001/XMLSchema#hexBinary")
             }},
           ]
         }
       }
     end
+  end
 
+  test "values with escaped characters" do
+    assert Query.Result.TSV.decode("?a\n\"foo\\n\\tbar\"") == {:ok,
+      %Query.ResultSet{
+          variables: ~w[a],
+          results: [
+            %Query.Result{bindings: %{
+              "a" => ~L"foo\n\tbar"
+            }}
+          ]
+        }
+      }
   end
 
   test "with no header and no results" do
-    assert Query.Result.CSV.decode("") ==
+    assert Query.Result.TSV.decode("") ==
             {:ok, %Query.ResultSet{variables: nil, results: []}}
   end
 
   test "with empty header values" do
     error = {:error, "invalid header variable: ''"}
-    assert Query.Result.CSV.decode("a,,b") == error
-    assert Query.Result.CSV.decode("a, ,b") == error
-    assert Query.Result.CSV.decode("a,") == error
-    assert Query.Result.CSV.decode(",a") == error
-    assert Query.Result.CSV.decode(" ") == error
+    assert Query.Result.TSV.decode("?a\t\t?b") == error 
+    assert Query.Result.TSV.decode("?a\t \t?b") == error
+    assert Query.Result.TSV.decode("?a\t") == error
+    assert Query.Result.TSV.decode("\t?a") == error
+    assert Query.Result.TSV.decode(" ") == error
   end
 
-  test "with syntax errors" do
-    assert {:error, %NimbleCSV.ParseError{}} = Query.Result.CSV.decode("a\"")
+  test "with header variables without a leading question mark" do
+    assert Query.Result.TSV.decode("a") == {:error, "invalid header variable: 'a'"}
+  end
+
+  test "with syntax errors in the values" do
+    assert Query.Result.TSV.decode("?a\n\"foo") == {:error, "illegal \"foo"}
   end
 
 end

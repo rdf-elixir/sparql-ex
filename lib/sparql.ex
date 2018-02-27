@@ -6,6 +6,7 @@ defmodule SPARQL do
   @result_formats [
     SPARQL.Query.Result.JSON,
     SPARQL.Query.Result.CSV,
+    SPARQL.Query.Result.TSV,
   ]
 
   @result_format_by_name         @result_formats |> Enum.map(&{&1.name, &1}) |> Map.new

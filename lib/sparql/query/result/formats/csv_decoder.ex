@@ -25,7 +25,7 @@ defmodule SPARQL.Query.Result.CSV.Decoder do
   defp valid_header(header) do
     normalized_header = Enum.map(header, &String.trim/1)
     if Enum.any?(normalized_header, fn variable -> variable == "" end) do
-      {:error, :blank_variable}
+      {:error, "invalid header variable: ''"}
     else
       {:ok, normalized_header}
     end
