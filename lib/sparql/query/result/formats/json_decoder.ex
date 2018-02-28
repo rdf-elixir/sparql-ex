@@ -5,14 +5,21 @@ defmodule SPARQL.Query.Result.JSON.Decoder do
 
 
   def decode(content, _opts \\ []) do
-    with {:ok, object} <- Jason.decode(content) do
-      {:ok, decode_results(object)}
+    try do
+      with {:ok, object} <- Jason.decode(content) do
+        {:ok, decode_results(object)}
+      end
+    rescue
+      error ->
+        {:error, error.message}
     end
   end
 
-  defp decode_results(%{"boolean" => boolean}) do
-    %ResultSet{results: boolean}
-  end
+  defp decode_results(%{"boolean" => boolean}) when is_boolean(boolean),
+    do: %ResultSet{results: boolean}
+
+  defp decode_results(%{"boolean" => invalid}),
+    do: raise "invalid boolean: #{inspect invalid}"
 
   defp decode_results(%{"head" => %{"vars" => variables}} = object) do
     %ResultSet{Map.delete(object, "head") |> decode_results() |
@@ -24,9 +31,8 @@ defmodule SPARQL.Query.Result.JSON.Decoder do
     %ResultSet{results: Enum.map(bindings, &decode_result/1)}
   end
 
-  defp decode_results(_) do
-    %ResultSet{}
-  end
+  defp decode_results(_), do: %ResultSet{}
+
 
   defp decode_result(result) do
     %Result{bindings:
@@ -53,6 +59,6 @@ defmodule SPARQL.Query.Result.JSON.Decoder do
     do: RDF.BlankNode.new(value)
 
   defp decode_value(value),
-    do: raise "Invalid query solution: #{inspect value}"
+    do: raise "invalid query solution: #{inspect value}"
 
 end

@@ -79,7 +79,13 @@ defmodule SPARQL.Query.Result.JSON.DecoderTest do
                           "p" => ~I<http://example.org/p1>,
                           "o" => ~I<http://example.org/s1>,
                         }}
-                      ]}}  end
+                      ]}}
+  end
+
+  test "ASK result with non-boolean value" do
+    assert Query.Result.JSON.decode(~S[{"boolean": "foo"}]) ==
+      {:error, ~S[invalid boolean: "foo"]}
+  end
 
   describe "W3C tests" do
     setup context do
