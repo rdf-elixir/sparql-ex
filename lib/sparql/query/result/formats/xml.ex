@@ -14,4 +14,5 @@ defmodule SPARQL.Query.Result.XML do
   @extension    "srx"
   @content_type "application/sparql-results+xml"
 
+  @supported_query_forms ~w[select ask]a
 end

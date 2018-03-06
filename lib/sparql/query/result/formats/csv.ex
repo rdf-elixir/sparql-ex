@@ -14,4 +14,5 @@ defmodule SPARQL.Query.Result.CSV do
   @extension    "csv"
   @content_type "text/csv"
 
+  @supported_query_forms ~w[select]a
 end

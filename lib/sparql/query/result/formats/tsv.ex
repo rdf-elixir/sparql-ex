@@ -14,4 +14,5 @@ defmodule SPARQL.Query.Result.TSV do
   @extension    "tsv"
   @content_type "text/tab-separated-values"
 
+  @supported_query_forms ~w[select]a
 end

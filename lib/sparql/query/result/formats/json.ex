@@ -14,4 +14,5 @@ defmodule SPARQL.Query.Result.JSON do
   @extension    "srj"
   @content_type "application/sparql-results+json"
 
+  @supported_query_forms ~w[select ask]a
 end

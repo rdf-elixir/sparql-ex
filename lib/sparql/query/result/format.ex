@@ -47,6 +47,11 @@ defmodule SPARQL.Query.Result.Format do
   @callback content_type :: binary
 
   @doc """
+  A list of the supported query forms of the SPARQL query result format.
+  """
+  @callback supported_query_forms :: [SPARQL.Query.forms]
+
+  @doc """
   The `SPARQL.Query.Result.Format.Decoder` module for the result format.
   """
   @callback decoder :: module
@@ -96,6 +101,10 @@ defmodule SPARQL.Query.Result.Format do
       if !Module.defines?(__MODULE__, {:content_type, 0}) &&
           Module.get_attribute(__MODULE__, :content_type) do
         def content_type, do: @content_type
+      end
+      if !Module.defines?(__MODULE__, {:supported_query_forms, 0}) &&
+          Module.get_attribute(__MODULE__, :supported_query_forms) do
+        def supported_query_forms, do: @supported_query_forms
       end
     end
   end
