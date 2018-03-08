@@ -9,10 +9,10 @@ defmodule SPARQL.Query.Result.TSV do
 
   import RDF.Sigils
 
-  @id           ~I<http://www.w3.org/ns/formats/SPARQL_Results_TSV>
-  @name         :tsv
-  @extension    "tsv"
-  @content_type "text/tab-separated-values"
+  @id         ~I<http://www.w3.org/ns/formats/SPARQL_Results_TSV>
+  @name       :tsv
+  @extension  "tsv"
+  @media_type "text/tab-separated-values"
 
   @supported_query_forms ~w[select]a
 end

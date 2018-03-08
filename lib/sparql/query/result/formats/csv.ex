@@ -9,10 +9,10 @@ defmodule SPARQL.Query.Result.CSV do
 
   import RDF.Sigils
 
-  @id           ~I<http://www.w3.org/ns/formats/SPARQL_Results_CSV>
-  @name         :csv
-  @extension    "csv"
-  @content_type "text/csv"
+  @id         ~I<http://www.w3.org/ns/formats/SPARQL_Results_CSV>
+  @name       :csv
+  @extension  "csv"
+  @media_type "text/csv"
 
   @supported_query_forms ~w[select]a
 end

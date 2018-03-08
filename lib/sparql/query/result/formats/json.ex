@@ -9,10 +9,10 @@ defmodule SPARQL.Query.Result.JSON do
 
   import RDF.Sigils
 
-  @id           ~I<http://www.w3.org/ns/formats/SPARQL_Results_JSON>
-  @name         :json
-  @extension    "srj"
-  @content_type "application/sparql-results+json"
+  @id         ~I<http://www.w3.org/ns/formats/SPARQL_Results_JSON>
+  @name       :json
+  @extension  "srj"
+  @media_type "application/sparql-results+json"
 
   @supported_query_forms ~w[select ask]a
 end

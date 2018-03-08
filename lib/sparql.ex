@@ -7,16 +7,17 @@ defmodule SPARQL do
     SPARQL.Query.Result.JSON,
     SPARQL.Query.Result.CSV,
     SPARQL.Query.Result.TSV,
+    SPARQL.Query.Result.XML,
   ]
 
-  @result_format_by_name         @result_formats |> Enum.map(&{&1.name, &1}) |> Map.new
-  @result_format_by_content_type @result_formats |> Enum.map(&{&1.content_type, &1}) |> Map.new |> IO.inspect()
-  @result_format_by_extension    @result_formats |> Enum.map(&{&1.extension, &1}) |> Map.new
+  @result_format_by_name       @result_formats |> Enum.map(&{&1.name, &1}) |> Map.new
+  @result_format_by_media_type @result_formats |> Enum.map(&{&1.media_type, &1}) |> Map.new
+  @result_format_by_extension  @result_formats |> Enum.map(&{&1.extension, &1}) |> Map.new
 
   def result_formats, do: @result_formats
 
-  def result_format(name),                         do: @result_format_by_name[name]
-  def result_format_by_content_type(content_type), do: @result_format_by_content_type[content_type]
-  def result_format_by_extension(extension),       do: @result_format_by_extension[extension]
+  def result_format(name),                     do: @result_format_by_name[name]
+  def result_format_by_media_type(media_type), do: @result_format_by_media_type[media_type]
+  def result_format_by_extension(extension),   do: @result_format_by_extension[extension]
 
 end

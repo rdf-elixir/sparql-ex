@@ -9,10 +9,10 @@ defmodule SPARQL.Query.Result.XML do
 
   import RDF.Sigils
 
-  @id           ~I<http://www.w3.org/ns/formats/SPARQL_Results_JSON>
-  @name         :xml
-  @extension    "srx"
-  @content_type "application/sparql-results+xml"
+  @id         ~I<http://www.w3.org/ns/formats/SPARQL_Results_JSON>
+  @name       :xml
+  @extension  "srx"
+  @media_type "application/sparql-results+xml"
 
   @supported_query_forms ~w[select ask]a
 end

@@ -9,12 +9,14 @@ defmodule SPARQL.Query.Result.Format do
         import RDF.Sigils
 
         @id           ~I<http://example.com/some_format>
+        @name         :some_format
         @extension    "ext"
-        @content_type "application/some-format"
+        @media_type "application/some-format"
       end
 
-  When `@id`, `@extension` and `@content_type` module attributes are defined the
-  resp. behaviour functions are generated automatically and return these values.
+  When `@id`, `@name`, `@extension` and `@media_type` module attributes are
+  defined the resp. behaviour functions are generated automatically and return
+  these values.
 
   Then you'll have to do the main work by implementing a
   `RDF.Serialization.Encoder` and a `RDF.Serialization.Decoder` for the format.
@@ -44,7 +46,7 @@ defmodule SPARQL.Query.Result.Format do
   @doc """
   The MIME type of the SPARQL query result format.
   """
-  @callback content_type :: binary
+  @callback media_type :: binary
 
   @doc """
   A list of the supported query forms of the SPARQL query result format.
@@ -98,9 +100,9 @@ defmodule SPARQL.Query.Result.Format do
           Module.get_attribute(__MODULE__, :extension) do
         def extension, do: @extension
       end
-      if !Module.defines?(__MODULE__, {:content_type, 0}) &&
-          Module.get_attribute(__MODULE__, :content_type) do
-        def content_type, do: @content_type
+      if !Module.defines?(__MODULE__, {:media_type, 0}) &&
+          Module.get_attribute(__MODULE__, :media_type) do
+        def media_type, do: @media_type
       end
       if !Module.defines?(__MODULE__, {:supported_query_forms, 0}) &&
           Module.get_attribute(__MODULE__, :supported_query_forms) do
