@@ -45,11 +45,11 @@ defmodule SPARQL.Query.Result.JSON.Decoder do
   defp decode_value(%{"type" => "uri", "value" => value}),
     do: RDF.IRI.new(value)
 
-  defp decode_value(%{"type" => "literal", "value" => value}),
-    do: RDF.Literal.new(value)
-
   defp decode_value(%{"type" => "literal", "value" => value, "xml:lang" => language}),
     do: RDF.Literal.new(value, language: language)
+
+  defp decode_value(%{"type" => "literal", "value" => value}),
+    do: RDF.Literal.new(value)
 
   defp decode_value(%{"type" => type, "value" => value, "datatype" => datatype})
     when type in ~w[literal typed-literal],

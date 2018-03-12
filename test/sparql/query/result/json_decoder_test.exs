@@ -82,6 +82,21 @@ defmodule SPARQL.Query.Result.JSON.DecoderTest do
                       ]}}
   end
 
+  test "international characters in language-tagged literal" do
+    assert Query.Result.JSON.decode("""
+      {
+        "results": {
+          "bindings": [
+            {"name": { "type": "literal" , "xml:lang": "jp", "value": "東京" }}
+          ]
+        }
+      }
+      """) == {:ok, %Query.ResultSet{results: [
+                        %Query.Result{bindings: %{"name" => ~L"東京"jp,
+                        }}
+                      ]}}
+  end
+
   test "ASK result with non-boolean value" do
     assert Query.Result.JSON.decode(~S[{"boolean": "foo"}]) ==
       {:error, ~S[invalid boolean: "foo"]}
