@@ -175,7 +175,6 @@ defmodule SPARQL.Query.Result.XML.DecoderTest do
                   ]}}
   end
 
-  @tag skip: "TODO"
   test "SELECT result with rdf:XMLLiteral" do
     assert Query.Result.XML.decode("""
         <sparql xmlns="http://www.w3.org/2005/sparql-results#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/sw/DataAccess/rf1/result2.xsd">
@@ -193,7 +192,7 @@ defmodule SPARQL.Query.Result.XML.DecoderTest do
           </results>
         </sparql>
         """) == {:ok, %Query.ResultSet{
-                  variables: ~w[x hpage name mbox age blurb friend],
+                  variables: ~w[blurb],
                   results: [
                     %Query.Result{bindings: %{
                       "blurb"  => RDF.Literal.new(

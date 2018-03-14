@@ -80,8 +80,7 @@ defmodule SPARQL.Query.Result.XML.Decoder do
         node |> xpath(~x"./text()"s) |> RDF.Literal.new(language: language)
       (datatype = xpath(node, ~x"./@datatype"s)) ==
           "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral" ->
-        require IEx ; IEx.pry
-        node |> xpath(~x"./text()"s) |> RDF.Literal.new(datatype: datatype)
+        node |> xpath(~x"*") |> node_to_xml() |> RDF.Literal.new(datatype: datatype)
       (datatype = xpath(node, ~x"./@datatype"s)) != "" ->
         node |> xpath(~x"./text()"s) |> RDF.Literal.new(datatype: datatype)
       true ->
@@ -95,4 +94,13 @@ defmodule SPARQL.Query.Result.XML.Decoder do
   defp decode_value(value),
     do: raise "Invalid query result: #{inspect node}"
 
+  # TODO: This is quite hacky! Is there a better solution? - https://github.com/kbrw/sweet_xml/issues/58
+  # TODO: Remove this when https://github.com/kbrw/sweet_xml/pull/45 gets merged
+  defp node_to_xml(node) do
+    [node]
+    |> :xmerl.export(:xmerl_xml)
+    |> List.flatten()
+    |> List.to_string()
+    |> String.replace_leading(~s[<?xml version="1.0"?>], "")
+  end
 end
