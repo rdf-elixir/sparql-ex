@@ -23,21 +23,41 @@ defmodule SPARQL.W3C.TestSuite do
   def dir("1.1"), do: dir() |> Path.join("data-sparql11")
   def dir({version, sub}), do: dir(version) |> Path.join(to_string(sub))
 
-  def file(filename, format), do: format |> dir() |> Path.join(filename)
-  def manifest_path(format, filename), do: file(filename, format)
+  def file(filename, test_suite), do: test_suite |> dir() |> Path.join(filename)
 
-  def manifest_graph(format, opts \\ []) do
-    format
+  def manifest_document_url(test_suite), do: "file:/" <> dir(test_suite)
+
+  def manifest_uri({"1.1", test_suite}),
+    do: RDF.iri("http://www.w3.org/2009/sparql/docs/tests/data-sparql11/#{test_suite}/manifest#")
+  def manifest_uri({"1.0", test_suite}),
+    do: RDF.iri("http://www.w3.org/2001/sw/DataAccess/tests/data-r2/#{test_suite}/manifest#")
+
+  def manifest_path(test_suite, filename), do: file(filename, test_suite)
+
+
+  def manifest_graph(test_suite, opts \\ []) do
+    opts = Keyword.put_new(opts, :base, manifest_document_url(test_suite))
+    test_suite
     |> manifest_path(Keyword.get(opts, :manifest, "manifest.ttl"))
     |> Turtle.read_file!(opts)
   end
 
-  def test_cases(format, test_type, opts) do
-    format
-    |> manifest_graph(opts)
+
+  def test_cases(test_suite, test_type, opts \\ []) do
+    manifest_graph = manifest_graph(test_suite, opts)
+    manifest_entries =
+      manifest_graph
+      |> Graph.description(manifest_document_url(test_suite))
+      |> Description.first(MF.entries)
+      |> RDF.List.new(manifest_graph)
+      |> RDF.List.values()
+      |> MapSet.new
+
+    manifest_graph
     |> Graph.descriptions
     |> Enum.filter(fn description ->
-        RDF.iri(test_type) in Description.get(description, RDF.type, [])
+        description.subject in manifest_entries and
+          RDF.iri(test_type) in Description.get(description, RDF.type, [])
        end)
   end
 
@@ -55,11 +75,11 @@ defmodule SPARQL.W3C.TestSuite do
   def test_output_file(test_case),
     do: test_case |> Description.first(MF.result) |> IRI.parse
 
-  def test_input_file_path(test_case, format),
-    do: test_input_file(test_case).path |> Path.basename |> file(format)
+  def test_input_file_path(test_case, test_suite),
+    do: test_input_file(test_case).path |> Path.basename |> file(test_suite)
 
-  def test_result_file_path(test_case, format),
-    do: test_output_file(test_case).path |> Path.basename |> file(format)
+  def test_result_file_path(test_case, test_suite),
+    do: test_output_file(test_case).path |> Path.basename |> file(test_suite)
 
 
   defp value(description, property),

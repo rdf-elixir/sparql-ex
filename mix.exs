@@ -54,7 +54,7 @@ defmodule SPARQL.Mixfile do
 
   defp deps do
     [
-      {:rdf, "~> 0.3"},
+      {:rdf, "~> 0.4"},
       {:jason, "~> 1.0"},
       {:nimble_csv, "~> 0.4"},
       {:sweet_xml, "~> 0.6"},
@@ -63,9 +63,6 @@ defmodule SPARQL.Mixfile do
       {:dialyxir, "~> 0.5",       only: [:dev, :test], runtime: false},
       {:credo, "~> 0.8",          only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.16",        only: :dev, runtime: false},
-      {:mix_test_watch, "~> 0.5", only: :dev, runtime: false},
-      {:benchee, "~> 0.9",        only: :bench},
-      {:erlang_term, "~> 1.7",    only: :bench},
     ]
   end
 

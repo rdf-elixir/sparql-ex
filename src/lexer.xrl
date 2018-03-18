@@ -18,6 +18,8 @@ PN_CHARS_U    = ({PN_CHARS_BASE}|_)
 PN_CHARS      = ({PN_CHARS_U}|-|[0-9]|\x{00B7}|[\x{0300}-\x{036F}]|[\x{203F}-\x{2040}])
 PN_PREFIX	    =	({PN_CHARS_BASE}(({PN_CHARS}|\.)*{PN_CHARS})?)
 PN_LOCAL_ESC  =	\\(_|~|\.|\-|\!|\$|\&|\'|\(|\)|\*|\+|\,|\;|\=|\/|\?|\#|\@|\%)
+%% Other implementations allow escaping of colons. Why?
+%% PN_LOCAL_ESC  =	\\(_|~|\.|\-|\!|\$|\&|\'|\(|\)|\*|\+|\,|\;|\=|\/|\?|\#|\@|\%|\:)
 PLX           =	({PERCENT}|{PN_LOCAL_ESC})
 PN_LOCAL	    =	({PN_CHARS_U}|:|[0-9]|{PLX})(({PN_CHARS}|\.|:|{PLX})*({PN_CHARS}|:|{PLX}))?
 PNAME_NS	    =	{PN_PREFIX}?:
@@ -244,20 +246,20 @@ Rules.
 {VAR2}                             : {token, {var, TokenLine, variable(TokenChars)}}.
 {LANGTAG}                          : {token, {langtag, TokenLine, langtag_str(TokenChars)}}.
 {IRIREF}                           : {token, {iriref,  TokenLine, quoted_content_str(TokenChars)}}.
-{DOUBLE}                           : {token, {double, TokenLine, double(TokenChars)}}.
+{DOUBLE}                           : {token, {double,  TokenLine, double(TokenChars)}}.
 {DECIMAL}                          : {token, {decimal, TokenLine, decimal(TokenChars)}}.
-{INTEGER}	                         : {token, {integer,  TokenLine, integer(TokenChars)}}.
-{DOUBLE_POSITIVE}                  : {token, {double_positive, TokenLine, double(TokenChars)}}.
+{INTEGER}	                         : {token, {integer, TokenLine, integer(TokenChars)}}.
+{DOUBLE_POSITIVE}                  : {token, {double_positive,  TokenLine, double(TokenChars)}}.
 {DECIMAL_POSITIVE}                 : {token, {decimal_positive, TokenLine, decimal(TokenChars)}}.
-{INTEGER_POSITIVE}	               : {token, {integer_positive,  TokenLine, integer(TokenChars)}}.
-{DOUBLE_NEGATIVE}                  : {token, {double_negative, TokenLine, double(TokenChars)}}.
+{INTEGER_POSITIVE}	               : {token, {integer_positive, TokenLine, integer(TokenChars)}}.
+{DOUBLE_NEGATIVE}                  : {token, {double_negative,  TokenLine, double(TokenChars)}}.
 {DECIMAL_NEGATIVE}                 : {token, {decimal_negative, TokenLine, decimal(TokenChars)}}.
-{INTEGER_NEGATIVE}	               : {token, {integer_negative,  TokenLine, integer(TokenChars)}}.
+{INTEGER_NEGATIVE}	               : {token, {integer_negative, TokenLine, integer(TokenChars)}}.
 {BOOLEAN}                          : {token, {boolean, TokenLine, boolean(TokenChars)}}.
-{STRING_LITERAL_SINGLE_QUOTE}      : {token, {string, TokenLine, quoted_content_str(TokenChars)}}.
-{STRING_LITERAL_QUOTE}             : {token, {string, TokenLine, quoted_content_str(TokenChars)}}.
-{STRING_LITERAL_LONG_SINGLE_QUOTE} : {token, {string, TokenLine, long_quoted_content_str(TokenChars)}}.
-{STRING_LITERAL_LONG_QUOTE}        : {token, {string, TokenLine, long_quoted_content_str(TokenChars)}}.
+{STRING_LITERAL_SINGLE_QUOTE}      : {token, {string_literal_quote, TokenLine, quoted_content_str(TokenChars)}}.
+{STRING_LITERAL_QUOTE}             : {token, {string_literal_quote, TokenLine, quoted_content_str(TokenChars)}}.
+{STRING_LITERAL_LONG_SINGLE_QUOTE} : {token, {string_literal_quote, TokenLine, long_quoted_content_str(TokenChars)}}.
+{STRING_LITERAL_LONG_QUOTE}        : {token, {string_literal_quote, TokenLine, long_quoted_content_str(TokenChars)}}.
 {BLANK_NODE_LABEL}                 : {token, {blank_node_label, TokenLine, bnode_str(TokenChars)}}.
 {ANON}	                           : {token, {anon, TokenLine}}.
 {NIL}	                             : {token, {nil, TokenLine}}.

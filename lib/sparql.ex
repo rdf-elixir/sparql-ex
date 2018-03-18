@@ -3,11 +3,13 @@ defmodule SPARQL do
   An implementation of the [SPARQL](http://www.w3.org/TR/sparql11-overview/) standard for Elixir.
   """
 
+  alias SPARQL.Query
+
   @result_formats [
     SPARQL.Query.Result.JSON,
-    SPARQL.Query.Result.CSV,
-    SPARQL.Query.Result.TSV,
     SPARQL.Query.Result.XML,
+    SPARQL.Query.Result.TSV,
+    SPARQL.Query.Result.CSV
   ]
 
   @result_format_by_name       @result_formats |> Enum.map(&{&1.name, &1}) |> Map.new
@@ -19,5 +21,8 @@ defmodule SPARQL do
   def result_format(name),                     do: @result_format_by_name[name]
   def result_format_by_media_type(media_type), do: @result_format_by_media_type[media_type]
   def result_format_by_extension(extension),   do: @result_format_by_extension[extension]
+
+
+  defdelegate query(query),    to: Query,  as: :new
 
 end

@@ -18,7 +18,7 @@ Nonterminals
   minusGraphPattern groupOrUnionGraphPattern
   filter constraint functionCall argList expressionList expressionSeq constructTemplate constructTriples triplesSameSubject
   propertyList propertyListNotEmpty propertyListNotEmptyVerbObjectList verb objectList object
-  triplesSameSubjectPath propertyListPath propertyListPathNotEmpty propertyListPathNotEmptyVerbObjectListSeq
+  triplesSameSubjectPath propertyListPathNotEmpty semicolonSeq
   verbObjectList verbPath verbSimple objectListPath objectPath
   path pathAlternative pathSequence pathElt pathEltOrInverse pathMod pathPrimary
   pathNegatedPropertySet pathNegatedPropertySetSeq pathOneInPropertySet
@@ -32,7 +32,7 @@ Nonterminals
 
 Terminals
   var prefix_ns prefix_ln iriref blank_node_label anon nil
-  string langtag integer decimal double boolean
+  string_literal_quote langtag integer decimal double boolean
   integer_positive decimal_positive double_positive integer_negative decimal_negative double_negative
   '.' ';' ',' '[' ']' '(' ')' '{' '}' '^^' 'a' '*' '|' '/' '^' '?' '=' '!='
   '<' '>' '<=' '>=' '+' '-' '!' '||' '&&'
@@ -102,40 +102,40 @@ varDecls -> varDecl varDecls            : ['$1' | '$2'] .
 varDecl  -> var                         : {'$1', nil} .
 varDecl  -> '(' expression 'AS' var ')' : {'$2', '$1'} .
 
-constructQuery	-> 'CONSTRUCT' constructTemplate datasetClauses whereClause solutionModifier .
-constructQuery	-> 'CONSTRUCT' constructTemplate whereClause solutionModifier .
-constructQuery	-> 'CONSTRUCT' datasetClauses 'WHERE' '{' triplesTemplate '}' solutionModifier .
-constructQuery	-> 'CONSTRUCT' 'WHERE' '{' triplesTemplate '}' solutionModifier .
-constructQuery	-> 'CONSTRUCT' datasetClauses 'WHERE' '{' '}' solutionModifier .
-constructQuery	-> 'CONSTRUCT' 'WHERE' '{' '}' solutionModifier .
+constructQuery	-> 'CONSTRUCT' constructTemplate datasetClauses whereClause solutionModifier   : {construct, '$2', '$3', '$4', '$5' } .
+constructQuery	-> 'CONSTRUCT' constructTemplate whereClause solutionModifier                  : {construct, '$2', nil , '$3', '$4' } .
+constructQuery	-> 'CONSTRUCT' datasetClauses 'WHERE' '{' triplesTemplate '}' solutionModifier : {construct, nil, '$2', {where, '$5'}, '$7' } .
+constructQuery	-> 'CONSTRUCT' 'WHERE' '{' triplesTemplate '}' solutionModifier                : {construct, nil, nil , {where, '$4'}, '$6' } .
+constructQuery	-> 'CONSTRUCT' datasetClauses 'WHERE' '{' '}' solutionModifier                 : {construct, nil, '$2', {where, nil}, '$6' } .
+constructQuery	-> 'CONSTRUCT' 'WHERE' '{' '}' solutionModifier                                : {construct, nil, nil , {where, nil}, '$5' } .
 %% without solutionModifier
-constructQuery	-> 'CONSTRUCT' constructTemplate datasetClauses whereClause .
-constructQuery	-> 'CONSTRUCT' constructTemplate whereClause .
-constructQuery	-> 'CONSTRUCT' datasetClauses 'WHERE' '{' triplesTemplate '}' .
-constructQuery	-> 'CONSTRUCT' 'WHERE' '{' triplesTemplate '}' .
-constructQuery	-> 'CONSTRUCT' datasetClauses 'WHERE' '{' '}' .
-constructQuery	-> 'CONSTRUCT' 'WHERE' '{' '}' .
+constructQuery	-> 'CONSTRUCT' constructTemplate datasetClauses whereClause   : {construct, '$2', '$3', '$4', nil } .
+constructQuery	-> 'CONSTRUCT' constructTemplate whereClause                  : {construct, '$2', nil , '$3', nil } .
+constructQuery	-> 'CONSTRUCT' datasetClauses 'WHERE' '{' triplesTemplate '}' : {construct, nil, '$2', {where, '$5'}, nil } .
+constructQuery	-> 'CONSTRUCT' 'WHERE' '{' triplesTemplate '}'                : {construct, nil, nil , {where, '$4'}, nil } .
+constructQuery	-> 'CONSTRUCT' datasetClauses 'WHERE' '{' '}'                 : {construct, nil, '$2', {where, nil}, nil } .
+constructQuery	-> 'CONSTRUCT' 'WHERE' '{' '}'                                : {construct, nil, nil , {where, nil}, nil } .
 
-describeQuery	  -> 'DESCRIBE' describeQuerySubject datasetClauses whereClause solutionModifier .
-describeQuery	  -> 'DESCRIBE' describeQuerySubject whereClause solutionModifier .
-describeQuery	  -> 'DESCRIBE' describeQuerySubject datasetClauses solutionModifier .
-describeQuery	  -> 'DESCRIBE' describeQuerySubject solutionModifier .
+describeQuery	  -> 'DESCRIBE' describeQuerySubject datasetClauses whereClause solutionModifier : {describe, '$2', '$3', '$4', '$5' } .
+describeQuery	  -> 'DESCRIBE' describeQuerySubject whereClause solutionModifier                : {describe, '$2', nil , '$3', '$4' } .
+describeQuery	  -> 'DESCRIBE' describeQuerySubject datasetClauses solutionModifier             : {describe, '$2', '$3', nil , '$4' } .
+describeQuery	  -> 'DESCRIBE' describeQuerySubject solutionModifier                            : {describe, '$2', nil , nil , '$3' } .
 %% without solutionModifier
-describeQuery	  -> 'DESCRIBE' describeQuerySubject datasetClauses whereClause .
-describeQuery	  -> 'DESCRIBE' describeQuerySubject whereClause .
-describeQuery	  -> 'DESCRIBE' describeQuerySubject datasetClauses .
-describeQuery	  -> 'DESCRIBE' describeQuerySubject .
+describeQuery	  -> 'DESCRIBE' describeQuerySubject datasetClauses whereClause : {describe, '$2', '$3', '$4', nil } .
+describeQuery	  -> 'DESCRIBE' describeQuerySubject whereClause                : {describe, '$2', nil , '$3', nil } .
+describeQuery	  -> 'DESCRIBE' describeQuerySubject datasetClauses             : {describe, '$2', '$3', nil , nil } .
+describeQuery	  -> 'DESCRIBE' describeQuerySubject                            : {describe, '$2', nil , nil , nil } .
 
 describeQuerySubject  -> '*'                            : ['$1'] .
 describeQuerySubject  -> describeQuerySubjects          : '$1' .
 describeQuerySubjects -> varOrIri                       : ['$1'] .
 describeQuerySubjects -> varOrIri describeQuerySubjects : ['$1' | '$2'] .
 
-askQuery	      -> 'ASK' datasetClauses whereClause solutionModifier .
-askQuery	      -> 'ASK' whereClause solutionModifier .
+askQuery	      -> 'ASK' datasetClauses whereClause solutionModifier : {ask, '$2', '$3', '$4' } .
+askQuery	      -> 'ASK' whereClause solutionModifier                : {ask, nil , '$2', '$3' } .
 %% without solutionModifier
-askQuery	      -> 'ASK' datasetClauses whereClause .
-askQuery	      -> 'ASK' whereClause .
+askQuery	      -> 'ASK' datasetClauses whereClause                  : {ask, '$2', '$3', nil } .
+askQuery	      -> 'ASK' whereClause                                 : {ask, nil , '$2', nil } .
 
 datasetClauses -> datasetClause                : ['$1'] .
 datasetClauses -> datasetClause datasetClauses : ['$1' | '$2'] .
@@ -148,8 +148,8 @@ namedGraphClause	 -> 'NAMED' sourceSelector .
 
 sourceSelector -> iri : '$1' .
 
-whereClause	-> 'WHERE' groupGraphPattern : '$2' .
-whereClause	-> groupGraphPattern         : '$1' .
+whereClause	-> 'WHERE' groupGraphPattern : {where, '$2'} .
+whereClause	-> groupGraphPattern         : {where, '$1'} .
 
 %% SolutionModifier ::= groupClause? havingClause? orderClause? limitOffsetClauses?
 solutionModifier -> groupClause  havingClause orderClause limitOffsetClauses .
@@ -227,11 +227,12 @@ triplesTemplate -> triplesSameSubject '.' triplesTemplate .
 triplesTemplate -> triplesSameSubject '.' .
 triplesTemplate -> triplesSameSubject .
 
-groupGraphPattern -> '{' subSelect '}'            : {'$2'} .
-groupGraphPattern -> '{' groupGraphPatternSub '}' : {'$2'} .
-groupGraphPattern -> '{' '}'                      : {} .
+groupGraphPattern -> '{' subSelect '}'            : {group_graph_pattern, '$2'} .
+groupGraphPattern -> '{' groupGraphPatternSub '}' : {group_graph_pattern, '$2'} .
+groupGraphPattern -> '{' '}'                      : {group_graph_pattern, nil } .
 
 %% GroupGraphPatternSub -> TriplesBlock? ( GraphPatternNotTriples '.'? TriplesBlock? )*
+%% TODO: Note: This can be empty!
 groupGraphPatternSub -> triplesBlock graphPatternNotTriplesBlockSeq .
 groupGraphPatternSub -> triplesBlock .
 groupGraphPatternSub -> graphPatternNotTriplesBlockSeq .
@@ -329,18 +330,18 @@ objectList -> object ',' objectList .
 objectList -> object .
 object -> graphNode .
 triplesSameSubjectPath -> varOrTerm propertyListPathNotEmpty .
-triplesSameSubjectPath -> triplesNodePath propertyListPath .
+triplesSameSubjectPath -> triplesNodePath propertyListPathNotEmpty .
 triplesSameSubjectPath -> triplesNodePath .
-propertyListPath -> propertyListPathNotEmpty .
+
 %% PropertyListPathNotEmpty -> ( VerbPath | VerbSimple ) ObjectListPath ( ';' ( ( VerbPath | VerbSimple ) ObjectListPath )? )*
-propertyListPathNotEmpty -> verbPath objectListPath propertyListPathNotEmptyVerbObjectListSeq .
-propertyListPathNotEmpty -> verbSimple objectListPath propertyListPathNotEmptyVerbObjectListSeq .
-propertyListPathNotEmpty -> verbPath objectListPath .
-propertyListPathNotEmpty -> verbSimple objectListPath .
-propertyListPathNotEmptyVerbObjectListSeq -> ';' verbObjectList propertyListPathNotEmptyVerbObjectListSeq .
-propertyListPathNotEmptyVerbObjectListSeq -> ';' propertyListPathNotEmptyVerbObjectListSeq .
+propertyListPathNotEmpty -> verbObjectList semicolonSeq propertyListPathNotEmpty .
+propertyListPathNotEmpty -> verbObjectList semicolonSeq .
+propertyListPathNotEmpty -> verbObjectList .
 verbObjectList -> verbPath objectListPath .
 verbObjectList -> verbSimple objectListPath .
+semicolonSeq -> ';' semicolonSeq .
+semicolonSeq -> ';' .
+
 verbPath -> path .
 verbSimple -> var .
 objectListPath -> objectPath ',' objectListPath .
@@ -534,17 +535,17 @@ aggregate -> 'AVG' '(' 'DISTINCT' expression ')' .
 aggregate -> 'AVG' '(' expression ')' .
 aggregate -> 'SAMPLE' '(' 'DISTINCT' expression ')' .
 aggregate -> 'SAMPLE' '(' expression ')' .
-aggregate -> 'GROUP_CONCAT' '(' 'DISTINCT' expression ';' 'SEPARATOR' '=' string ')' .
+aggregate -> 'GROUP_CONCAT' '(' 'DISTINCT' expression ';' 'SEPARATOR' '=' string_literal_quote ')' .
 aggregate -> 'GROUP_CONCAT' '(' 'DISTINCT' expression ')' .
-aggregate -> 'GROUP_CONCAT' '(' expression ';' 'SEPARATOR' '=' string ')' .
+aggregate -> 'GROUP_CONCAT' '(' expression ';' 'SEPARATOR' '=' string_literal_quote ')' .
 aggregate -> 'GROUP_CONCAT' '(' expression ')' .
 
 iriOrFunction -> iri argList .
 iriOrFunction -> iri .
 
-rdfLiteral -> string '^^' iri    : to_literal('$1', {datatype, '$3'}) .
-rdfLiteral -> string langtag     : to_literal('$1', {language, to_langtag('$2')}) .
-rdfLiteral -> string             : to_literal('$1') .
+rdfLiteral -> string_literal_quote '^^' iri    : to_literal('$1', {datatype, '$3'}) .
+rdfLiteral -> string_literal_quote langtag     : to_literal('$1', {language, to_langtag('$2')}) .
+rdfLiteral -> string_literal_quote             : to_literal('$1') .
 
 numericLiteral -> numericLiteralUnsigned .
 numericLiteral -> numericLiteralPositive .

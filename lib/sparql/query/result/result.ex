@@ -1,8 +1,6 @@
 defmodule SPARQL.Query.Result do
 
-  defstruct [
-    :bindings
-  ]
+  defstruct [:bindings]
 
   @type t :: module
 
