@@ -1,5 +1,9 @@
 # SPARQL.ex
 
+[![Travis](https://img.shields.io/travis/marcelotto/sparql-ex.svg?style=flat-square)](https://travis-ci.org/marcelotto/sparql-ex)
+[![Hex.pm](https://img.shields.io/hexpm/v/sparql.svg?style=flat-square)](https://hex.pm/packages/sparql)
+
+
 An implementation of the [SPARQL] standards for Elixir.
 
 Currently, this package is not very useful on its own. It contains just the necessary parts to make the [SPARQL.Client] work. You'll find more useful information [there](https://github.com/marcelotto/sparql_client).
