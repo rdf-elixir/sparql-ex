@@ -77,8 +77,8 @@ defmodule SPARQL.Query.Result.Format do
       defdelegate decode(results, opts \\ []),  to: @decoder
       defdelegate decode!(results, opts \\ []), to: @decoder
 
-      defdelegate encode(content, opts \\ []),  to: @encoder
-      defdelegate encode!(content, opts \\ []), to: @encoder
+#      defdelegate encode(content, opts \\ []),  to: @encoder
+#      defdelegate encode!(content, opts \\ []), to: @encoder
 
       # This is just to be API-compatible to RDF.Serialization.format.
       # TODO: Should we introduce a similar Reader-/Writer-functionality here or introduce RDF.Serialization.decode?
