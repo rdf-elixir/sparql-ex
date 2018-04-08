@@ -1,6 +1,6 @@
 defmodule SPARQL.Language.Decoder do
 
-  alias SPARQL.Query
+  alias SPARQL.{Query, Algebra}
 
 
   def decode(content, opts \\ %{})
@@ -17,7 +17,7 @@ defmodule SPARQL.Language.Decoder do
     end
   end
 
-  defp ast(content) do
+  def ast(content) do
     with {:ok, tokens, _} <- tokenize(content),
          {:ok, ast}       <- parse(tokens) do
       {:ok, ast}
@@ -37,16 +37,18 @@ defmodule SPARQL.Language.Decoder do
   defp parse(tokens), do: tokens |> :parser.parse
 
 
-
-  defp build({:query, {prologue, form, _values}}, default_base) do
+  defp build({:query, {prologue, form, values}}, default_base) do
     with {:ok, base, prefixes} <- do_prologue(prologue),
-         {:ok, query_form}     <- do_query_form(form)
+         {:ok, query_form}     <- do_query_form(form),
+         {:ok, expression}     <-
+           Algebra.Translation.translate({:query, form, values}, prefixes, base)
     do
       {:ok,
         %Query{
-          base:     iri(base || default_base),
-          prefixes: prefixes,
-          form:     query_form,
+          base:       iri(base || default_base),
+          prefixes:   prefixes,
+          form:       query_form,
+          expression: expression
         }
       }
     end
@@ -89,4 +91,3 @@ defmodule SPARQL.Language.Decoder do
   defp iri(string),           do: RDF.iri(string)
 
 end
-

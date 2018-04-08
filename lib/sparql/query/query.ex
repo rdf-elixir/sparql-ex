@@ -4,10 +4,13 @@ defmodule SPARQL.Query do
   """
 
   defstruct [
-    :query_string, # This is only temporary until we have a functionally complete SPARQL language decoder and encoder
     :base,
     :prefixes,
-    :form
+    :form,
+
+    :expression,
+
+    :query_string, # This is only temporary until we have a functionally complete SPARQL language decoder and encoder
   ]
 
   alias __MODULE__

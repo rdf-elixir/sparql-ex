@@ -15,7 +15,7 @@ Currently, this package is not very useful on its own. It contains just the nece
 - [x] SPARQL Query Results XML Format
 - [x] SPARQL 1.1 Query Results JSON Format
 - [x] SPARQL 1.1 Query Results CSV and TSV Formats
-- [x] SPARQL 1.1 Protocol (in a separate package: [sparql_client](https://github.com/marcelotto/sparql_client))
+- [x] SPARQL 1.1 Protocol (currently client-only; in a separate package: [sparql_client](https://github.com/marcelotto/sparql_client))
 - [ ] SPARQL 1.1 Graph Store HTTP Protocol
 - [ ] SPARQL 1.1 Service Description
 - [ ] SPARQL 1.1 Federated Query

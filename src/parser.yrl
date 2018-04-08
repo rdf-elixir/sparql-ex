@@ -148,8 +148,8 @@ namedGraphClause	 -> 'NAMED' sourceSelector .
 
 sourceSelector -> iri : '$1' .
 
-whereClause	-> 'WHERE' groupGraphPattern : {where, '$2'} .
-whereClause	-> groupGraphPattern         : {where, '$1'} .
+whereClause	-> 'WHERE' groupGraphPattern : '$2' .
+whereClause	-> groupGraphPattern         : '$1' .
 
 %% SolutionModifier ::= groupClause? havingClause? orderClause? limitOffsetClauses?
 solutionModifier -> groupClause  havingClause orderClause limitOffsetClauses .
@@ -229,12 +229,12 @@ triplesTemplate -> triplesSameSubject .
 
 groupGraphPattern -> '{' subSelect '}'            : {group_graph_pattern, '$2'} .
 groupGraphPattern -> '{' groupGraphPatternSub '}' : {group_graph_pattern, '$2'} .
-groupGraphPattern -> '{' '}'                      : {group_graph_pattern, nil } .
+groupGraphPattern -> '{' '}'                      : {group_graph_pattern, [] } .
 
 %% GroupGraphPatternSub -> TriplesBlock? ( GraphPatternNotTriples '.'? TriplesBlock? )*
 %% TODO: Note: This can be empty!
 groupGraphPatternSub -> triplesBlock graphPatternNotTriplesBlockSeq .
-groupGraphPatternSub -> triplesBlock .
+groupGraphPatternSub -> triplesBlock : [{triples_block, '$1'}] .
 groupGraphPatternSub -> graphPatternNotTriplesBlockSeq .
 graphPatternNotTriplesBlockSeq -> graphPatternNotTriplesBlock graphPatternNotTriplesBlockSeq .
 graphPatternNotTriplesBlockSeq -> graphPatternNotTriplesBlock  .
@@ -243,9 +243,9 @@ graphPatternNotTriplesBlock -> graphPatternNotTriples '.' .
 graphPatternNotTriplesBlock -> graphPatternNotTriples triplesBlock .
 graphPatternNotTriplesBlock -> graphPatternNotTriples .
 
-triplesBlock -> triplesSameSubjectPath '.' triplesBlock .
-triplesBlock -> triplesSameSubjectPath '.' .
-triplesBlock -> triplesSameSubjectPath .
+triplesBlock -> triplesSameSubjectPath '.' triplesBlock : ['$1' | '$3'] .
+triplesBlock -> triplesSameSubjectPath '.'              : ['$1'] .
+triplesBlock -> triplesSameSubjectPath                  : ['$1'] .
 
 graphPatternNotTriples -> groupOrUnionGraphPattern .
 graphPatternNotTriples -> optionalGraphPattern .
@@ -264,17 +264,22 @@ serviceGraphPattern  -> 'SERVICE' varOrIri groupGraphPattern .
 bind -> 'BIND' '(' expression 'AS' var ')' .
 
 inlineData -> 'VALUES' dataBlock .
+
 dataBlock  -> inlineDataOneVar .
 dataBlock  -> inlineDataFull .
+
 inlineDataOneVar -> var '{' dataBlockValues '}' .
 inlineDataOneVar -> var '{' '}' .
+
 %% InlineDataFull -> ( NIL | '(' Var* ')' ) '{' ( '(' DataBlockValue* ')' | NIL )* '}'
 inlineDataFull -> '(' vars ')' '{' dataBlockValuesOrNil '}' .
 inlineDataFull -> '(' vars ')' '{' '}' .
 inlineDataFull -> nil '{' dataBlockValuesOrNil '}' .
 inlineDataFull -> nil '{' '}' .
+
 vars -> var vars : ['$1' | '$2'] .
 vars -> var      : ['$1'] .
+
 dataBlockValuesOrNil -> '(' dataBlockValues ')' dataBlockValuesOrNil .
 dataBlockValuesOrNil -> nil dataBlockValuesOrNil .
 dataBlockValuesOrNil -> '(' dataBlockValues ')' .
@@ -292,27 +297,33 @@ groupOrUnionGraphPattern -> groupGraphPattern 'UNION' groupOrUnionGraphPattern .
 groupOrUnionGraphPattern -> groupGraphPattern .
 
 filter -> 'FILTER' constraint .
+
 constraint -> brackettedExpression .
 constraint -> builtInCall .
 constraint -> functionCall .
+
 functionCall -> iri argList .
+
 %% ArgList -> NIL | '(' 'DISTINCT'? Expression ( ',' Expression )* ')'
 argList -> nil .
 argList -> '(' 'DISTINCT' expression expressionSeq ')' .
 argList -> '(' 'DISTINCT' expression  ')' .
 argList -> '(' expression expressionSeq ')' .
 argList -> '(' expression  ')' .
+
 %% ExpressionList -> NIL | '(' Expression ( ',' Expression )* ')'
 expressionList -> nil .
 expressionList -> '(' expression ')' .
 expressionList -> '(' expression expressionSeq ')' .
 expressionSeq -> ',' expression expressionSeq .
 expressionSeq -> ',' expression .
+
 constructTemplate -> '{' constructTriples '}' .
 constructTemplate -> '{' '}' .
 constructTriples -> triplesSameSubject '.' constructTriples .
 constructTriples -> triplesSameSubject '.' .
 constructTriples -> triplesSameSubject  .
+
 triplesSameSubject -> varOrTerm propertyListNotEmpty .
 triplesSameSubject -> triplesNode propertyList .
 triplesSameSubject -> triplesNode .
@@ -324,44 +335,47 @@ propertyListNotEmptyVerbObjectList -> ';' verb objectList propertyListNotEmptyVe
 propertyListNotEmptyVerbObjectList -> ';' propertyListNotEmptyVerbObjectList .
 propertyListNotEmptyVerbObjectList -> ';' verb objectList .
 propertyListNotEmptyVerbObjectList -> ';' .
-verb -> varOrIri .
-verb -> 'a' .
-objectList -> object ',' objectList .
-objectList -> object .
-object -> graphNode .
-triplesSameSubjectPath -> varOrTerm propertyListPathNotEmpty .
-triplesSameSubjectPath -> triplesNodePath propertyListPathNotEmpty .
-triplesSameSubjectPath -> triplesNodePath .
+
+verb -> varOrIri : '$1' .
+verb -> 'a'      : rdf_type() .
+
+objectList -> object ',' objectList : ['$1' | '$3'] .
+objectList -> object                : ['$1'] .
+object     -> graphNode             : '$1' .
+
+triplesSameSubjectPath -> varOrTerm propertyListPathNotEmpty       : [{subject, '$1'} | '$2'].
+triplesSameSubjectPath -> triplesNodePath propertyListPathNotEmpty : [{subject, '$1'} | '$2'].
+triplesSameSubjectPath -> triplesNodePath                          : [{subject, '$1'}].
 
 %% PropertyListPathNotEmpty -> ( VerbPath | VerbSimple ) ObjectListPath ( ';' ( ( VerbPath | VerbSimple ) ObjectListPath )? )*
-propertyListPathNotEmpty -> verbObjectList semicolonSeq propertyListPathNotEmpty .
-propertyListPathNotEmpty -> verbObjectList semicolonSeq .
-propertyListPathNotEmpty -> verbObjectList .
-verbObjectList -> verbPath objectListPath .
-verbObjectList -> verbSimple objectListPath .
+propertyListPathNotEmpty -> verbObjectList semicolonSeq propertyListPathNotEmpty : '$1' ++ '$3' .
+propertyListPathNotEmpty -> verbObjectList semicolonSeq                          : '$1' .
+propertyListPathNotEmpty -> verbObjectList                                       : '$1' .
+verbObjectList -> verbPath objectListPath   : [{predicate, '$1'} | '$2'] .
+verbObjectList -> verbSimple objectListPath : [{predicate, '$1'} | '$2'] .
 semicolonSeq -> ';' semicolonSeq .
 semicolonSeq -> ';' .
 
-verbPath -> path .
-verbSimple -> var .
-objectListPath -> objectPath ',' objectListPath .
-objectListPath -> objectPath .
-objectPath -> graphNodePath .
+verbPath -> path  : '$1' .
+verbSimple -> var : '$1' .
+objectListPath -> objectPath ',' objectListPath : [{object, '$1'} | '$3'] .
+objectListPath -> objectPath : [{object, '$1'}] .
+objectPath -> graphNodePath  : '$1' .
 
-path -> pathAlternative .
+path -> pathAlternative : '$1' .
 pathAlternative -> pathSequence '|' pathAlternative .
-pathAlternative -> pathSequence .
+pathAlternative -> pathSequence : '$1' .
 pathSequence -> pathEltOrInverse '/' pathSequence .
-pathSequence -> pathEltOrInverse .
+pathSequence -> pathEltOrInverse : '$1' .
 pathElt -> pathPrimary pathMod .
-pathElt -> pathPrimary .
-pathEltOrInverse -> pathElt .
+pathElt -> pathPrimary : '$1' .
+pathEltOrInverse -> pathElt : '$1' .
 pathEltOrInverse -> '^' pathElt .
 pathMod -> '?' .
 pathMod -> '*' .
 pathMod -> '+' .
-pathPrimary -> iri .
-pathPrimary -> 'a' .
+pathPrimary -> iri : '$1' .
+pathPrimary -> 'a' : rdf_type() .
 pathPrimary -> '!' pathNegatedPropertySet .
 pathPrimary -> '(' path ')' .
 pathNegatedPropertySet -> pathOneInPropertySet .
@@ -374,32 +388,38 @@ pathOneInPropertySet -> 'a' .
 pathOneInPropertySet -> '^' iri .
 pathOneInPropertySet -> '^' 'a' .
 
-triplesNode -> collection .
-triplesNode -> blankNodePropertyList .
-blankNodePropertyList -> '[' propertyListNotEmpty ']' .
-triplesNodePath -> collectionPath .
-triplesNodePath -> blankNodePropertyListPath .
-blankNodePropertyListPath -> '[' propertyListPathNotEmpty ']' .
-collection -> '(' graphNodes ')' .
-graphNodes -> graphNode graphNodes .
-graphNodes -> graphNode .
-collectionPath -> '(' graphNodePaths ')' .
-graphNodePaths -> graphNodePath graphNodePaths .
-graphNodePaths -> graphNodePath .
-graphNode -> varOrTerm .
-graphNode -> triplesNode .
-graphNodePath -> varOrTerm .
-graphNodePath -> triplesNodePath .
-varOrTerm	-> var .
-varOrTerm	-> graphTerm .
-varOrIri -> var .
-varOrIri -> iri .
-graphTerm -> iri .
-graphTerm -> rdfLiteral .
-graphTerm -> numericLiteral .
-graphTerm -> booleanLiteral .
-graphTerm -> blankNode .
-graphTerm -> nil .
+triplesNode -> collection            : '$1' .
+triplesNode -> blankNodePropertyList : '$1' .
+blankNodePropertyList -> '[' propertyListNotEmpty ']' : {blank_node_property_list, '$2'} .
+
+triplesNodePath -> collectionPath            : '$1' .
+triplesNodePath -> blankNodePropertyListPath : '$1' .
+blankNodePropertyListPath -> '[' propertyListPathNotEmpty ']' : {blank_node_property_list, '$2'} .
+
+collection -> '(' graphNodes ')'   : {collection, '$2'} .
+graphNodes -> graphNode graphNodes : ['$1' | '$2'] .
+graphNodes -> graphNode            : ['$1'] .
+
+collectionPath -> '(' graphNodePaths ')'       : {collection, '$2'} .
+graphNodePaths -> graphNodePath graphNodePaths : ['$1' | '$2'] .
+graphNodePaths -> graphNodePath                : ['$1'] .
+
+graphNode -> varOrTerm   : '$1' .
+graphNode -> triplesNode : '$1' .
+graphNodePath -> varOrTerm       : '$1' .
+graphNodePath -> triplesNodePath : '$1' .
+
+varOrTerm	-> var            : '$1' .
+varOrTerm	-> graphTerm      : '$1' .
+varOrIri -> var             : '$1' .
+varOrIri -> iri             : '$1' .
+graphTerm -> iri            : '$1' .
+graphTerm -> rdfLiteral     : '$1' .
+graphTerm -> numericLiteral : '$1' .
+graphTerm -> booleanLiteral : '$1' .
+graphTerm -> blankNode      : '$1' .
+graphTerm -> nil            : '$1' .
+
 expression -> conditionalOrExpression .
 conditionalOrExpression -> conditionalAndExpression '||' conditionalOrExpression .
 conditionalOrExpression -> conditionalAndExpression .
@@ -444,13 +464,13 @@ unaryExpression -> '!' primaryExpression .
 unaryExpression -> '+' primaryExpression .
 unaryExpression -> '-' primaryExpression .
 unaryExpression -> primaryExpression .
-primaryExpression -> brackettedExpression .
-primaryExpression -> builtInCall .
-primaryExpression -> iriOrFunction .
-primaryExpression -> rdfLiteral .
-primaryExpression -> numericLiteral .
-primaryExpression -> booleanLiteral .
-primaryExpression -> var .
+primaryExpression -> brackettedExpression : '$1' .
+primaryExpression -> builtInCall          : '$1' .
+primaryExpression -> iriOrFunction        : '$1' .
+primaryExpression -> rdfLiteral           : '$1' .
+primaryExpression -> numericLiteral       : '$1' .
+primaryExpression -> booleanLiteral       : '$1' .
+primaryExpression -> var                  : '$1' .
 
 brackettedExpression -> '(' expression ')' .
 
@@ -547,18 +567,18 @@ rdfLiteral -> string_literal_quote '^^' iri    : to_literal('$1', {datatype, '$3
 rdfLiteral -> string_literal_quote langtag     : to_literal('$1', {language, to_langtag('$2')}) .
 rdfLiteral -> string_literal_quote             : to_literal('$1') .
 
-numericLiteral -> numericLiteralUnsigned .
-numericLiteral -> numericLiteralPositive .
-numericLiteral -> numericLiteralNegative .
-numericLiteralUnsigned -> integer .
-numericLiteralUnsigned -> decimal .
-numericLiteralUnsigned -> double .
-numericLiteralPositive -> integer_positive .
-numericLiteralPositive -> decimal_positive .
-numericLiteralPositive -> double_positive .
-numericLiteralNegative -> integer_negative .
-numericLiteralNegative -> decimal_negative .
-numericLiteralNegative -> double_negative .
+numericLiteral -> numericLiteralUnsigned   : '$1' .
+numericLiteral -> numericLiteralPositive   : '$1' .
+numericLiteral -> numericLiteralNegative   : '$1' .
+numericLiteralUnsigned -> integer          : extract_literal('$1') .
+numericLiteralUnsigned -> decimal          : extract_literal('$1') .
+numericLiteralUnsigned -> double           : extract_literal('$1') .
+numericLiteralPositive -> integer_positive : extract_literal('$1') .
+numericLiteralPositive -> decimal_positive : extract_literal('$1') .
+numericLiteralPositive -> double_positive  : extract_literal('$1') .
+numericLiteralNegative -> integer_negative : extract_literal('$1') .
+numericLiteralNegative -> decimal_negative : extract_literal('$1') .
+numericLiteralNegative -> double_negative  : extract_literal('$1') .
 
 booleanLiteral -> boolean : to_literal('$1') .
 
@@ -569,7 +589,7 @@ prefixedName -> prefix_ln : '$1' .
 prefixedName -> prefix_ns : '$1' .
 
 blankNode -> blank_node_label : to_bnode('$1') .
-blankNode -> anon             : {anon} .
+blankNode -> anon             : to_bnode('$1') .
 
 
 Erlang code.
@@ -581,3 +601,4 @@ to_literal(STRING) -> 'Elixir.RDF.Serialization.ParseHelper':to_literal(STRING).
 to_literal(STRING, Type) -> 'Elixir.RDF.Serialization.ParseHelper':to_literal(STRING, Type).
 to_langtag(LANGTAG) -> 'Elixir.RDF.Serialization.ParseHelper':to_langtag(LANGTAG).
 rdf_type() -> 'Elixir.RDF.Serialization.ParseHelper':rdf_type().
+extract_literal(LITERAL) -> 'Elixir.SPARQL.Language.ParseHelper':extract_literal(LITERAL).
