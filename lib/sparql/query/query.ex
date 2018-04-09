@@ -8,7 +8,7 @@ defmodule SPARQL.Query do
     :prefixes,
     :form,
 
-    :expression,
+    :expr,
 
     :query_string, # This is only temporary until we have a functionally complete SPARQL language decoder and encoder
   ]

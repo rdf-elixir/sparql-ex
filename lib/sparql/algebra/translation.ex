@@ -11,35 +11,36 @@ defmodule SPARQL.Algebra.Translation do
   @no_mapping nil
 
   def translate(ast, prefixes, base, options \\ %{}) do
-    with {:ok, p} <-
+    with state = %{expr: ast},
+         {:ok, state} <-
            # 18.2.2 Converting Graph Patterns
-           convert_graph_patterns(ast, prefixes, base, options),
+           convert_graph_patterns(state, prefixes, base, options),
 
-#         {:ok, p} <-
+#         {:ok, state} <-
 #           # 18.2.4.1 Grouping and Aggregation - Step: GROUP BY
 #           group(...) # https://www.w3.org/TR/sparql11-query/#defn_algGroup
 
-         {:ok, p} <-
+         {:ok, state} <-
            # 18.2.4.1 Grouping and Aggregation - Step: Aggregates
-           convert_aggregates(p),
+           convert_aggregates(state),
 
-         {:ok, p} <-
+         {:ok, state} <-
            # 18.2.4.2 HAVING
-           convert_having(p),
+           convert_having(state),
 
-         {:ok, p} <-
+         {:ok, state} <-
            # 18.2.4.3 VALUES
-           convert_final_values_clause(p),
+           convert_final_values_clause(state),
 
-         {:ok, p, pv} <-
+         {:ok, state} <-
            # 18.2.4.4 SELECT Expressions
-           convert_select(p),
+           convert_select(state),
 
-         {:ok, m} <-
+         {:ok, state} <-
            # 18.2.5 Converting Solution Modifiers
-           convert_solution_modifiers(p, pv)
+           convert_solution_modifiers(state)
     do
-      {:ok, m}
+      {:ok, state.expr}
     end
   end
 
@@ -58,10 +59,10 @@ defmodule SPARQL.Algebra.Translation do
 
   <https://www.w3.org/TR/sparql11-query/#convertGraphPattern>
   """
-  defp convert_graph_patterns(ast, prefixes, base, _options) do
+  defp convert_graph_patterns(state, prefixes, base, _options) do
     with {:ok, ast} <-
             # 18.2.2.1 Expand Syntax Forms
-            expand_syntax_forms(ast, prefixes, base),
+            expand_syntax_forms(state.expr, prefixes, base),
 
          {:ok, ast} <-
             # 18.2.2.2 Collect FILTER Elements
@@ -91,7 +92,7 @@ defmodule SPARQL.Algebra.Translation do
             # 18.2.2.8 Simplification step
             simplification(ast)
     do
-      {:ok, ast}
+      {:ok, %{state | expr: ast}}
     end
   end
 
@@ -460,42 +461,80 @@ defmodule SPARQL.Algebra.Translation do
   # 18.2.4 Converting Groups, Aggregates, HAVING, final VALUES clause and SELECT Expressions
 
   # https://www.w3.org/TR/sparql11-query/#sparqlGroupAggregate
-  defp convert_aggregates(p) do
-    {:ok, p}
+  defp convert_aggregates(state) do
+    {:ok, state}
   end
 
 
   # https://www.w3.org/TR/sparql11-query/#sparqlAlgebraFinalValues
-  defp convert_final_values_clause({:query, p, nil}) do
-    {:ok, p}
+  defp convert_final_values_clause(%{expr: {:query, p, nil}} = state) do
+    {:ok, %{state | expr: p}}
   end
 
-  defp convert_final_values_clause({:query, p, data}) do
-    {:ok, p}
+  defp convert_final_values_clause(%{expr: {:query, p, data}} = state) do
+    {:ok, %{state | expr: p}}
   end
 
   # https://www.w3.org/TR/sparql11-query/#sparqlHavingClause
-  defp convert_having(p) do
-    {:ok, p}
+  defp convert_having(state) do
+    {:ok, state}
   end
 
 
   # https://www.w3.org/TR/sparql11-query/#sparqlSelectExpressions
-  defp convert_select({:select, todo, _dataset_clause, where_clause, _solution_modifier}) do
-    {:ok, where_clause, visible_variables(where_clause)}
+  defp convert_select(%{expr:
+        {:select, {var_decls, modifier}, _dataset_clause, where_clause, _solution_modifier}} = state) do
+    with {pv, e} = select_items(var_decls, where_clause) do
+      # TODO: process e (with AS expressions)
+      {:ok,
+        state
+        |> Map.put(:expr, {where_clause, modifier})
+        |> Map.put(:pv, pv)
+      }
+    end
   end
 
-  defp convert_select({:ask, _dataset_clauses, where_clause, _solution_modifier}) do
-    {:ok, where_clause, visible_variables(where_clause)}
+  defp convert_select(%{expr:
+        {:ask, _dataset_clauses, where_clause, _solution_modifier}} = state) do
+    {:ok,
+      state
+      |> Map.put(:expr, where_clause)
+      |> Map.put(:pv, visible_variables(where_clause))
+    }
   end
 
-  defp convert_select({:describe, _subject, _dataset_clauses, where_clause, _solution_modifier}) do
-    {:ok, where_clause, visible_variables(where_clause)}
+  defp convert_select(%{expr:
+        {:describe, _subject, _dataset_clauses, where_clause, _solution_modifier}} = state) do
+    {:ok,
+      state
+      |> Map.put(:expr, where_clause)
+      |> Map.put(:pv, visible_variables(where_clause))
+    }
   end
 
-  defp convert_select({:construct, _construct_template, _dataset_clauses, where_clause, _solution_modifier}) do
-    {:ok, where_clause, visible_variables(where_clause)}
+  defp convert_select(%{expr:
+        {:construct, _construct_template, _dataset_clauses, where_clause, _solution_modifier}} = state) do
+    {:ok,
+      state
+      |> Map.put(:expr, where_clause)
+      |> Map.put(:pv, visible_variables(where_clause))
+    }
   end
+
+
+  defp select_items([:*], where_clause) do
+    {visible_variables(where_clause), []}
+  end
+
+  defp select_items(sel_items, _) do
+    {pv, e} =
+      Enum.reduce sel_items, {[], []}, fn
+        {variable, nil},  {pv, e} -> {[variable | pv], e}
+        {variable, expr}, {pv, e} -> {[variable | pv], [{variable, expr} | e]}
+      end
+    {Enum.reverse(pv), Enum.reverse(e)}
+  end
+
 
   ############################################################################
   # 18.2.5 Converting Solution Modifiers
@@ -515,12 +554,35 @@ defmodule SPARQL.Algebra.Translation do
 
   <https://www.w3.org/TR/sparql11-query/#convertSolMod>
   """
-  defp convert_solution_modifiers(pattern, pv) do
-    m = to_list(pattern)
+  defp convert_solution_modifiers(state) do
+    {pattern, modifier} = case state.expr do
+      {pattern, modifier} -> {pattern, modifier}
+      pattern             -> {pattern, nil}
+    end
 
+    m = pattern # TODO: to_list(pattern)
 
-    # 18.2.5.6 Final Algebra Expression
-    {:ok, m}
+    # TODO: 18.2.5.1 ORDER BY
+
+    # 18.2.5.2 Projection
+    m =
+      if state.pv && not Enum.empty?(state.pv) do
+        %SPARQL.Algebra.Project{vars: state.pv, expr: m}
+      else
+        m
+      end
+
+    # 18.2.5.3 DISTINCT and 18.2.5.4 REDUCED
+    m = case modifier do
+      :distinct -> %SPARQL.Algebra.Distinct{expr: m}
+      :reduced  -> %SPARQL.Algebra.Reduced{expr: m}
+      nil       -> m
+      _         -> m # TODO: remove this when the implementation is complete; we currently need this to make the W3C syntax tests pass on non-select queries
+    end
+
+    # TODO: 18.2.5.5 OFFSET and LIMIT
+
+    {:ok, %{state | expr: m}}
   end
 
 

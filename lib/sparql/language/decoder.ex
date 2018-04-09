@@ -45,10 +45,10 @@ defmodule SPARQL.Language.Decoder do
     do
       {:ok,
         %Query{
-          base:       iri(base || default_base),
-          prefixes:   prefixes,
-          form:       query_form,
-          expression: expression
+          base:     iri(base || default_base),
+          prefixes: prefixes,
+          form:     query_form,
+          expr:     expression
         }
       }
     end
