@@ -5,34 +5,49 @@ defmodule SPARQL.Algebra.TranslationTest do
 
   import SPARQL.Language.Decoder, only: [decode: 1]
 
-  @rdf_first RDF.first()
-  @rdf_rest  RDF.rest()
-  @rdf_nil   RDF.nil()
+
+  test "IRI" do
+    query = "SELECT * WHERE { ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?class }"
+
+    assert {:ok, %SPARQL.Query{expr:
+        %SPARQL.Algebra.BGP{
+          triples: [{:s?, ~I<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>, :class?}]
+        }}} = decode(query)
+  end
+
+  @tag skip: "TODO"
+  test "relative IRI"
+
+  test "a" do
+    query = "SELECT * WHERE { ?s a ?class }"
+
+    assert {:ok, %SPARQL.Query{expr:
+        %SPARQL.Algebra.BGP{
+          triples: [{:s?, ~I<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>, :class?}]
+        }}} = decode(query)
+  end
+
+  test "blank node" do
+    query = "SELECT * WHERE { _:foo ?p ?o }"
+
+    assert {:ok, %SPARQL.Query{expr:
+        %SPARQL.Algebra.BGP{
+          triples: [{~B"foo", :p?, :o?}]
+        }}} = decode(query)
+  end
+
+  test "abbreviated blank node" do
+    query = "SELECT * WHERE { [] ?p ?o }"
+
+    assert {:ok, %SPARQL.Query{expr:
+        %SPARQL.Algebra.BGP{
+          triples: [{%RDF.BlankNode{}, :p?, :o?}]
+        }}} = decode(query)
+  end
 
 
-  describe "RDF model" do
-    test "with IRI" do
-      query = "SELECT * WHERE { ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?class }"
-
-      assert {:ok, %SPARQL.Query{expr:
-          %SPARQL.Algebra.BGP{
-            triples: [{:s?, ~I<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>, :class?}]
-          }}} = decode(query)
-    end
-
-    @tag skip: "TODO"
-    test "with relative IRI"
-
-    test "with a" do
-      query = "SELECT * WHERE { ?s a ?class }"
-
-      assert {:ok, %SPARQL.Query{expr:
-          %SPARQL.Algebra.BGP{
-            triples: [{:s?, ~I<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>, :class?}]
-          }}} = decode(query)
-    end
-
-    test "with integer literal" do
+  describe "literals" do
+    test "integer" do
       query = ~s[SELECT * WHERE { ?s ?p 42 }]
 
       int = RDF.Integer.new(42)
@@ -42,7 +57,7 @@ defmodule SPARQL.Algebra.TranslationTest do
           }}} = decode(query)
     end
 
-    test "with plain literal" do
+    test "plain literal" do
       query = ~s[SELECT * WHERE { ?s ?p "foo" }]
 
       assert {:ok, %SPARQL.Query{expr:
@@ -51,7 +66,7 @@ defmodule SPARQL.Algebra.TranslationTest do
           }}} = decode(query)
     end
 
-    test "with typed literal" do
+    test "typed literal" do
       query = ~s[SELECT * WHERE { ?s ?p "foo"^^<http://www.w3.org/2001/XMLSchema#token> }]
 
       literal = RDF.literal("foo", datatype: "http://www.w3.org/2001/XMLSchema#token")
@@ -61,7 +76,7 @@ defmodule SPARQL.Algebra.TranslationTest do
           }}} = decode(query)
     end
 
-    test "with language tagged literal" do
+    test "language tagged literal" do
       query = ~s[SELECT * WHERE { ?s ?p "foo"@en }]
 
       assert {:ok, %SPARQL.Query{expr:
@@ -69,42 +84,14 @@ defmodule SPARQL.Algebra.TranslationTest do
             triples: [{:s?, :p?, ~L"foo"en}]
           }}} = decode(query)
     end
+  end
 
-    test "with blank node" do
-      query = "SELECT * WHERE { _:foo ?p ?o }"
+  describe "collection" do
+    @rdf_first RDF.first()
+    @rdf_rest  RDF.rest()
+    @rdf_nil   RDF.nil()
 
-      assert {:ok, %SPARQL.Query{expr:
-          %SPARQL.Algebra.BGP{
-            triples: [{~B"foo", :p?, :o?}]
-          }}} = decode(query)
-    end
-
-    test "with abbreviated blank node" do
-      query = "SELECT * WHERE { [] ?p ?o }"
-
-      assert {:ok, %SPARQL.Query{expr:
-          %SPARQL.Algebra.BGP{
-            triples: [{%RDF.BlankNode{}, :p?, :o?}]
-          }}} = decode(query)
-    end
-
-    test "with '()' for nil" do
-      query = "SELECT * WHERE { () ?p ?o }"
-
-      assert {:ok, %SPARQL.Query{expr:
-          %SPARQL.Algebra.BGP{
-            triples: [{~I<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>, :p?, :o?}]
-          }}} = decode(query)
-
-      query = "SELECT * WHERE { ?s ?p () }"
-
-      assert {:ok, %SPARQL.Query{expr:
-          %SPARQL.Algebra.BGP{
-            triples: [{:s?, :p?, ~I<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>}]
-          }}} = decode(query)
-    end
-
-    test "with list" do
+    test "simple" do
       one = RDF.Integer.new(1)
 
       query = "SELECT * WHERE { ?s ?p (1 ?second ?third) }"
@@ -136,7 +123,7 @@ defmodule SPARQL.Algebra.TranslationTest do
           }}} = decode(query)
     end
 
-    test "with nested list" do
+    test "nested collection" do
       one = RDF.Integer.new(1)
 
       query = "SELECT * WHERE { ?s ?p (?one (1 ?two) [?foo ?bar]) }"
@@ -159,186 +146,21 @@ defmodule SPARQL.Algebra.TranslationTest do
             ]
           }}} = decode(query)
     end
-  end
 
-
-  describe "SELECT query" do
-    test "a single bgp with a single triple" do
-      query = """
-        PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-        SELECT * WHERE { ?person foaf:name ?name }
-        """
+    test "'()' for nil" do
+      query = "SELECT * WHERE { () ?p ?o }"
 
       assert {:ok, %SPARQL.Query{expr:
           %SPARQL.Algebra.BGP{
-            triples: [{:person?, ~I<http://xmlns.com/foaf/0.1/name>, :name?}]
-          }
-        }} = decode(query)
-    end
+            triples: [{~I<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>, :p?, :o?}]
+          }}} = decode(query)
 
-    test "a single bgp with a multiple triples" do
-      query = """
-        PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-        SELECT *
-        WHERE {
-          ?person foaf:name ?name ;
-                  foaf:knows ?other, ?friend .
-          ?other foaf:knows ?friend .
-        }
-        """
+      query = "SELECT * WHERE { ?s ?p () }"
 
       assert {:ok, %SPARQL.Query{expr:
           %SPARQL.Algebra.BGP{
-            triples: [
-              {:person?, ~I<http://xmlns.com/foaf/0.1/name>,  :name?},
-              {:person?, ~I<http://xmlns.com/foaf/0.1/knows>, :other?},
-              {:person?, ~I<http://xmlns.com/foaf/0.1/knows>, :friend?},
-              {:other?,  ~I<http://xmlns.com/foaf/0.1/knows>, :friend?},
-            ]
-          }
-        }} = decode(query)
-    end
-
-    test "a single bgp with a blank node property list at subject position" do
-      query = """
-        PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-        SELECT *
-        WHERE {
-          [ foaf:mbox ?email ] foaf:knows ?other, ?friend .
-        }
-        """
-      assert {:ok, %SPARQL.Query{expr:
-          %SPARQL.Algebra.BGP{
-            triples: [
-              {%RDF.BlankNode{} = bnode, ~I<http://xmlns.com/foaf/0.1/mbox>,  :email?},
-              {%RDF.BlankNode{} = bnode, ~I<http://xmlns.com/foaf/0.1/knows>, :other?},
-              {%RDF.BlankNode{} = bnode, ~I<http://xmlns.com/foaf/0.1/knows>, :friend?},
-            ]
-          }
-        }} = decode(query)
-
-      query = """
-        PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-        SELECT *
-        WHERE {
-          [ foaf:mbox ?email ; foaf:knows ?other, ?friend ] .
-        }
-        """
-      assert {:ok, %SPARQL.Query{expr:
-          %SPARQL.Algebra.BGP{
-            triples: [
-              {%RDF.BlankNode{} = bnode, ~I<http://xmlns.com/foaf/0.1/mbox>,  :email?},
-              {%RDF.BlankNode{} = bnode, ~I<http://xmlns.com/foaf/0.1/knows>, :other?},
-              {%RDF.BlankNode{} = bnode, ~I<http://xmlns.com/foaf/0.1/knows>, :friend?},
-            ]
-          }
-        }} = decode(query)
-    end
-
-    test "a single bgp with a blank node property list at object position" do
-      query = """
-        PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-        SELECT *
-        WHERE {
-          ?s ?p [ foaf:mbox ?email ; foaf:knows ?other, ?friend ] .
-        }
-        """
-      assert {:ok, %SPARQL.Query{expr:
-          %SPARQL.Algebra.BGP{
-            triples: [
-              {:s?, :p?, %RDF.BlankNode{} = bnode},
-              {%RDF.BlankNode{} = bnode, ~I<http://xmlns.com/foaf/0.1/mbox>,  :email?},
-              {%RDF.BlankNode{} = bnode, ~I<http://xmlns.com/foaf/0.1/knows>, :other?},
-              {%RDF.BlankNode{} = bnode, ~I<http://xmlns.com/foaf/0.1/knows>, :friend?},
-            ]
-          }
-        }} = decode(query)
-    end
-
-    test "simple projected variables" do
-      query = """
-        PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-        SELECT ?person ?name WHERE { ?person foaf:name ?name }
-        """
-
-      assert {:ok, %SPARQL.Query{expr:
-          %SPARQL.Algebra.Project{
-            vars: ~w[person? name?]a,
-            expr: %SPARQL.Algebra.BGP{
-                triples: [{:person?, ~I<http://xmlns.com/foaf/0.1/name>, :name?}]
-              }
-            }
-        }} = decode(query)
-    end
-
-    @tag skip: "TODO when we have SPARQL expressions as algebra expressions available"
-    test "projected expressions"
-
-
-    test "DISTINCT with *" do
-      query = """
-        PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-        SELECT DISTINCT * WHERE { ?person foaf:name ?name }
-        """
-
-      assert {:ok, %SPARQL.Query{expr:
-          %SPARQL.Algebra.Distinct{expr:
-            %SPARQL.Algebra.BGP{
-              triples: [{:person?, ~I<http://xmlns.com/foaf/0.1/name>, :name?}]
-            }
-          }
-        }} = decode(query)
-    end
-
-    test "DISTINCT with projected variables" do
-      query = """
-        PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-        SELECT DISTINCT ?person ?name WHERE { ?person foaf:name ?name }
-        """
-
-      assert {:ok, %SPARQL.Query{expr:
-          %SPARQL.Algebra.Distinct{expr:
-            %SPARQL.Algebra.Project{
-              vars: ~w[person? name?]a,
-              expr: %SPARQL.Algebra.BGP{
-                  triples: [{:person?, ~I<http://xmlns.com/foaf/0.1/name>, :name?}]
-                }
-              }
-            }
-        }} = decode(query)
-    end
-
-    test "REDUCED with *" do
-      query = """
-        PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-        SELECT REDUCED * WHERE { ?person foaf:name ?name }
-        """
-
-      assert {:ok, %SPARQL.Query{expr:
-          %SPARQL.Algebra.Reduced{expr:
-            %SPARQL.Algebra.BGP{
-              triples: [{:person?, ~I<http://xmlns.com/foaf/0.1/name>, :name?}]
-            }
-          }
-        }} = decode(query)
-    end
-
-    test "REDUCED with projected variables" do
-      query = """
-        PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-        SELECT REDUCED ?person ?name WHERE { ?person foaf:name ?name }
-        """
-
-      assert {:ok, %SPARQL.Query{expr:
-          %SPARQL.Algebra.Reduced{expr:
-            %SPARQL.Algebra.Project{
-              vars: ~w[person? name?]a,
-              expr: %SPARQL.Algebra.BGP{
-                  triples: [{:person?, ~I<http://xmlns.com/foaf/0.1/name>, :name?}]
-                }
-              }
-            }
-        }} = decode(query)
+            triples: [{:s?, :p?, ~I<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>}]
+          }}} = decode(query)
     end
 
   end
