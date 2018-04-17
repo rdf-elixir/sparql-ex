@@ -13,7 +13,7 @@ defmodule SPARQL.Algebra.Translation.SelectQueryTest do
 
     assert {:ok, %SPARQL.Query{expr:
         %SPARQL.Algebra.BGP{
-          triples: [{:person?, ~I<http://xmlns.com/foaf/0.1/name>, :name?}]
+          triples: [{"person", ~I<http://xmlns.com/foaf/0.1/name>, "name"}]
         }
       }} = decode(query)
   end
@@ -32,10 +32,10 @@ defmodule SPARQL.Algebra.Translation.SelectQueryTest do
     assert {:ok, %SPARQL.Query{expr:
         %SPARQL.Algebra.BGP{
           triples: [
-            {:person?, ~I<http://xmlns.com/foaf/0.1/name>,  :name?},
-            {:person?, ~I<http://xmlns.com/foaf/0.1/knows>, :other?},
-            {:person?, ~I<http://xmlns.com/foaf/0.1/knows>, :friend?},
-            {:other?,  ~I<http://xmlns.com/foaf/0.1/knows>, :friend?},
+            {"person", ~I<http://xmlns.com/foaf/0.1/name>,  "name"},
+            {"person", ~I<http://xmlns.com/foaf/0.1/knows>, "other"},
+            {"person", ~I<http://xmlns.com/foaf/0.1/knows>, "friend"},
+            {"other",  ~I<http://xmlns.com/foaf/0.1/knows>, "friend"},
           ]
         }
       }} = decode(query)
@@ -52,9 +52,9 @@ defmodule SPARQL.Algebra.Translation.SelectQueryTest do
     assert {:ok, %SPARQL.Query{expr:
         %SPARQL.Algebra.BGP{
           triples: [
-            {%RDF.BlankNode{} = bnode, ~I<http://xmlns.com/foaf/0.1/mbox>,  :email?},
-            {%RDF.BlankNode{} = bnode, ~I<http://xmlns.com/foaf/0.1/knows>, :other?},
-            {%RDF.BlankNode{} = bnode, ~I<http://xmlns.com/foaf/0.1/knows>, :friend?},
+            {%RDF.BlankNode{} = bnode, ~I<http://xmlns.com/foaf/0.1/mbox>,  "email"},
+            {%RDF.BlankNode{} = bnode, ~I<http://xmlns.com/foaf/0.1/knows>, "other"},
+            {%RDF.BlankNode{} = bnode, ~I<http://xmlns.com/foaf/0.1/knows>, "friend"},
           ]
         }
       }} = decode(query)
@@ -69,9 +69,9 @@ defmodule SPARQL.Algebra.Translation.SelectQueryTest do
     assert {:ok, %SPARQL.Query{expr:
         %SPARQL.Algebra.BGP{
           triples: [
-            {%RDF.BlankNode{} = bnode, ~I<http://xmlns.com/foaf/0.1/mbox>,  :email?},
-            {%RDF.BlankNode{} = bnode, ~I<http://xmlns.com/foaf/0.1/knows>, :other?},
-            {%RDF.BlankNode{} = bnode, ~I<http://xmlns.com/foaf/0.1/knows>, :friend?},
+            {%RDF.BlankNode{} = bnode, ~I<http://xmlns.com/foaf/0.1/mbox>,  "email"},
+            {%RDF.BlankNode{} = bnode, ~I<http://xmlns.com/foaf/0.1/knows>, "other"},
+            {%RDF.BlankNode{} = bnode, ~I<http://xmlns.com/foaf/0.1/knows>, "friend"},
           ]
         }
       }} = decode(query)
@@ -88,10 +88,10 @@ defmodule SPARQL.Algebra.Translation.SelectQueryTest do
     assert {:ok, %SPARQL.Query{expr:
         %SPARQL.Algebra.BGP{
           triples: [
-            {:s?, :p?, %RDF.BlankNode{} = bnode},
-            {%RDF.BlankNode{} = bnode, ~I<http://xmlns.com/foaf/0.1/mbox>,  :email?},
-            {%RDF.BlankNode{} = bnode, ~I<http://xmlns.com/foaf/0.1/knows>, :other?},
-            {%RDF.BlankNode{} = bnode, ~I<http://xmlns.com/foaf/0.1/knows>, :friend?},
+            {"s", "p", %RDF.BlankNode{} = bnode},
+            {%RDF.BlankNode{} = bnode, ~I<http://xmlns.com/foaf/0.1/mbox>,  "email"},
+            {%RDF.BlankNode{} = bnode, ~I<http://xmlns.com/foaf/0.1/knows>, "other"},
+            {%RDF.BlankNode{} = bnode, ~I<http://xmlns.com/foaf/0.1/knows>, "friend"},
           ]
         }
       }} = decode(query)
@@ -105,9 +105,9 @@ defmodule SPARQL.Algebra.Translation.SelectQueryTest do
 
     assert {:ok, %SPARQL.Query{expr:
         %SPARQL.Algebra.Project{
-          vars: ~w[person? name?]a,
+          vars: ~w[person name],
           expr: %SPARQL.Algebra.BGP{
-              triples: [{:person?, ~I<http://xmlns.com/foaf/0.1/name>, :name?}]
+              triples: [{"person", ~I<http://xmlns.com/foaf/0.1/name>, "name"}]
             }
           }
       }} = decode(query)
@@ -126,7 +126,7 @@ defmodule SPARQL.Algebra.Translation.SelectQueryTest do
     assert {:ok, %SPARQL.Query{expr:
         %SPARQL.Algebra.Distinct{expr:
           %SPARQL.Algebra.BGP{
-            triples: [{:person?, ~I<http://xmlns.com/foaf/0.1/name>, :name?}]
+            triples: [{"person", ~I<http://xmlns.com/foaf/0.1/name>, "name"}]
           }
         }
       }} = decode(query)
@@ -141,9 +141,9 @@ defmodule SPARQL.Algebra.Translation.SelectQueryTest do
     assert {:ok, %SPARQL.Query{expr:
         %SPARQL.Algebra.Distinct{expr:
           %SPARQL.Algebra.Project{
-            vars: ~w[person? name?]a,
+            vars: ~w[person name],
             expr: %SPARQL.Algebra.BGP{
-                triples: [{:person?, ~I<http://xmlns.com/foaf/0.1/name>, :name?}]
+                triples: [{"person", ~I<http://xmlns.com/foaf/0.1/name>, "name"}]
               }
             }
           }
@@ -159,7 +159,7 @@ defmodule SPARQL.Algebra.Translation.SelectQueryTest do
     assert {:ok, %SPARQL.Query{expr:
         %SPARQL.Algebra.Reduced{expr:
           %SPARQL.Algebra.BGP{
-            triples: [{:person?, ~I<http://xmlns.com/foaf/0.1/name>, :name?}]
+            triples: [{"person", ~I<http://xmlns.com/foaf/0.1/name>, "name"}]
           }
         }
       }} = decode(query)
@@ -174,9 +174,9 @@ defmodule SPARQL.Algebra.Translation.SelectQueryTest do
     assert {:ok, %SPARQL.Query{expr:
         %SPARQL.Algebra.Reduced{expr:
           %SPARQL.Algebra.Project{
-            vars: ~w[person? name?]a,
+            vars: ~w[person name],
             expr: %SPARQL.Algebra.BGP{
-                triples: [{:person?, ~I<http://xmlns.com/foaf/0.1/name>, :name?}]
+                triples: [{"person", ~I<http://xmlns.com/foaf/0.1/name>, "name"}]
               }
             }
           }

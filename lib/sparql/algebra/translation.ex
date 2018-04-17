@@ -121,8 +121,8 @@ defmodule SPARQL.Algebra.Translation do
     end
   end
 
-  defp expand_syntax_form({:var, _, var}, _), do: :"#{var}?"
-  defp expand_syntax_form({:*, _}, _),        do: :*
+  defp expand_syntax_form({:var, _, var}, _), do: var
+  defp expand_syntax_form({:*, _}, _),        do: "*"
   defp expand_syntax_form({:nil, _}, _),      do: RDF.nil()
 
   # TODO: optimize performance by providing function clauses for AST patterns which don't need further traversal
@@ -522,7 +522,7 @@ defmodule SPARQL.Algebra.Translation do
   end
 
 
-  defp select_items([:*], where_clause) do
+  defp select_items(["*"], where_clause) do
     {visible_variables(where_clause), []}
   end
 

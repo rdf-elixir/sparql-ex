@@ -11,7 +11,7 @@ defmodule SPARQL.Algebra.TranslationTest do
 
     assert {:ok, %SPARQL.Query{expr:
         %SPARQL.Algebra.BGP{
-          triples: [{:s?, ~I<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>, :class?}]
+          triples: [{"s", ~I<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>, "class"}]
         }}} = decode(query)
   end
 
@@ -23,7 +23,7 @@ defmodule SPARQL.Algebra.TranslationTest do
 
     assert {:ok, %SPARQL.Query{expr:
         %SPARQL.Algebra.BGP{
-          triples: [{:s?, ~I<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>, :class?}]
+          triples: [{"s", ~I<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>, "class"}]
         }}} = decode(query)
   end
 
@@ -32,7 +32,7 @@ defmodule SPARQL.Algebra.TranslationTest do
 
     assert {:ok, %SPARQL.Query{expr:
         %SPARQL.Algebra.BGP{
-          triples: [{~B"foo", :p?, :o?}]
+          triples: [{~B"foo", "p", "o"}]
         }}} = decode(query)
   end
 
@@ -41,7 +41,7 @@ defmodule SPARQL.Algebra.TranslationTest do
 
     assert {:ok, %SPARQL.Query{expr:
         %SPARQL.Algebra.BGP{
-          triples: [{%RDF.BlankNode{}, :p?, :o?}]
+          triples: [{%RDF.BlankNode{}, "p", "o"}]
         }}} = decode(query)
   end
 
@@ -53,7 +53,7 @@ defmodule SPARQL.Algebra.TranslationTest do
       int = RDF.Integer.new(42)
       assert {:ok, %SPARQL.Query{expr:
           %SPARQL.Algebra.BGP{
-            triples: [{:s?, :p?, ^int}]
+            triples: [{"s", "p", ^int}]
           }}} = decode(query)
     end
 
@@ -62,7 +62,7 @@ defmodule SPARQL.Algebra.TranslationTest do
 
       assert {:ok, %SPARQL.Query{expr:
           %SPARQL.Algebra.BGP{
-            triples: [{:s?, :p?, ~L"foo"}]
+            triples: [{"s", "p", ~L"foo"}]
           }}} = decode(query)
     end
 
@@ -72,7 +72,7 @@ defmodule SPARQL.Algebra.TranslationTest do
       literal = RDF.literal("foo", datatype: "http://www.w3.org/2001/XMLSchema#token")
       assert {:ok, %SPARQL.Query{expr:
           %SPARQL.Algebra.BGP{
-            triples: [{:s?, :p?, ^literal}]
+            triples: [{"s", "p", ^literal}]
           }}} = decode(query)
     end
 
@@ -81,7 +81,7 @@ defmodule SPARQL.Algebra.TranslationTest do
 
       assert {:ok, %SPARQL.Query{expr:
           %SPARQL.Algebra.BGP{
-            triples: [{:s?, :p?, ~L"foo"en}]
+            triples: [{"s", "p", ~L"foo"en}]
           }}} = decode(query)
     end
   end
@@ -98,12 +98,12 @@ defmodule SPARQL.Algebra.TranslationTest do
       assert {:ok, %SPARQL.Query{expr:
           %SPARQL.Algebra.BGP{
             triples: [
-              {:s?, :p?, %RDF.BlankNode{} = first_node},
+              {"s", "p", %RDF.BlankNode{} = first_node},
               {%RDF.BlankNode{} = first_node , @rdf_first, ^one},
               {%RDF.BlankNode{} = first_node , @rdf_rest, second_node},
-              {%RDF.BlankNode{} = second_node, @rdf_first, :second?},
+              {%RDF.BlankNode{} = second_node, @rdf_first, "second"},
               {%RDF.BlankNode{} = second_node, @rdf_rest, third_node},
-              {%RDF.BlankNode{} = third_node , @rdf_first, :third?},
+              {%RDF.BlankNode{} = third_node , @rdf_first, "third"},
               {%RDF.BlankNode{} = third_node , @rdf_rest, @rdf_nil},
             ]
           }}} = decode(query)
@@ -114,11 +114,11 @@ defmodule SPARQL.Algebra.TranslationTest do
             triples: [
               {%RDF.BlankNode{} = first_node , @rdf_first, ^one},
               {%RDF.BlankNode{} = first_node , @rdf_rest, second_node},
-              {%RDF.BlankNode{} = second_node, @rdf_first, :second?},
+              {%RDF.BlankNode{} = second_node, @rdf_first, "second"},
               {%RDF.BlankNode{} = second_node, @rdf_rest, third_node},
-              {%RDF.BlankNode{} = third_node , @rdf_first, :third?},
+              {%RDF.BlankNode{} = third_node , @rdf_first, "third"},
               {%RDF.BlankNode{} = third_node , @rdf_rest, @rdf_nil},
-              {%RDF.BlankNode{} = first_node, :p?, :o?,},
+              {%RDF.BlankNode{} = first_node, "p", "o",},
             ]
           }}} = decode(query)
     end
@@ -131,17 +131,17 @@ defmodule SPARQL.Algebra.TranslationTest do
       assert {:ok, %SPARQL.Query{expr:
           %SPARQL.Algebra.BGP{
             triples: [
-              {:s?, :p?, %RDF.BlankNode{} = first_node},
-              {%RDF.BlankNode{} = first_node , @rdf_first, :one?},
+              {"s", "p", %RDF.BlankNode{} = first_node},
+              {%RDF.BlankNode{} = first_node , @rdf_first, "one"},
               {%RDF.BlankNode{} = first_node , @rdf_rest, second_node},
               {%RDF.BlankNode{} = second_node, @rdf_first, first_nested_node},
               {%RDF.BlankNode{} = first_nested_node , @rdf_first, ^one},
               {%RDF.BlankNode{} = first_nested_node , @rdf_rest, second_nested_node},
-              {%RDF.BlankNode{} = second_nested_node, @rdf_first, :two?},
+              {%RDF.BlankNode{} = second_nested_node, @rdf_first, "two"},
               {%RDF.BlankNode{} = second_nested_node, @rdf_rest, @rdf_nil},
               {%RDF.BlankNode{} = second_node, @rdf_rest, third_node},
               {%RDF.BlankNode{} = third_node , @rdf_first, %RDF.BlankNode{} = description_node},
-              {%RDF.BlankNode{} = description_node , :foo?, :bar?},
+              {%RDF.BlankNode{} = description_node , "foo", "bar"},
               {%RDF.BlankNode{} = third_node , @rdf_rest, @rdf_nil},
             ]
           }}} = decode(query)
@@ -152,14 +152,14 @@ defmodule SPARQL.Algebra.TranslationTest do
 
       assert {:ok, %SPARQL.Query{expr:
           %SPARQL.Algebra.BGP{
-            triples: [{~I<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>, :p?, :o?}]
+            triples: [{~I<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>, "p", "o"}]
           }}} = decode(query)
 
       query = "SELECT * WHERE { ?s ?p () }"
 
       assert {:ok, %SPARQL.Query{expr:
           %SPARQL.Algebra.BGP{
-            triples: [{:s?, :p?, ~I<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>}]
+            triples: [{"s", "p", ~I<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>}]
           }}} = decode(query)
     end
 
