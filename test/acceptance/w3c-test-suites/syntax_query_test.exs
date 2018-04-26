@@ -12,6 +12,9 @@ defmodule SPARQL.W3C.TestSuite.SyntaxQueryTest do
   alias SPARQL.W3C.TestSuite
   alias TestSuite.NS.MF
 
+  @base "http://example.org/"
+
+
   describe "SPARQL 1.1 syntax-query test suite" do
     @test_suite {"1.1", "syntax-query"}
 
@@ -23,7 +26,7 @@ defmodule SPARQL.W3C.TestSuite.SyntaxQueryTest do
                     (test_case
                      |> TestSuite.test_input_file_path(@test_suite)
                      |> File.read!()
-                     |> SPARQL.Query.new()
+                     |> SPARQL.Query.new(base: @base)
                     )
          end
        end)
@@ -48,7 +51,7 @@ defmodule SPARQL.W3C.TestSuite.SyntaxQueryTest do
            assert {:error, _} =  (test_case
                    |> TestSuite.test_input_file_path(@test_suite)
                    |> File.read!()
-                   |> SPARQL.Query.new()
+                   |> SPARQL.Query.new(base: @base)
                   )
          end
        end)
@@ -69,7 +72,7 @@ defmodule SPARQL.W3C.TestSuite.SyntaxQueryTest do
                     (test_case
                      |> TestSuite.test_input_file_path(@test_suite)
                      |> File.read!()
-                     |> SPARQL.Query.new()
+                     |> SPARQL.Query.new(base: @base)
                     )
          end
        end)
@@ -91,7 +94,7 @@ defmodule SPARQL.W3C.TestSuite.SyntaxQueryTest do
                     (test_case
                      |> TestSuite.test_input_file_path(@test_suite)
                      |> File.read!()
-                     |> SPARQL.Query.new()
+                     |> SPARQL.Query.new(base: @base)
                     )
          end
        end)
@@ -108,7 +111,7 @@ defmodule SPARQL.W3C.TestSuite.SyntaxQueryTest do
                     (test_case
                      |> TestSuite.test_input_file_path(@test_suite)
                      |> File.read!()
-                     |> SPARQL.Query.new()
+                     |> SPARQL.Query.new(base: @base)
                     )
          end
        end)
@@ -129,7 +132,7 @@ defmodule SPARQL.W3C.TestSuite.SyntaxQueryTest do
            assert {:error, _} =  (test_case
                    |> TestSuite.test_input_file_path(@test_suite)
                    |> File.read!()
-                   |> SPARQL.Query.new()
+                   |> SPARQL.Query.new(base: @base)
                   )
          end
        end)
@@ -146,7 +149,7 @@ defmodule SPARQL.W3C.TestSuite.SyntaxQueryTest do
                     (test_case
                      |> TestSuite.test_input_file_path(@test_suite)
                      |> File.read!()
-                     |> SPARQL.Query.new()
+                     |> SPARQL.Query.new(base: @base)
                     )
          end
        end)
@@ -159,7 +162,7 @@ defmodule SPARQL.W3C.TestSuite.SyntaxQueryTest do
 #           assert {:error, _} =  (test_case
 #                   |> TestSuite.test_input_file_path(@test_suite)
 #                   |> File.read!()
-#                   |> SPARQL.Query.new()
+#                   |> SPARQL.Query.new(base: @base)
 #                  )
 #         end
 #       end)
@@ -176,7 +179,7 @@ defmodule SPARQL.W3C.TestSuite.SyntaxQueryTest do
                     (test_case
                      |> TestSuite.test_input_file_path(@test_suite)
                      |> File.read!()
-                     |> SPARQL.Query.new()
+                     |> SPARQL.Query.new(base: @base)
                     )
          end
        end)

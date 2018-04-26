@@ -3,7 +3,7 @@ defmodule SPARQL.Algebra.TranslationTest do
 
   import RDF.Sigils
 
-  import SPARQL.Language.Decoder, only: [decode: 1]
+  import SPARQL.Language.Decoder, only: [decode: 1, decode: 2]
 
 
   test "IRI" do
@@ -15,31 +15,53 @@ defmodule SPARQL.Algebra.TranslationTest do
         }}} = decode(query)
   end
 
-  test "relative IRI with given BASE" do
-    query = """
-    BASE <http://example.org/x/>
-    SELECT * WHERE { <x> <p> ?v }
-    """
+  describe "relative IRI" do
+    test "with base given as an option" do
+      query = "SELECT * WHERE { <x> <p> ?v }"
 
-    assert {:ok, %SPARQL.Query{expr:
-        %SPARQL.Algebra.BGP{
-          triples: [{~I<http://example.org/x/x>, ~I<http://example.org/x/p>, "v"}]
-        }}} = decode(query)
+      assert {:ok, %SPARQL.Query{expr:
+          %SPARQL.Algebra.BGP{
+            triples: [{~I<http://example.org/x/x>, ~I<http://example.org/x/p>, "v"}]
+          }}} = decode(query, base: "http://example.org/x/")
+    end
+
+    test "with base given in the query" do
+      query = """
+      BASE <http://example.org/x/>
+      SELECT * WHERE { <x> <p> ?v }
+      """
+
+      assert {:ok, %SPARQL.Query{expr:
+          %SPARQL.Algebra.BGP{
+            triples: [{~I<http://example.org/x/x>, ~I<http://example.org/x/p>, "v"}]
+          }}} = decode(query)
+    end
+
+    test "base in the query overwrites a base given as an option" do
+      query = """
+      BASE <http://example.org/x/>
+      SELECT * WHERE { <x> <p> ?v }
+      """
+
+      assert {:ok, %SPARQL.Query{expr:
+          %SPARQL.Algebra.BGP{
+            triples: [{~I<http://example.org/x/x>, ~I<http://example.org/x/p>, "v"}]
+          }}} = decode(query, base: "http://example.org/y/")
+    end
+
+    test "relative IRI in prefix" do
+      query = """
+      BASE <http://example.org/x/>
+      PREFIX : <>
+      SELECT * WHERE { :x ?p ?v }
+      """
+
+      assert {:ok, %SPARQL.Query{expr:
+          %SPARQL.Algebra.BGP{
+            triples: [{~I<http://example.org/x/x>, "p", "v"}]
+          }}} = decode(query)
+    end
   end
-
-  test "relative IRI in prefix" do
-    query = """
-    BASE <http://example.org/x/>
-    PREFIX : <>
-    SELECT * WHERE { :x ?p ?v }
-    """
-
-    assert {:ok, %SPARQL.Query{expr:
-        %SPARQL.Algebra.BGP{
-          triples: [{~I<http://example.org/x/x>, "p", "v"}]
-        }}} = decode(query)
-  end
-
 
   test "a" do
     query = "SELECT * WHERE { ?s a ?class }"

@@ -23,10 +23,10 @@ defmodule SPARQL.Query do
   @doc """
   Creates a `SPARQL.Query` struct.
   """
-  def new(query)
+  def new(query, options \\ %{})
 
-  def new(%Query{} = query), do: query
-  def new(query) when is_binary(query), do: translate(query)
+  def new(%Query{} = query, _options), do: query
+  def new(query, options) when is_binary(query), do: translate(query, options)
 
 
   @doc """
@@ -35,8 +35,8 @@ defmodule SPARQL.Query do
   In the first version we just use the decoder for validation and determination
   of the query form.
   """
-  def translate(string) do
-    with {:ok, query} <- SPARQL.Language.Decoder.decode(string) do
+  def translate(string, options) do
+    with {:ok, query} <- SPARQL.Language.Decoder.decode(string, options) do
       query
     end
   end

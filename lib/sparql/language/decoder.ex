@@ -39,13 +39,14 @@ defmodule SPARQL.Language.Decoder do
 
   defp build({:query, {prologue, form, values}}, default_base) do
     with {:ok, base, prefixes} <- do_prologue(prologue),
+         base                   = iri(base || default_base),
          {:ok, query_form}     <- do_query_form(form),
          {:ok, expression}     <-
            Algebra.Translation.translate({:query, form, values}, prefixes, base)
     do
       {:ok,
         %Query{
-          base:     iri(base || default_base),
+          base:     base,
           prefixes: prefixes,
           form:     query_form,
           expr:     expression
