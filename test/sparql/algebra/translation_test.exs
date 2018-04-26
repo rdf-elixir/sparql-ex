@@ -121,6 +121,19 @@ defmodule SPARQL.Algebra.TranslationTest do
           }}} = decode(query)
     end
 
+    test "typed literal with prefixed type" do
+      query = """
+      PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+      SELECT * WHERE { ?s ?p "foo"^^xsd:token }
+      """
+
+      literal = RDF.literal("foo", datatype: "http://www.w3.org/2001/XMLSchema#token")
+      assert {:ok, %SPARQL.Query{expr:
+          %SPARQL.Algebra.BGP{
+            triples: [{"s", "p", ^literal}]
+          }}} = decode(query)
+    end
+
     test "language tagged literal" do
       query = ~s[SELECT * WHERE { ?s ?p "foo"@en }]
 

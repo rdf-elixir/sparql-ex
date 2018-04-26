@@ -7,8 +7,8 @@ defmodule SPARQL.Algebra.Translation do
 
   alias RDF.IRI
 
-
   @no_mapping nil
+
 
   def translate(ast, prefixes, base, options \\ %{}) do
     with state = %{expr: ast},
@@ -126,8 +126,19 @@ defmodule SPARQL.Algebra.Translation do
     end
   end
 
+  defp expand_syntax_form({:prefix_ns, line, ns}, prologue) do
+    expand_syntax_form({:prefix_ln, line, {ns, ""}}, prologue)
+  end
+
   defp expand_syntax_form({:relative_iri, relative_iri}, %{base: base}) do
     IRI.absolute(relative_iri, base)
+  end
+
+  # Typed literals with a prefixed name datatype aren't expanded during parsing, so we do this here
+  defp expand_syntax_form({{:string_literal_quote, _, _} = literal_ast,
+                           {:datatype, {_, _, _} = prefixed_name_ast}}, prologue) do
+    RDF.Serialization.ParseHelper.to_literal(literal_ast,
+      {:datatype, expand_syntax_form(prefixed_name_ast, prologue)})
   end
 
   defp expand_syntax_form({:var, _, var}, _), do: var
