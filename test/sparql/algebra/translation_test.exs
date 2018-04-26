@@ -15,8 +15,31 @@ defmodule SPARQL.Algebra.TranslationTest do
         }}} = decode(query)
   end
 
-  @tag skip: "TODO"
-  test "relative IRI"
+  test "relative IRI with given BASE" do
+    query = """
+    BASE <http://example.org/x/>
+    SELECT * WHERE { <x> <p> ?v }
+    """
+
+    assert {:ok, %SPARQL.Query{expr:
+        %SPARQL.Algebra.BGP{
+          triples: [{~I<http://example.org/x/x>, ~I<http://example.org/x/p>, "v"}]
+        }}} = decode(query)
+  end
+
+  test "relative IRI in prefix" do
+    query = """
+    BASE <http://example.org/x/>
+    PREFIX : <>
+    SELECT * WHERE { :x ?p ?v }
+    """
+
+    assert {:ok, %SPARQL.Query{expr:
+        %SPARQL.Algebra.BGP{
+          triples: [{~I<http://example.org/x/x>, "p", "v"}]
+        }}} = decode(query)
+  end
+
 
   test "a" do
     query = "SELECT * WHERE { ?s a ?class }"
