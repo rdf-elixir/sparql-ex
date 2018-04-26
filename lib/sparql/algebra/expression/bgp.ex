@@ -1,0 +1,206 @@
+defmodule SPARQL.Algebra.BGP do
+  defstruct [:triples]
+
+  alias SPARQL.Query.ResultSet
+  alias RDF.{Dataset, Graph, Description}
+
+
+  def solutions(triple_patterns, data) do
+    triple_patterns
+    |> Enum.sort_by(&triple_priority/1)
+    |> do_matching(data)
+  end
+
+  defp do_matching(triple_patterns, data, solutions \\ [])
+
+  defp do_matching(_, _, nil),        do: []
+  defp do_matching([], _, solutions), do: solutions
+
+  defp do_matching([triple_pattern | remaining], data, acc) do
+    solutions = match(data, triple_pattern, acc)
+
+    if solutions do
+      remaining
+      |> mark_solved_variables(solutions)
+      |> Enum.sort_by(&triple_priority/1)
+    else
+      remaining
+    end
+    |> do_matching(data, solutions)
+  end
+
+
+  defp match(data, {s, p, o} = triple_pattern, existing_solutions)
+      when is_tuple(s) or is_tuple(p) or is_tuple(o) do
+    triple_pattern
+    |> apply_solutions(existing_solutions)
+    |> Enum.flat_map(&(merge_matches(&1, data)))
+    |> case do
+         []        -> nil
+         solutions -> solutions
+       end
+  end
+
+  defp match(data, triple_pattern, []), do: match(data, triple_pattern)
+
+  defp match(data, triple_pattern, existing_solutions) do
+    data
+    |> match(triple_pattern)
+    |> Enum.flat_map(fn solution ->
+         Enum.map(existing_solutions, &(Map.merge(solution, &1)))
+       end)
+  end
+
+  defp match(%Graph{descriptions: descriptions},
+              {subject_variable, _, _} = triple_pattern)
+       when is_binary(subject_variable) do
+    Enum.reduce descriptions, [], fn ({subject, description}, acc) ->
+      case match(description, triple_pattern) do
+        nil       -> acc
+        solutions ->
+          Enum.map(solutions, fn solution ->
+            Map.put(solution, subject_variable, subject)
+          end) ++ acc
+      end
+    end
+  end
+
+  defp match(%Graph{} = graph, {subject, _, _} = triple_pattern) do
+    case graph[subject] do
+      nil         -> nil
+      description -> match(description, triple_pattern)
+    end
+  end
+
+  defp match(%Description{predications: predications},
+         {_, predicate_variable, object_variable})
+       when is_binary(predicate_variable) and is_binary(object_variable) do
+    unless Enum.empty?(predications) do
+      Enum.reduce predications, [], fn ({predicate, objects}, solutions) ->
+        solutions ++
+        Enum.map(objects, fn {object, _} ->
+          %{predicate_variable => predicate, object_variable => object}
+        end)
+      end
+    end
+  end
+
+  defp match(%Description{predications: predications},
+         {_, predicate_variable, object}) when is_binary(predicate_variable) do
+    case (
+      Enum.reduce predications, [], fn ({predicate, objects}, solutions) ->
+        if Map.has_key?(objects, object) do
+          [%{predicate_variable => predicate} | solutions]
+        else
+          solutions
+        end
+      end
+    ) do
+      []        -> nil
+      solutions -> solutions
+    end
+  end
+
+  defp match(%Description{predications: predications},
+              {_, predicate, object_or_variable}) do
+    case predications[predicate] do
+      nil -> nil
+      objects -> cond do
+        # object_or_variable is a variable
+        is_binary(object_or_variable) ->
+          Enum.map(objects, fn {object, _} ->
+            %{object_or_variable => object}
+          end)
+
+        # object_or_variable is a object
+        Map.has_key?(objects, object_or_variable) ->
+          [%{}]
+
+        # else
+        true ->
+          nil
+      end
+    end
+  end
+
+
+  defp merge_matches({dependent_solution, triple_pattern}, data) do
+    case match(data, triple_pattern) do
+      nil -> []
+      solutions ->
+        Enum.map solutions, fn solution ->
+          Map.merge(dependent_solution, solution)
+        end
+    end
+  end
+
+  defp triple_priority({s, p, o}) do
+    {sp, pp, op} = {value_priority(s), value_priority(p), value_priority(o)}
+    <<(sp + pp + op) :: size(2), sp :: size(1), pp :: size(1), op :: size(1)>>
+  end
+
+  defp value_priority(value) when is_binary(value), do: 1
+  defp value_priority(_),                           do: 0
+
+  defp mark_solved_variables(triple_patterns, [solution | _]) do
+    Stream.map triple_patterns, fn {s, p, o} ->
+      {
+        (if is_binary(s) and Map.has_key?(solution, s), do: {s}, else: s),
+        (if is_binary(p) and Map.has_key?(solution, p), do: {p}, else: p),
+        (if is_binary(o) and Map.has_key?(solution, o), do: {o}, else: o)
+      }
+    end
+  end
+
+  defp apply_solutions(triple_pattern, solutions) do
+    apply_solution =
+      case triple_pattern do
+        {{s}, {p}, {o}} -> fn solution -> {solution, {solution[s], solution[p], solution[o]}} end
+        {{s}, {p},  o } -> fn solution -> {solution, {solution[s], solution[p], o}} end
+        {{s},  p , {o}} -> fn solution -> {solution, {solution[s], p          , solution[o]}} end
+        {{s},  p ,  o } -> fn solution -> {solution, {solution[s], p          , o}} end
+        { s , {p}, {o}} -> fn solution -> {solution, {s          , solution[p], solution[o]}} end
+        { s , {p} , o } -> fn solution -> {solution, {s          , solution[p], o}} end
+        { s ,  p , {o}} -> fn solution -> {solution, {s          , p          , solution[o]}} end
+       _ -> nil
+      end
+    if apply_solution do
+      Stream.map(solutions, apply_solution)
+    else
+      solutions
+    end
+  end
+
+
+  def variables({s, p, o}) when is_binary(s) and is_binary(p) and is_binary(o), do: [s, p, o]
+  def variables({s, p, _}) when is_binary(s) and is_binary(p), do: [s, p]
+  def variables({s, _, o}) when is_binary(s) and is_binary(o), do: [s, o]
+  def variables({_, p, o}) when is_binary(p) and is_binary(o), do: [p, o]
+  def variables({s, _, _}) when is_binary(s), do: [s]
+  def variables({_, p, _}) when is_binary(p), do: [p]
+  def variables({_, _, o}) when is_binary(o), do: [o]
+
+  def variables(triple_patterns) when is_list(triple_patterns) do
+    triple_patterns
+    |> Enum.reduce([], fn triple, vars ->
+         triple
+         |> variables()
+         |> Enum.reduce(vars, fn var, vars -> [var | vars] end)
+       end)
+    |> Stream.uniq
+    |> Enum.reverse
+  end
+
+  def variables(_), do: []
+
+
+  defimpl SPARQL.Algebra.Expression do
+    def evaluate(expr, data) do
+      expr.triples
+      |> SPARQL.Algebra.BGP.solutions(data)
+      |> ResultSet.new(variables(expr))
+    end
+
+    def variables(expr), do: SPARQL.Algebra.BGP.variables(expr.triples)
+  end
+end

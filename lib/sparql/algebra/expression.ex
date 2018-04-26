@@ -1,19 +1,7 @@
-defmodule SPARQL.Algebra.BGP do
-  defstruct [:triples]
-end
+defprotocol SPARQL.Algebra.Expression do
 
-defmodule SPARQL.Algebra.Project do
-  defstruct [:vars, :expr]
-end
+  def variables(expr)
 
-defmodule SPARQL.Algebra.Extend do
-  defstruct [:var, :expr]
-end
+  def evaluate(expr, data)
 
-defmodule SPARQL.Algebra.Distinct do
-  defstruct [:expr]
-end
-
-defmodule SPARQL.Algebra.Reduced do
-  defstruct [:expr]
 end

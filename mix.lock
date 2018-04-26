@@ -13,6 +13,7 @@
   "jsx": {:hex, :jsx, "2.8.3", "a05252d381885240744d955fbe3cf810504eb2567164824e19303ea59eef62cf", [:mix, :rebar3], []},
   "metrics": {:hex, :metrics, "1.0.1", "25f094dea2cda98213cecc3aeff09e940299d950904393b2a29d191c346a8486", [:rebar3], []},
   "mimerl": {:hex, :mimerl, "1.0.2", "993f9b0e084083405ed8252b99460c4f0563e41729ab42d9074fd5e52439be88", [:rebar3], []},
+  "multiset": {:hex, :multiset, "0.0.4", "b7b68aeea142f7cb4e744b1e3ef220ac69e60f4fb3919d7c4a1046aeeaba3892", [:mix], []},
   "nimble_csv": {:hex, :nimble_csv, "0.4.0", "e2a21d93071cb3b3278411b5b49fe6b55a0e4b3e90485d1187e0c9c75c74f977", [:mix], []},
   "rdf": {:hex, :rdf, "0.4.1", "8c879a091cc2a6035cc6e955186948a15477c9cce4a7ca61a54f38f7259ff396", [:mix], []},
   "ssl_verify_fun": {:hex, :ssl_verify_fun, "1.1.1", "28a4d65b7f59893bc2c7de786dec1e1555bd742d336043fe644ae956c3497fbe", [:make, :rebar], []},
