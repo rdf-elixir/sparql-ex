@@ -26,18 +26,25 @@ defmodule SPARQL.W3C.TestSuite do
 
   def file(filename, test_suite), do: test_suite |> dir() |> Path.join(filename)
 
-  def manifest_uri({"1.1", test_suite}),
-    do: RDF.iri("http://www.w3.org/2009/sparql/docs/tests/data-sparql11/#{test_suite}/manifest#")
-  def manifest_uri({"1.0", test_suite}),
-    do: RDF.iri("http://www.w3.org/2001/sw/DataAccess/tests/data-r2/#{test_suite}/manifest#")
-
   def manifest_path(test_suite, filename), do: file(filename, test_suite)
 
   def manifest_document_url, do: "file://manifest.ttl"
+
   def manifest_test_suite_property, do: ~I<https://hex.pm/packages/rdf#manifest_test_suite>
 
+  def manifest_uri(manifest_graph), do: manifest_description(manifest_graph).subject
+
   def manifest_description(manifest_graph) do
-    manifest_graph |> Graph.description(manifest_document_url())
+    description = Graph.description(manifest_graph, manifest_document_url())
+
+    if Description.include?(description, {RDF.type, MF.Manifest}) do
+      description
+    else
+      {manifest_resource, _, _} =
+        manifest_graph
+        |> Enum.find(fn {_, p, o} -> p == RDF.type and o == RDF.iri(MF.Manifest) end)
+      Graph.description(manifest_graph, manifest_resource)
+    end
   end
 
   def manifest_graph(test_suite, opts \\ []) do
@@ -52,15 +59,15 @@ defmodule SPARQL.W3C.TestSuite do
     Graph.add(graph, {
       manifest_document_url(),
       manifest_test_suite_property(),
-      test_suite |> Tuple.to_list |> Enum.join("-")
+      test_suite |> Tuple.to_list |> Enum.join(",")
     })
   end
   defp test_suite(manifest_graph) do
     manifest_graph
-    |> manifest_description()
+    |> Graph.description(manifest_document_url())
     |> Description.first(manifest_test_suite_property())
     |> to_string
-    |> String.split("-")
+    |> String.split(",")
     |> List.to_tuple
   end
 
