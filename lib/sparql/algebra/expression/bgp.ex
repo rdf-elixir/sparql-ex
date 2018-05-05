@@ -2,14 +2,35 @@ defmodule SPARQL.Algebra.BGP do
   defstruct [:triples]
 
   alias SPARQL.Query.ResultSet
-  alias RDF.{Dataset, Graph, Description}
+  alias RDF.{Dataset, Graph, Description, BlankNode}
+
+  @blank_node_prefix "_:"
 
 
   def solutions(triple_patterns, data) do
     triple_patterns
+    |> Stream.map(&convert_blank_nodes/1)
     |> Enum.sort_by(&triple_priority/1)
     |> do_matching(data)
+    # TODO: Do really want to return a Stream on this public function just to prevent an additional iteration over the solutions?
+    |> Stream.map(&remove_blank_nodes/1)
   end
+
+
+  defp convert_blank_nodes({%BlankNode{} = s, p, o}), do: convert_blank_nodes({to_string(s), p, o})
+  defp convert_blank_nodes({s, %BlankNode{} = p, o}), do: convert_blank_nodes({s, to_string(p), o})
+  defp convert_blank_nodes({s, p, %BlankNode{} = o}), do: convert_blank_nodes({s, p, to_string(o)})
+  defp convert_blank_nodes(triple_pattern),           do: triple_pattern
+
+  defp remove_blank_nodes(solution) do
+    solution
+    |> Enum.filter(fn
+         {@blank_node_prefix <> _, _} -> false
+         _                            -> true
+       end)
+    |> Map.new
+  end
+
 
   defp do_matching(triple_patterns, data, solutions \\ [])
 

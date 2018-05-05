@@ -219,6 +219,59 @@ defmodule SPARQL.Processor.SelectQueryTest do
             ]
           }
     end
+
+    test "blank nodes behave like variables, but don't appear in the solution" do
+      assert query(@example_graph, """
+        SELECT *
+        WHERE {
+          <#{EX.s1}> ?p _:o .
+          <#{EX.s3}> ?p2 _:o .
+        }
+        """) ==
+        %Query.ResultSet{
+          variables: ~w[p p2],
+          results: [
+            %Query.Result{bindings: %{
+              "p"  => ~I<http://example.org/p2>,
+              "p2" => ~I<http://example.org/p3>,
+            }},
+        ]}
+    end
+
+    test "cross-product with blank nodes" do
+      assert query(@example_graph, """
+          SELECT *
+          WHERE {
+            <#{EX.s1}> ?p1 ?o .
+            _:s ?p2 <#{EX.o2}>.
+          }
+          """) ==
+          %Query.ResultSet{
+            variables: ~w[p1 o p2],
+            results: [
+              %Query.Result{bindings: %{
+                "p1"  => ~I<http://example.org/p1>,
+                "o"  => ~I<http://example.org/o1>,
+                "p2"  => ~I<http://example.org/p3>,
+              }},
+              %Query.Result{bindings: %{
+                "p1"  => ~I<http://example.org/p2>,
+                "o"  => ~I<http://example.org/o2>,
+                "p2"  => ~I<http://example.org/p3>,
+              }},
+              %Query.Result{bindings: %{
+                "p1"  => ~I<http://example.org/p1>,
+                "o"  => ~I<http://example.org/o1>,
+                "p2"  => ~I<http://example.org/p2>,
+              }},
+              %Query.Result{bindings: %{
+                "p1"  => ~I<http://example.org/p2>,
+                "o"  => ~I<http://example.org/o2>,
+                "p2"  => ~I<http://example.org/p2>,
+              }},
+            ]
+          }
+    end
   end
 
 
