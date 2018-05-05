@@ -13,11 +13,11 @@ defmodule SPARQL.Query.Result.Turtle.Decoder do
     do
       {:ok,
         if boolean = Description.first(description, RS.boolean) do
-          %ResultSet{results: boolean.value}
+          %Result{results: boolean.value}
         else
-          %ResultSet{
+          %Result{
             variables: variables(description),
-            results:   results(description, graph)
+            results:   solutions(description, graph)
           }
         end
       }
@@ -42,28 +42,26 @@ defmodule SPARQL.Query.Result.Turtle.Decoder do
     |> Enum.map(&to_string/1)
   end
 
-  defp results(result_set_description, graph) do
+  defp solutions(result_set_description, graph) do
     result_set_description
     |> Description.get(RS.solution)
-    |> Stream.map(&(result(&1, graph)))
+    |> Stream.map(&(solution(&1, graph)))
     |> Enum.sort_by(fn {index, _} -> index end)
-    |> Enum.map(fn {_, result} -> result end)
+    |> Enum.map(fn {_, solution} -> solution end)
   end
 
-  defp result(solution_resource, graph) do
+  defp solution(solution_resource, graph) do
     with solution_description = Graph.description(graph, solution_resource) do
       {
         Description.first(solution_description, RS.index),
-        %Result{bindings:
-          solution_description
-          |> Description.get(RS.binding)
-          |> Enum.reduce(%{}, fn binding_resource, bindings ->
-                binding = Graph.description(graph, binding_resource)
-                Map.put bindings,
-                  binding |> Description.first(RS.variable) |> to_string(),
-                  binding |> Description.first(RS.value)
-             end)
-         }
+        solution_description
+        |> Description.get(RS.binding)
+        |> Enum.reduce(%{}, fn binding_resource, bindings ->
+              binding = Graph.description(graph, binding_resource)
+              Map.put bindings,
+                binding |> Description.first(RS.variable) |> to_string(),
+                binding |> Description.first(RS.value)
+           end)
       }
     end
   end

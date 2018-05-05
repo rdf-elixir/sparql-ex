@@ -30,7 +30,7 @@ defmodule SPARQL.W3C.TestSuite.BnodeCoreferenceTest do
            |> File.read!()
            |> SPARQL.Query.Result.Turtle.decode!()
 
-         assert %SPARQL.Query.ResultSet{} = actual_result =
+         assert %SPARQL.Query.Result{} = actual_result =
                   SPARQL.Processor.query(data, query)
 
          assert Multiset.new(actual_result.variables) ==

@@ -9,7 +9,7 @@ defmodule SPARQL.Query.Result.XML.Decoder do
   def decode(content, _opts \\ []) do
     try do
       with doc = parse(content, namespace_conformant: true),
-           %ResultSet{} = result_set <- decode_doc(doc)
+           %Result{} = result_set <- decode_doc(doc)
       do
         {:ok, result_set}
       end
@@ -22,7 +22,7 @@ defmodule SPARQL.Query.Result.XML.Decoder do
 
   defp decode_doc(doc) do
     with {:ok, results} <- decode_results(doc) do
-      %ResultSet{
+      %Result{
         variables: decode_variables(doc),
         results: results
       }
@@ -56,12 +56,10 @@ defmodule SPARQL.Query.Result.XML.Decoder do
   end
 
   defp decode_result(result_node) do
-    %Result{bindings:
-      result_node
-      |> xpath(~x"./binding"l)
-      |> Enum.map(&decode_binding/1)
-      |> Map.new()
-    }
+    result_node
+    |> xpath(~x"./binding"l)
+    |> Enum.map(&decode_binding/1)
+    |> Map.new()
   end
 
   defp decode_binding(binding_node) do

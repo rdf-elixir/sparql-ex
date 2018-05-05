@@ -11,9 +11,9 @@ defmodule SPARQL.Query.Result.CSV.Decoder do
       with [header | rows] <- CSV.parse_string(content, headers: false),
            {:ok, header}   <- valid_header(header)
       do
-        {:ok, %ResultSet{variables: header, results: decode_results(rows, header)}}
+        {:ok, %Result{variables: header, results: decode_solutions(rows, header)}}
       else
-        []    -> {:ok, %ResultSet{}}
+        []    -> {:ok, %Result{}}
         error -> error
       end
     rescue
@@ -31,17 +31,15 @@ defmodule SPARQL.Query.Result.CSV.Decoder do
     end
   end
 
-  defp decode_results(results, header) do
-    Enum.map(results, &(decode_result(&1, header)))
+  defp decode_solutions(solutions, header) do
+    Enum.map(solutions, &(decode_solution(&1, header)))
   end
 
-  defp decode_result(result, header) do
-    %Result{bindings:
-       header
-       |> Enum.zip(result)
-       |> Enum.map(&decode_value/1)
-       |> Map.new
-    }
+  defp decode_solution(solution, header) do
+     header
+     |> Enum.zip(solution)
+     |> Enum.map(&decode_value/1)
+     |> Map.new
   end
 
   defp decode_value({variable, "_:" <> label}),

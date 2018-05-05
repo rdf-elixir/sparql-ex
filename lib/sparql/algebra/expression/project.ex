@@ -1,19 +1,17 @@
 defmodule SPARQL.Algebra.Project do
   defstruct [:vars, :expr]
 
-  def result_set(%SPARQL.Query.ResultSet{results: results}, variables) do
-    %SPARQL.Query.ResultSet{
+  def result_set(%SPARQL.Query.Result{results: results}, variables) do
+    %SPARQL.Query.Result{
       variables: variables,
-      results: Enum.map(results, &(result(&1, variables)))
+      results: Enum.map(results, &(solution(&1, variables)))
     }
   end
 
-  def result(%SPARQL.Query.Result{bindings: bindings} = result, variables) do
-    %SPARQL.Query.Result{result | bindings:
-      bindings
-      |> Stream.filter(fn {var, value} -> var in variables end)
-      |> Map.new
-    }
+  def solution(bindings, variables) do
+    bindings
+    |> Stream.filter(fn {var, value} -> var in variables end)
+    |> Map.new
   end
 
   defimpl SPARQL.Algebra.Expression do

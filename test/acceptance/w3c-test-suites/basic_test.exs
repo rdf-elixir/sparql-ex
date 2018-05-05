@@ -31,7 +31,7 @@ defmodule SPARQL.W3C.TestSuite.BasicTest do
            |> File.read!()
            |> SPARQL.Query.Result.XML.decode!()
 
-         assert %SPARQL.Query.ResultSet{} = actual_result =
+         assert %SPARQL.Query.Result{} = actual_result =
                   SPARQL.Processor.query(data, query)
 
          assert Multiset.new(actual_result.variables) ==

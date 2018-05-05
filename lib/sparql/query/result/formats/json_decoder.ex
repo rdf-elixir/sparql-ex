@@ -16,30 +16,28 @@ defmodule SPARQL.Query.Result.JSON.Decoder do
   end
 
   defp decode_results(%{"boolean" => boolean}) when is_boolean(boolean),
-    do: %ResultSet{results: boolean}
+    do: %Result{results: boolean}
 
   defp decode_results(%{"boolean" => invalid}),
     do: raise "invalid boolean: #{inspect invalid}"
 
   defp decode_results(%{"head" => %{"vars" => variables}} = object) do
-    %ResultSet{Map.delete(object, "head") |> decode_results() |
+    %Result{Map.delete(object, "head") |> decode_results() |
       variables: variables
     }
   end
 
   defp decode_results(%{"results" => %{"bindings" => bindings}}) do
-    %ResultSet{results: Enum.map(bindings, &decode_result/1)}
+    %Result{results: Enum.map(bindings, &decode_solution/1)}
   end
 
-  defp decode_results(_), do: %ResultSet{}
+  defp decode_results(_), do: %Result{}
 
 
-  defp decode_result(result) do
-    %Result{bindings:
-      Enum.reduce(result, %{}, fn {variable, value}, query_result ->
-        Map.put(query_result, variable, decode_value(value))
-      end)
-    }
+  defp decode_solution(bindings) do
+    Enum.reduce(bindings, %{}, fn {variable, value}, query_result ->
+      Map.put(query_result, variable, decode_value(value))
+    end)
   end
 
   defp decode_value(%{"type" => "uri", "value" => value}),

@@ -23,45 +23,45 @@ defmodule SPARQL.Processor.SelectQueryTest do
 
     test "single {s ?p ?o}" do
       assert query(@example_graph, "SELECT * WHERE { <#{EX.s1}> ?p ?o }") ==
-        %Query.ResultSet{
+        %Query.Result{
          variables: ~w[p o],
           results: [
-            %Query.Result{bindings: %{
+            %{
               "p" => ~I<http://example.org/p1>,
               "o" => ~I<http://example.org/o1>,
-            }},
-            %Query.Result{bindings: %{
+            },
+            %{
               "p" => ~I<http://example.org/p2>,
               "o" => ~I<http://example.org/o2>,
-            }}
+            }
         ]}
     end
 
     test "single {?s ?p o}" do
       assert query(@example_graph, "SELECT * WHERE { ?s ?p <#{EX.o2}> }") ==
-        %Query.ResultSet{
+        %Query.Result{
           variables: ~w[s p],
           results: [
-            %Query.Result{bindings: %{
+            %{
               "s" => ~I<http://example.org/s3>,
               "p" => ~I<http://example.org/p3>,
-            }},
-            %Query.Result{bindings: %{
+            },
+            %{
               "s" => ~I<http://example.org/s1>,
               "p" => ~I<http://example.org/p2>,
-            }}
+            }
         ]}
     end
 
     test "single {?s p ?o}" do
       assert query(@example_graph, "SELECT * WHERE { ?s <#{EX.p3}> ?o }") ==
-        %Query.ResultSet{
+        %Query.Result{
           variables: ~w[s o],
           results: [
-            %Query.Result{bindings: %{
+            %{
               "s" => ~I<http://example.org/s3>,
               "o" => ~I<http://example.org/o2>,
-            }},
+            },
         ]}
     end
 
@@ -73,14 +73,14 @@ defmodule SPARQL.Processor.SelectQueryTest do
           <#{EX.s3}> ?p2 ?o .
         }
         """) ==
-        %Query.ResultSet{
+        %Query.Result{
           variables: ~w[p p2 o],
           results: [
-            %Query.Result{bindings: %{
+            %{
               "p"  => ~I<http://example.org/p2>,
               "p2" => ~I<http://example.org/p3>,
               "o"  => ~I<http://example.org/o2>,
-            }},
+            },
         ]}
 
       assert query(@example_graph, """
@@ -89,19 +89,19 @@ defmodule SPARQL.Processor.SelectQueryTest do
           <#{EX.s1}> ?p ?o1, ?o2 .
         }
         """) ==
-        %Query.ResultSet{
+        %Query.Result{
           variables: ~w[o1 p o2],
           results: [
-            %Query.Result{bindings: %{
+            %{
               "p"  => ~I<http://example.org/p1>,
               "o1" => ~I<http://example.org/o1>,
               "o2" => ~I<http://example.org/o1>,
-            }},
-            %Query.Result{bindings: %{
+            },
+            %{
               "p"  => ~I<http://example.org/p2>,
               "o1" => ~I<http://example.org/o2>,
               "o2" => ~I<http://example.org/o2>,
-            }},
+            },
           ]
         }
 
@@ -118,13 +118,13 @@ defmodule SPARQL.Processor.SelectQueryTest do
           <#{EX.s3}> ?p ?o .
         }
         """) ==
-        %Query.ResultSet{
+        %Query.Result{
           variables: ~w[p o],
           results: [
-            %Query.Result{bindings: %{
+            %{
               "p"  => ~I<http://example.org/p3>,
               "o"  => ~I<http://example.org/o1>,
-            }},
+            },
         ]}
     end
 
@@ -143,14 +143,14 @@ defmodule SPARQL.Processor.SelectQueryTest do
           ?s ?p ?o .
         }
         """) ==
-        %Query.ResultSet{
+        %Query.Result{
           variables: ~w[s p o],
           results: [
-            %Query.Result{bindings: %{
+            %{
               "s"  => ~I<http://example.org/s3>,
               "p"  => ~I<http://example.org/p2>,
               "o"  => ~I<http://example.org/o1>,
-            }},
+            },
         ]}
     end
 
@@ -161,7 +161,7 @@ defmodule SPARQL.Processor.SelectQueryTest do
             <#{EX.s}> <#{EX.p}> ?o .
           }
           """) ==
-          %Query.ResultSet{
+          %Query.Result{
             variables: ~w[o],
             results: []
           }
@@ -175,7 +175,7 @@ defmodule SPARQL.Processor.SelectQueryTest do
           <#{EX.s}> <#{EX.p}> <#{EX.o}> .
         }
         """) ==
-        %Query.ResultSet{
+        %Query.Result{
           variables: ~w[p o],
           results: []
         }
@@ -189,33 +189,33 @@ defmodule SPARQL.Processor.SelectQueryTest do
             ?s ?p2 <#{EX.o2}>.
           }
           """) ==
-          %Query.ResultSet{
+          %Query.Result{
             variables: ~w[p1 o s p2],
             results: [
-              %Query.Result{bindings: %{
+              %{
                 "p1" => ~I<http://example.org/p1>,
                 "o"  => ~I<http://example.org/o1>,
                 "s"  => ~I<http://example.org/s3>,
                 "p2" => ~I<http://example.org/p3>,
-              }},
-              %Query.Result{bindings: %{
+              },
+              %{
                 "p1" => ~I<http://example.org/p2>,
                 "o"  => ~I<http://example.org/o2>,
                 "s"  => ~I<http://example.org/s3>,
                 "p2" => ~I<http://example.org/p3>,
-              }},
-              %Query.Result{bindings: %{
+              },
+              %{
                 "p1" => ~I<http://example.org/p1>,
                 "o"  => ~I<http://example.org/o1>,
                 "s"  => ~I<http://example.org/s1>,
                 "p2" => ~I<http://example.org/p2>,
-              }},
-              %Query.Result{bindings: %{
+              },
+              %{
                 "p1" => ~I<http://example.org/p2>,
                 "o"  => ~I<http://example.org/o2>,
                 "s"  => ~I<http://example.org/s1>,
                 "p2" => ~I<http://example.org/p2>,
-              }},
+              },
             ]
           }
     end
@@ -228,13 +228,13 @@ defmodule SPARQL.Processor.SelectQueryTest do
           <#{EX.s3}> ?p2 _:o .
         }
         """) ==
-        %Query.ResultSet{
+        %Query.Result{
           variables: ~w[p p2],
           results: [
-            %Query.Result{bindings: %{
+            %{
               "p"  => ~I<http://example.org/p2>,
               "p2" => ~I<http://example.org/p3>,
-            }},
+            },
         ]}
     end
 
@@ -246,29 +246,29 @@ defmodule SPARQL.Processor.SelectQueryTest do
             _:s ?p2 <#{EX.o2}>.
           }
           """) ==
-          %Query.ResultSet{
+          %Query.Result{
             variables: ~w[p1 o p2],
             results: [
-              %Query.Result{bindings: %{
+              %{
                 "p1" => ~I<http://example.org/p1>,
                 "o"  => ~I<http://example.org/o1>,
                 "p2" => ~I<http://example.org/p3>,
-              }},
-              %Query.Result{bindings: %{
+              },
+              %{
                 "p1" => ~I<http://example.org/p2>,
                 "o"  => ~I<http://example.org/o2>,
                 "p2" => ~I<http://example.org/p3>,
-              }},
-              %Query.Result{bindings: %{
+              },
+              %{
                 "p1" => ~I<http://example.org/p1>,
                 "o"  => ~I<http://example.org/o1>,
                 "p2" => ~I<http://example.org/p2>,
-              }},
-              %Query.Result{bindings: %{
+              },
+              %{
                 "p1" => ~I<http://example.org/p2>,
                 "o"  => ~I<http://example.org/o2>,
                 "p2" => ~I<http://example.org/p2>,
-              }},
+              },
             ]
           }
     end
@@ -278,11 +278,11 @@ defmodule SPARQL.Processor.SelectQueryTest do
   describe "projection" do
     test "single variable" do
       assert query(@example_graph, "SELECT ?o WHERE { <#{EX.s1}> ?p ?o }") ==
-        %Query.ResultSet{
+        %Query.Result{
           variables: ~w[o],
           results: [
-            %Query.Result{bindings: %{"o" => ~I<http://example.org/o1>}},
-            %Query.Result{bindings: %{"o" => ~I<http://example.org/o2>}}
+            %{"o" => ~I<http://example.org/o1>},
+            %{"o" => ~I<http://example.org/o2>}
           ]}
     end
   end
