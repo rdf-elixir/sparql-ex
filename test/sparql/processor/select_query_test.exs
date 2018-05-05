@@ -193,28 +193,28 @@ defmodule SPARQL.Processor.SelectQueryTest do
             variables: ~w[p1 o s p2],
             results: [
               %Query.Result{bindings: %{
-                "p1"  => ~I<http://example.org/p1>,
+                "p1" => ~I<http://example.org/p1>,
                 "o"  => ~I<http://example.org/o1>,
                 "s"  => ~I<http://example.org/s3>,
-                "p2"  => ~I<http://example.org/p3>,
+                "p2" => ~I<http://example.org/p3>,
               }},
               %Query.Result{bindings: %{
-                "p1"  => ~I<http://example.org/p2>,
+                "p1" => ~I<http://example.org/p2>,
                 "o"  => ~I<http://example.org/o2>,
                 "s"  => ~I<http://example.org/s3>,
-                "p2"  => ~I<http://example.org/p3>,
+                "p2" => ~I<http://example.org/p3>,
               }},
               %Query.Result{bindings: %{
-                "p1"  => ~I<http://example.org/p1>,
+                "p1" => ~I<http://example.org/p1>,
                 "o"  => ~I<http://example.org/o1>,
                 "s"  => ~I<http://example.org/s1>,
-                "p2"  => ~I<http://example.org/p2>,
+                "p2" => ~I<http://example.org/p2>,
               }},
               %Query.Result{bindings: %{
-                "p1"  => ~I<http://example.org/p2>,
+                "p1" => ~I<http://example.org/p2>,
                 "o"  => ~I<http://example.org/o2>,
                 "s"  => ~I<http://example.org/s1>,
-                "p2"  => ~I<http://example.org/p2>,
+                "p2" => ~I<http://example.org/p2>,
               }},
             ]
           }
@@ -250,24 +250,24 @@ defmodule SPARQL.Processor.SelectQueryTest do
             variables: ~w[p1 o p2],
             results: [
               %Query.Result{bindings: %{
-                "p1"  => ~I<http://example.org/p1>,
+                "p1" => ~I<http://example.org/p1>,
                 "o"  => ~I<http://example.org/o1>,
-                "p2"  => ~I<http://example.org/p3>,
+                "p2" => ~I<http://example.org/p3>,
               }},
               %Query.Result{bindings: %{
-                "p1"  => ~I<http://example.org/p2>,
+                "p1" => ~I<http://example.org/p2>,
                 "o"  => ~I<http://example.org/o2>,
-                "p2"  => ~I<http://example.org/p3>,
+                "p2" => ~I<http://example.org/p3>,
               }},
               %Query.Result{bindings: %{
-                "p1"  => ~I<http://example.org/p1>,
+                "p1" => ~I<http://example.org/p1>,
                 "o"  => ~I<http://example.org/o1>,
-                "p2"  => ~I<http://example.org/p2>,
+                "p2" => ~I<http://example.org/p2>,
               }},
               %Query.Result{bindings: %{
-                "p1"  => ~I<http://example.org/p2>,
+                "p1" => ~I<http://example.org/p2>,
                 "o"  => ~I<http://example.org/o2>,
-                "p2"  => ~I<http://example.org/p2>,
+                "p2" => ~I<http://example.org/p2>,
               }},
             ]
           }

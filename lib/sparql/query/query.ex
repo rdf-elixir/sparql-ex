@@ -35,7 +35,7 @@ defmodule SPARQL.Query do
   In the first version we just use the decoder for validation and determination
   of the query form.
   """
-  def translate(string, options) do
+  def translate(string, options \\ %{}) do
     with {:ok, query} <- SPARQL.Language.Decoder.decode(string, options) do
       query
     end

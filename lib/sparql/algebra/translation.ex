@@ -102,9 +102,7 @@ defmodule SPARQL.Algebra.Translation do
 
   Expand abbreviations for IRIs and triple patterns.
 
-  We also replace some AST elements with more natural representations:
-
-  - variables as atoms
+  We also do various other basic AST transformations here.
 
   <https://www.w3.org/TR/sparql11-query/#sparqlExpandForms>
   """
