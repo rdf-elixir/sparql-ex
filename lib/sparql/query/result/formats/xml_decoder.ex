@@ -92,7 +92,7 @@ defmodule SPARQL.Query.Result.XML.Decoder do
     do: node |> xpath(~x"./text()"s) |> RDF.BlankNode.new()
 
   defp decode_value(value),
-    do: raise "Invalid query result: #{inspect node}"
+    do: raise "Invalid query result: #{inspect value}"
 
   # TODO: This is quite hacky! Is there a better solution? - https://github.com/kbrw/sweet_xml/issues/58
   # TODO: Remove this when https://github.com/kbrw/sweet_xml/pull/45 gets merged
