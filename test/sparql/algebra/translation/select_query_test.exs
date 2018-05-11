@@ -183,4 +183,213 @@ defmodule SPARQL.Algebra.Translation.SelectQueryTest do
       }} = decode(query)
   end
 
+  describe "FILTER" do
+    test "single filter" do
+      query = """
+        PREFIX ex: <http://example.org/>
+        SELECT ?s ?cost WHERE {
+          ?s ex:cost ?cost .
+          FILTER (?cost < 10)
+        }
+        """
+      ten = RDF.integer(10)
+      assert {:ok, %SPARQL.Query{
+          expr: %SPARQL.Algebra.Project{
+            vars: ~w[s cost],
+            expr: %SPARQL.Algebra.Filter{
+              filters: [
+                %SPARQL.Algebra.FunctionCall{
+                  name: :<,
+                  arguments: ["cost", ^ten]
+                }
+              ],
+              expr: %SPARQL.Algebra.BGP{
+                  triples: [{"s", ~I<http://example.org/cost>, "cost"}]
+                }
+              }
+            }
+        }} = decode(query)
+    end
+
+    test "single filter with function" do
+      query = """
+        PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+        SELECT ?person ?name WHERE {
+          ?person foaf:name ?name
+          FILTER(regex(?name, "foo", "i"))
+        }
+        """
+      assert {:ok, %SPARQL.Query{
+          expr: %SPARQL.Algebra.Project{
+            vars: ~w[person name],
+            expr: %SPARQL.Algebra.Filter{
+              filters: [
+                %SPARQL.Algebra.FunctionCall{
+                  name: :REGEX,
+                  arguments: ["name", ~L"foo", ~L"i"]
+                }
+              ],
+              expr: %SPARQL.Algebra.BGP{
+                  triples: [{"person", ~I<http://xmlns.com/foaf/0.1/name>, "name"}]
+                }
+              }
+            }
+        }} = decode(query)
+    end
+
+    test "nested function call" do
+      query = """
+        PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+        SELECT ?person ?name WHERE {
+          ?person foaf:name ?name
+          FILTER (UCASE(?name) = "foo")
+        }
+        """
+      assert {:ok, %SPARQL.Query{
+          expr: %SPARQL.Algebra.Project{
+            vars: ~w[person name],
+            expr: %SPARQL.Algebra.Filter{
+              filters: [
+                %SPARQL.Algebra.FunctionCall{
+                  name: :=,
+                  arguments: [
+                    %SPARQL.Algebra.FunctionCall{
+                      name: :UCASE,
+                      arguments: ["name"]
+                    },
+                    ~L"foo"
+                  ]
+                }
+              ],
+              expr: %SPARQL.Algebra.BGP{
+                  triples: [{"person", ~I<http://xmlns.com/foaf/0.1/name>, "name"}]
+                }
+              }
+            }
+        }} = decode(query)
+    end
+
+    test "complex mathematical expression" do
+      query = """
+        PREFIX ex: <http://example.org/>
+        SELECT ?s ?cost WHERE {
+          ?s ex:cost ?cost .
+          FILTER (?cost = (42 - 11 * 2) / 2)
+        }
+        """
+      n42 = RDF.integer(42)
+      n11 = RDF.integer(11)
+      n2  = RDF.integer(2)
+      assert {:ok, %SPARQL.Query{
+          expr: %SPARQL.Algebra.Project{
+            vars: ~w[s cost],
+            expr: %SPARQL.Algebra.Filter{
+              filters: [
+                %SPARQL.Algebra.FunctionCall{
+                  name: :=,
+                  arguments: ["cost",
+                    %SPARQL.Algebra.FunctionCall{
+                      name: :/,
+                      arguments: [
+                        %SPARQL.Algebra.FunctionCall{
+                          name: :-,
+                          arguments: [^n42,
+                            %SPARQL.Algebra.FunctionCall{
+                              name: :*,
+                              arguments: [^n11, ^n2]
+                            }
+                          ]
+                        }, ^n2
+                      ]
+                    }
+                  ]
+                }
+              ],
+              expr: %SPARQL.Algebra.BGP{
+                  triples: [{"s", ~I<http://example.org/cost>, "cost"}]
+                }
+              }
+            }
+        }} = decode(query)
+    end
+
+    test "complex mathematical expression with signed numbers" do
+      query = """
+        PREFIX ex: <http://example.org/>
+        SELECT ?s ?cost WHERE {
+          ?s ex:cost ?cost .
+          FILTER (?cost = (-42 - -(+11 * -2)) / -2)
+        }
+        """
+      n42 = RDF.integer(-42)
+      n11 = RDF.integer("+11")
+      n2  = RDF.integer(-2)
+      assert {:ok, %SPARQL.Query{
+          expr: %SPARQL.Algebra.Project{
+            vars: ~w[s cost],
+            expr: %SPARQL.Algebra.Filter{
+              filters: [
+                %SPARQL.Algebra.FunctionCall{
+                  name: :=,
+                  arguments: ["cost",
+                    %SPARQL.Algebra.FunctionCall{
+                      name: :/,
+                      arguments: [
+                        %SPARQL.Algebra.FunctionCall{
+                          name: :-,
+                          arguments: [^n42,
+                            %SPARQL.Algebra.FunctionCall{
+                              name: :-,
+                              arguments: [
+                                %SPARQL.Algebra.FunctionCall{
+                                  name: :*,
+                                  arguments: [^n11, ^n2]
+                                }
+                              ]
+                            }
+                          ]
+                        }, ^n2
+                      ]
+                    }
+                  ]
+                }
+              ],
+              expr: %SPARQL.Algebra.BGP{
+                  triples: [{"s", ~I<http://example.org/cost>, "cost"}]
+                }
+              }
+            }
+        }} = decode(query)
+    end
+
+    @tag skip: "TODO"
+    test "ambiguity between number sign and arithmetic operator" do
+      query = """
+        PREFIX ex: <http://example.org/>
+        SELECT ?s ?cost WHERE {
+          ?s ex:cost ?cost, ?cost2 .
+          FILTER (?cost = (?cost2+1))
+        }
+        """
+      ten = RDF.integer(10)
+      assert {:ok, %SPARQL.Query{
+          expr: %SPARQL.Algebra.Project{
+            vars: ~w[s cost],
+            expr: %SPARQL.Algebra.Filter{
+              filters: [
+                %SPARQL.Algebra.FunctionCall{
+                  name: :<,
+                  arguments: ["cost", ^ten]
+                }
+              ],
+              expr: %SPARQL.Algebra.BGP{
+                  triples: [{"s", ~I<http://example.org/cost>, "cost"}]
+                }
+              }
+            }
+        }} = decode(query)
+    end
+
+  end
+
 end
