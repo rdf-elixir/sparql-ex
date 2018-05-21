@@ -438,28 +438,27 @@ relationalExpression -> numericExpression 'NOT' 'IN' expressionList : {builtin_f
 numericExpression -> additiveExpression : '$1' .
 
 %% AdditiveExpression -> MultiplicativeExpression ( '+' MultiplicativeExpression | '-' MultiplicativeExpression | ( NumericLiteralPositive | NumericLiteralNegative ) ( ( '*' UnaryExpression ) | ( '/' UnaryExpression ) )* )*
-%% TODO:
-additiveExpression -> multiplicativeExpression multiplicativeExpressionSeq : arithmetic_expr('$2', '$1') .
-additiveExpression -> multiplicativeExpression : '$1' .
-multiplicativeExpressionSeq -> '+' multiplicativeExpression multiplicativeExpressionSeq .
-multiplicativeExpressionSeq -> '-' multiplicativeExpression multiplicativeExpressionSeq .
+additiveExpression -> multiplicativeExpression multiplicativeExpressionSeq : arithmetic_expr('$1', '$2') .
+additiveExpression -> multiplicativeExpression : arithmetic_expr('$1') .
+multiplicativeExpressionSeq -> '+' multiplicativeExpression multiplicativeExpressionSeq : arithmetic_expr('$1', '$2', '$3') .
+multiplicativeExpressionSeq -> '-' multiplicativeExpression multiplicativeExpressionSeq : arithmetic_expr('$1', '$2', '$3') .
 multiplicativeExpressionSeq -> '+' multiplicativeExpression : ['$1', '$2'] .
 multiplicativeExpressionSeq -> '-' multiplicativeExpression : ['$1', '$2'] .
-multiplicativeExpressionSeq -> numericLiteralPositive multiplicativeUnaryExpressionSeq multiplicativeExpressionSeq .
-multiplicativeExpressionSeq -> numericLiteralNegative multiplicativeUnaryExpressionSeq multiplicativeExpressionSeq .
-multiplicativeExpressionSeq -> numericLiteralPositive multiplicativeExpressionSeq .
-multiplicativeExpressionSeq -> numericLiteralNegative multiplicativeExpressionSeq .
-multiplicativeExpressionSeq -> numericLiteralPositive multiplicativeUnaryExpressionSeq .
-multiplicativeExpressionSeq -> numericLiteralNegative multiplicativeUnaryExpressionSeq .
-multiplicativeExpressionSeq -> numericLiteralPositive : '$1' .
-multiplicativeExpressionSeq -> numericLiteralNegative : '$1' .
-multiplicativeUnaryExpressionSeq -> multiplicativeUnaryExpression multiplicativeUnaryExpressionSeq : arithmetic_expr('$2', '$1') .
+multiplicativeExpressionSeq -> numericLiteralPositive multiplicativeUnaryExpressionSeq multiplicativeExpressionSeq : arithmetic_quirk_expr('+', strip_sign('$1'), '$2', '$3') .
+multiplicativeExpressionSeq -> numericLiteralNegative multiplicativeUnaryExpressionSeq multiplicativeExpressionSeq : arithmetic_quirk_expr('-', strip_sign('$1'), '$2', '$3') .
+multiplicativeExpressionSeq -> numericLiteralPositive multiplicativeExpressionSeq      : arithmetic_expr('+', strip_sign('$1'), '$2') .
+multiplicativeExpressionSeq -> numericLiteralNegative multiplicativeExpressionSeq      : arithmetic_expr('-', strip_sign('$1'), '$2') .
+multiplicativeExpressionSeq -> numericLiteralPositive multiplicativeUnaryExpressionSeq : multiplicative_quirk_expr('+', strip_sign('$1'), '$2') .
+multiplicativeExpressionSeq -> numericLiteralNegative multiplicativeUnaryExpressionSeq : multiplicative_quirk_expr('-', strip_sign('$1'), '$2') .
+multiplicativeExpressionSeq -> numericLiteralPositive : ['+', strip_sign('$1')] .
+multiplicativeExpressionSeq -> numericLiteralNegative : ['-', strip_sign('$1')] .
+multiplicativeUnaryExpressionSeq -> multiplicativeUnaryExpression multiplicativeUnaryExpressionSeq : arithmetic_expr('$1', '$2') .
 multiplicativeUnaryExpressionSeq -> multiplicativeUnaryExpression : '$1' .
 multiplicativeUnaryExpression -> '*' unaryExpression : ['$1', '$2'] .
 multiplicativeUnaryExpression -> '/' unaryExpression : ['$1', '$2'] .
 
-multiplicativeExpression -> unaryExpression '*' multiplicativeExpression : {builtin_function_call, '*', ['$1', '$3']} .
-multiplicativeExpression -> unaryExpression '/' multiplicativeExpression : {builtin_function_call, '/', ['$1', '$3']} .
+multiplicativeExpression -> unaryExpression '*' multiplicativeExpression : multiplicative_expr('$2', '$1', '$3') .
+multiplicativeExpression -> unaryExpression '/' multiplicativeExpression : multiplicative_expr('$2', '$1', '$3') .
 multiplicativeExpression -> unaryExpression                              : '$1' .
 unaryExpression -> '!' primaryExpression  : {builtin_function_call, '!', ['$2']} .
 unaryExpression -> '+' primaryExpression  : {builtin_function_call, '+', ['$2']} .
@@ -603,5 +602,10 @@ to_literal(STRING, Type) -> 'Elixir.RDF.Serialization.ParseHelper':to_literal(ST
 to_langtag(LANGTAG) -> 'Elixir.RDF.Serialization.ParseHelper':to_langtag(LANGTAG).
 rdf_type() -> 'Elixir.RDF.Serialization.ParseHelper':rdf_type().
 extract_literal(LITERAL) -> 'Elixir.SPARQL.Language.ParseHelper':extract_literal(LITERAL).
-
-arithmetic_expr([{Op, _}, Right], Left) -> {builtin_function_call, Op, [Left, Right]} .
+arithmetic_expr(EXPR) -> 'Elixir.SPARQL.Language.ParseHelper':arithmetic_expr(EXPR).
+arithmetic_expr(LEFT, RIGHT) -> 'Elixir.SPARQL.Language.ParseHelper':arithmetic_expr(LEFT, RIGHT).
+arithmetic_expr(OP, LEFT, RIGHT) -> 'Elixir.SPARQL.Language.ParseHelper':arithmetic_expr(OP, LEFT, RIGHT).
+arithmetic_quirk_expr(SIGN, LEFT, MIDDLE, RIGHT) -> 'Elixir.SPARQL.Language.ParseHelper':arithmetic_quirk_expr(SIGN, LEFT, MIDDLE, RIGHT).
+multiplicative_expr(OP, LEFT, RIGHT) -> 'Elixir.SPARQL.Language.ParseHelper':multiplicative_expr(OP, LEFT, RIGHT).
+multiplicative_quirk_expr(SIGN, LEFT, RIGHT) -> 'Elixir.SPARQL.Language.ParseHelper':multiplicative_quirk_expr(SIGN, LEFT, RIGHT).
+strip_sign(LITERAL) -> 'Elixir.SPARQL.Language.ParseHelper':strip_sign(LITERAL).

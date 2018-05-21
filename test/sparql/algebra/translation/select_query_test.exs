@@ -192,7 +192,7 @@ defmodule SPARQL.Algebra.Translation.SelectQueryTest do
           FILTER (?cost < 10)
         }
         """
-      ten = RDF.integer(10)
+      n10 = RDF.integer(10)
       assert {:ok, %SPARQL.Query{
           expr: %SPARQL.Algebra.Project{
             vars: ~w[s cost],
@@ -200,7 +200,7 @@ defmodule SPARQL.Algebra.Translation.SelectQueryTest do
               filters: [
                 %SPARQL.Algebra.FunctionCall{
                   name: :<,
-                  arguments: ["cost", ^ten]
+                  arguments: ["cost", ^n10]
                 }
               ],
               expr: %SPARQL.Algebra.BGP{
@@ -269,127 +269,343 @@ defmodule SPARQL.Algebra.Translation.SelectQueryTest do
         }} = decode(query)
     end
 
+  end
+
+  describe "arithmetic expressions" do
+
     test "complex mathematical expression" do
-      query = """
-        PREFIX ex: <http://example.org/>
-        SELECT ?s ?cost WHERE {
-          ?s ex:cost ?cost .
-          FILTER (?cost = (42 - 11 * 2) / 2)
-        }
-        """
-      n42 = RDF.integer(42)
-      n11 = RDF.integer(11)
-      n2  = RDF.integer(2)
-      assert {:ok, %SPARQL.Query{
-          expr: %SPARQL.Algebra.Project{
-            vars: ~w[s cost],
-            expr: %SPARQL.Algebra.Filter{
-              filters: [
-                %SPARQL.Algebra.FunctionCall{
-                  name: :=,
-                  arguments: ["cost",
-                    %SPARQL.Algebra.FunctionCall{
-                      name: :/,
-                      arguments: [
-                        %SPARQL.Algebra.FunctionCall{
-                          name: :-,
-                          arguments: [^n42,
-                            %SPARQL.Algebra.FunctionCall{
-                              name: :*,
-                              arguments: [^n11, ^n2]
-                            }
-                          ]
-                        }, ^n2
-                      ]
-                    }
-                  ]
-                }
-              ],
-              expr: %SPARQL.Algebra.BGP{
-                  triples: [{"s", ~I<http://example.org/cost>, "cost"}]
-                }
-              }
-            }
-        }} = decode(query)
+       assert_algebra_expr "(42 - 11 * 2) / 2",
+          %SPARQL.Algebra.FunctionCall{
+            name: :/,
+            arguments: [
+              %SPARQL.Algebra.FunctionCall{
+                name: :-,
+                arguments: [RDF.integer(42),
+                  %SPARQL.Algebra.FunctionCall{
+                    name: :*,
+                    arguments: [RDF.integer(11), RDF.integer(2)]
+                  }
+                ]
+              }, RDF.integer(2)
+            ]
+          }
     end
 
     test "complex mathematical expression with signed numbers" do
+       assert_algebra_expr "(-42 - -(+11 * -2)) / -2",
+          %SPARQL.Algebra.FunctionCall{
+            name: :/,
+            arguments: [
+              %SPARQL.Algebra.FunctionCall{
+                name: :-,
+                arguments: [RDF.integer(-42),
+                  %SPARQL.Algebra.FunctionCall{
+                    name: :-,
+                    arguments: [
+                      %SPARQL.Algebra.FunctionCall{
+                        name: :*,
+                        arguments: [RDF.integer("+11"), RDF.integer(-2)]
+                      }
+                    ]
+                  }
+                ]
+              }, RDF.integer(-2)
+            ]
+          }
+    end
+
+    test "associativity of additive expressions" do
+       assert_algebra_expr "2 - 3 + 1",
+          %SPARQL.Algebra.FunctionCall{
+            name: :+,
+            arguments: [
+              %SPARQL.Algebra.FunctionCall{
+                name: :-,
+                arguments: [RDF.integer(2), RDF.integer(3)
+                ]
+              }, RDF.integer(1)
+            ]
+          }
+
+       assert_algebra_expr "2 - 3 + 1 - 42",
+          %SPARQL.Algebra.FunctionCall{
+            arguments: [
+              %SPARQL.Algebra.FunctionCall{
+                arguments: [
+                  %SPARQL.Algebra.FunctionCall{
+                    arguments: [RDF.integer(2), RDF.integer(3)],
+                    name: :-
+                  }, RDF.integer(1)
+                ],
+                name: :+
+              }, RDF.integer(42)
+            ],
+            name: :-
+          }
+    end
+
+    test "associativity of multiplicative expressions" do
+       assert_algebra_expr "1 * 2 / 3",
+          %SPARQL.Algebra.FunctionCall{
+            name: :/,
+            arguments: [
+              %SPARQL.Algebra.FunctionCall{
+                name: :*,
+                arguments: [RDF.integer(1), RDF.integer(2)
+                ]
+              }, RDF.integer(3)
+            ]
+          }
+
+       assert_algebra_expr "2 / 3 * 1 / 42",
+          %SPARQL.Algebra.FunctionCall{
+            arguments: [
+              %SPARQL.Algebra.FunctionCall{
+                arguments: [
+                  %SPARQL.Algebra.FunctionCall{
+                    arguments: [RDF.integer(2), RDF.integer(3)],
+                    name: :/
+                  }, RDF.integer(1)
+                ],
+                name: :*
+              }, RDF.integer(42)
+            ],
+            name: :/
+          }
+    end
+
+    test "associativity of mixed expressions" do
+       assert_algebra_expr "1 + 2 / 3",
+          %SPARQL.Algebra.FunctionCall{
+            name: :+,
+            arguments: [
+              RDF.integer(1),
+              %SPARQL.Algebra.FunctionCall{
+                name: :/,
+                arguments: [RDF.integer(2), RDF.integer(3)
+                ]
+              }
+            ]
+          }
+
+       assert_algebra_expr "1 * 2 + 3",
+          %SPARQL.Algebra.FunctionCall{
+            name: :+,
+            arguments: [
+              %SPARQL.Algebra.FunctionCall{
+                name: :*,
+                arguments: [RDF.integer(1), RDF.integer(2)
+                ]
+              }, RDF.integer(3)
+            ]
+          }
+
+       assert_algebra_expr "2 - 3 + 4 * 42 / 5",
+          %SPARQL.Algebra.FunctionCall{
+            arguments: [
+              %SPARQL.Algebra.FunctionCall{
+                arguments: [RDF.integer(2), RDF.integer(3)],
+                name: :-
+              },
+              %SPARQL.Algebra.FunctionCall{
+                arguments: [
+                  %SPARQL.Algebra.FunctionCall{
+                    arguments: [RDF.integer(4), RDF.integer(42)],
+                    name: :*
+                  }, RDF.integer(5)
+                ],
+                name: :/
+              }
+            ],
+            name: :+
+          }
+    end
+
+    test "arithmetic expression signs quirk #1" do
+       assert_algebra_expr "2-3+1",
+          %SPARQL.Algebra.FunctionCall{
+            name: :+,
+            arguments: [
+              %SPARQL.Algebra.FunctionCall{
+                name: :-,
+                arguments: [RDF.integer(2), RDF.integer(3)
+                ]
+              }, RDF.integer(1)
+            ]
+          }
+
+       assert_algebra_expr "2-+3+1",
+          %SPARQL.Algebra.FunctionCall{
+            name: :+,
+            arguments: [
+              %SPARQL.Algebra.FunctionCall{
+                name: :-,
+                arguments: [RDF.integer(2), RDF.integer("+3")
+                ]
+              }, RDF.integer(1)
+            ]
+          }
+
+       assert_algebra_expr "2-+3++1",
+          %SPARQL.Algebra.FunctionCall{
+            name: :+,
+            arguments: [
+              %SPARQL.Algebra.FunctionCall{
+                name: :-,
+                arguments: [RDF.integer(2), RDF.integer("+3")
+                ]
+              }, RDF.integer("+1")
+            ]
+          }
+
+       assert_algebra_expr "-2*+3+-1",
+          %SPARQL.Algebra.FunctionCall{
+            name: :+,
+            arguments: [
+              %SPARQL.Algebra.FunctionCall{
+                name: :*,
+                arguments: [RDF.integer(-2), RDF.integer("+3")
+                ]
+              },
+              RDF.integer(-1),
+            ]
+          }
+
+    end
+
+    test "arithmetic expression signs quirk #2" do
+       assert_algebra_expr "2-3*1",
+          %SPARQL.Algebra.FunctionCall{
+            name: :-,
+            arguments: [
+              RDF.integer(2),
+              %SPARQL.Algebra.FunctionCall{
+                name: :*,
+                arguments: [RDF.integer(3), RDF.integer(1)
+                ]
+              }
+            ]
+          }
+
+       assert_algebra_expr "-2-+3*-1",
+          %SPARQL.Algebra.FunctionCall{
+            name: :-,
+            arguments: [
+              RDF.integer(-2),
+              %SPARQL.Algebra.FunctionCall{
+                name: :*,
+                arguments: [RDF.integer("+3"), RDF.integer(-1)
+                ]
+              }
+            ]
+          }
+    end
+
+    test "arithmetic expression signs quirk #3" do
+       assert_algebra_expr "2-3*1+4",
+          %SPARQL.Algebra.FunctionCall{
+            name: :+,
+            arguments: [
+              %SPARQL.Algebra.FunctionCall{
+                name: :-,
+                arguments: [
+                  RDF.integer(2),
+                  %SPARQL.Algebra.FunctionCall{
+                    name: :*,
+                    arguments: [RDF.integer(3), RDF.integer(1)]
+                  }
+                ]
+              }, RDF.integer(4)
+            ]
+          }
+
+       assert_algebra_expr "2-3*1/5+4",
+          %SPARQL.Algebra.FunctionCall{
+            name: :+,
+            arguments: [
+              %SPARQL.Algebra.FunctionCall{
+                name: :-,
+                arguments: [
+                  RDF.integer(2),
+                  %SPARQL.Algebra.FunctionCall{
+                    name: :/,
+                    arguments: [
+                      %SPARQL.Algebra.FunctionCall{
+                        name: :*,
+                        arguments: [RDF.integer(3), RDF.integer(1)]
+                      }, RDF.integer(5)
+                    ]
+                  }
+                ]
+              }, RDF.integer(4)
+            ]
+          }
+    end
+
+    test "arithmetic expression signs quirk #4" do
+       assert_algebra_expr "2-3*1/4",
+          %SPARQL.Algebra.FunctionCall{
+            name: :-,
+            arguments: [
+              RDF.integer(2),
+              %SPARQL.Algebra.FunctionCall{
+                name: :/,
+                arguments: [
+                  %SPARQL.Algebra.FunctionCall{
+                    name: :*,
+                    arguments: [RDF.integer(3), RDF.integer(1)]
+                  }, RDF.integer(4)
+                ]
+              }
+            ]
+          }
+
+       assert_algebra_expr "2-3*1/4*5",
+          %SPARQL.Algebra.FunctionCall{
+            name: :-,
+            arguments: [
+              RDF.integer(2),
+              %SPARQL.Algebra.FunctionCall{
+                name: :*,
+                arguments: [
+                  %SPARQL.Algebra.FunctionCall{
+                    name: :/,
+                    arguments: [
+                      %SPARQL.Algebra.FunctionCall{
+                        name: :*,
+                        arguments: [RDF.integer(3), RDF.integer(1)]
+                      }, RDF.integer(4)
+                    ]
+                  }, RDF.integer(5)
+                ]
+              }
+            ]
+          }
+    end
+
+    def assert_algebra_expr(arithmetic_expr, algebra_expr) do
       query = """
-        PREFIX ex: <http://example.org/>
-        SELECT ?s ?cost WHERE {
-          ?s ex:cost ?cost .
-          FILTER (?cost = (-42 - -(+11 * -2)) / -2)
+        SELECT ?o WHERE {
+          ?s ?p ?o .
+          FILTER (?o = (#{arithmetic_expr}))
         }
         """
-      n42 = RDF.integer(-42)
-      n11 = RDF.integer("+11")
-      n2  = RDF.integer(-2)
+
       assert {:ok, %SPARQL.Query{
           expr: %SPARQL.Algebra.Project{
-            vars: ~w[s cost],
+            vars: ~w[o],
             expr: %SPARQL.Algebra.Filter{
               filters: [
                 %SPARQL.Algebra.FunctionCall{
                   name: :=,
-                  arguments: ["cost",
-                    %SPARQL.Algebra.FunctionCall{
-                      name: :/,
-                      arguments: [
-                        %SPARQL.Algebra.FunctionCall{
-                          name: :-,
-                          arguments: [^n42,
-                            %SPARQL.Algebra.FunctionCall{
-                              name: :-,
-                              arguments: [
-                                %SPARQL.Algebra.FunctionCall{
-                                  name: :*,
-                                  arguments: [^n11, ^n2]
-                                }
-                              ]
-                            }
-                          ]
-                        }, ^n2
-                      ]
-                    }
-                  ]
+                  arguments: ["o", ^algebra_expr]
                 }
               ],
-              expr: %SPARQL.Algebra.BGP{
-                  triples: [{"s", ~I<http://example.org/cost>, "cost"}]
-                }
-              }
+              expr: %SPARQL.Algebra.BGP{triples: [{"s", "p", "o"}]}
             }
+          }
         }} = decode(query)
     end
-
-    @tag skip: "TODO"
-    test "ambiguity between number sign and arithmetic operator" do
-      query = """
-        PREFIX ex: <http://example.org/>
-        SELECT ?s ?cost WHERE {
-          ?s ex:cost ?cost, ?cost2 .
-          FILTER (?cost = (?cost2+1))
-        }
-        """
-      ten = RDF.integer(10)
-      assert {:ok, %SPARQL.Query{
-          expr: %SPARQL.Algebra.Project{
-            vars: ~w[s cost],
-            expr: %SPARQL.Algebra.Filter{
-              filters: [
-                %SPARQL.Algebra.FunctionCall{
-                  name: :<,
-                  arguments: ["cost", ^ten]
-                }
-              ],
-              expr: %SPARQL.Algebra.BGP{
-                  triples: [{"s", ~I<http://example.org/cost>, "cost"}]
-                }
-              }
-            }
-        }} = decode(query)
-    end
-
   end
 
 end
