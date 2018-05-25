@@ -1,7 +1,5 @@
-defmodule SPARQL.Algebra.TranslationTest do
-  use ExUnit.Case
-
-  import RDF.Sigils
+defmodule SPARQL.Algebra.RDFValueTest do
+  use SPARQL.Test.Case
 
   import SPARQL.Language.Decoder, only: [decode: 1, decode: 2]
 
