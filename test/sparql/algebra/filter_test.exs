@@ -18,7 +18,7 @@ defmodule SPARQL.Algebra.FilterTest do
           vars: ~w[s cost],
           expr: %SPARQL.Algebra.Filter{
             filters: [
-              %SPARQL.Algebra.FunctionCall{
+              %SPARQL.Algebra.FunctionCall.Builtin{
                 name: :<,
                 arguments: ["cost", ^n10]
               }
@@ -44,7 +44,7 @@ defmodule SPARQL.Algebra.FilterTest do
           vars: ~w[person name],
           expr: %SPARQL.Algebra.Filter{
             filters: [
-              %SPARQL.Algebra.FunctionCall{
+              %SPARQL.Algebra.FunctionCall.Builtin{
                 name: :REGEX,
                 arguments: ["name", ~L"foo", ~L"i"]
               }
@@ -70,10 +70,10 @@ defmodule SPARQL.Algebra.FilterTest do
           vars: ~w[person name],
           expr: %SPARQL.Algebra.Filter{
             filters: [
-              %SPARQL.Algebra.FunctionCall{
+              %SPARQL.Algebra.FunctionCall.Builtin{
                 name: :=,
                 arguments: [
-                  %SPARQL.Algebra.FunctionCall{
+                  %SPARQL.Algebra.FunctionCall.Builtin{
                     name: :UCASE,
                     arguments: ["name"]
                   },

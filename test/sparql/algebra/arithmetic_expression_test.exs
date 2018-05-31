@@ -15,7 +15,7 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
           vars: ~w[o],
           expr: %SPARQL.Algebra.Filter{
             filters: [
-              %SPARQL.Algebra.FunctionCall{
+              %SPARQL.Algebra.FunctionCall.Builtin{
                 name: :=,
                 arguments: ["o", ^algebra_expr]
               }
@@ -29,13 +29,13 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
 
   test "complex mathematical expression" do
      assert_algebra_expr "(42 - 11 * 2) / 2",
-        %SPARQL.Algebra.FunctionCall{
+        %SPARQL.Algebra.FunctionCall.Builtin{
           name: :/,
           arguments: [
-            %SPARQL.Algebra.FunctionCall{
+            %SPARQL.Algebra.FunctionCall.Builtin{
               name: :-,
               arguments: [RDF.integer(42),
-                %SPARQL.Algebra.FunctionCall{
+                %SPARQL.Algebra.FunctionCall.Builtin{
                   name: :*,
                   arguments: [RDF.integer(11), RDF.integer(2)]
                 }
@@ -47,16 +47,16 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
 
   test "complex mathematical expression with signed numbers" do
      assert_algebra_expr "(-42 - -(+11 * -2)) / -2",
-        %SPARQL.Algebra.FunctionCall{
+        %SPARQL.Algebra.FunctionCall.Builtin{
           name: :/,
           arguments: [
-            %SPARQL.Algebra.FunctionCall{
+            %SPARQL.Algebra.FunctionCall.Builtin{
               name: :-,
               arguments: [RDF.integer(-42),
-                %SPARQL.Algebra.FunctionCall{
+                %SPARQL.Algebra.FunctionCall.Builtin{
                   name: :-,
                   arguments: [
-                    %SPARQL.Algebra.FunctionCall{
+                    %SPARQL.Algebra.FunctionCall.Builtin{
                       name: :*,
                       arguments: [RDF.integer("+11"), RDF.integer(-2)]
                     }
@@ -70,10 +70,10 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
 
   test "associativity of additive expressions" do
      assert_algebra_expr "2 - 3 + 1",
-        %SPARQL.Algebra.FunctionCall{
+        %SPARQL.Algebra.FunctionCall.Builtin{
           name: :+,
           arguments: [
-            %SPARQL.Algebra.FunctionCall{
+            %SPARQL.Algebra.FunctionCall.Builtin{
               name: :-,
               arguments: [RDF.integer(2), RDF.integer(3)
               ]
@@ -82,11 +82,11 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
         }
 
      assert_algebra_expr "2 - 3 + 1 - 42",
-        %SPARQL.Algebra.FunctionCall{
+        %SPARQL.Algebra.FunctionCall.Builtin{
           arguments: [
-            %SPARQL.Algebra.FunctionCall{
+            %SPARQL.Algebra.FunctionCall.Builtin{
               arguments: [
-                %SPARQL.Algebra.FunctionCall{
+                %SPARQL.Algebra.FunctionCall.Builtin{
                   arguments: [RDF.integer(2), RDF.integer(3)],
                   name: :-
                 }, RDF.integer(1)
@@ -100,10 +100,10 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
 
   test "associativity of multiplicative expressions" do
      assert_algebra_expr "1 * 2 / 3",
-        %SPARQL.Algebra.FunctionCall{
+        %SPARQL.Algebra.FunctionCall.Builtin{
           name: :/,
           arguments: [
-            %SPARQL.Algebra.FunctionCall{
+            %SPARQL.Algebra.FunctionCall.Builtin{
               name: :*,
               arguments: [RDF.integer(1), RDF.integer(2)
               ]
@@ -112,11 +112,11 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
         }
 
      assert_algebra_expr "2 / 3 * 1 / 42",
-        %SPARQL.Algebra.FunctionCall{
+        %SPARQL.Algebra.FunctionCall.Builtin{
           arguments: [
-            %SPARQL.Algebra.FunctionCall{
+            %SPARQL.Algebra.FunctionCall.Builtin{
               arguments: [
-                %SPARQL.Algebra.FunctionCall{
+                %SPARQL.Algebra.FunctionCall.Builtin{
                   arguments: [RDF.integer(2), RDF.integer(3)],
                   name: :/
                 }, RDF.integer(1)
@@ -130,11 +130,11 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
 
   test "associativity of mixed expressions" do
      assert_algebra_expr "1 + 2 / 3",
-        %SPARQL.Algebra.FunctionCall{
+        %SPARQL.Algebra.FunctionCall.Builtin{
           name: :+,
           arguments: [
             RDF.integer(1),
-            %SPARQL.Algebra.FunctionCall{
+            %SPARQL.Algebra.FunctionCall.Builtin{
               name: :/,
               arguments: [RDF.integer(2), RDF.integer(3)
               ]
@@ -143,10 +143,10 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
         }
 
      assert_algebra_expr "1 * 2 + 3",
-        %SPARQL.Algebra.FunctionCall{
+        %SPARQL.Algebra.FunctionCall.Builtin{
           name: :+,
           arguments: [
-            %SPARQL.Algebra.FunctionCall{
+            %SPARQL.Algebra.FunctionCall.Builtin{
               name: :*,
               arguments: [RDF.integer(1), RDF.integer(2)
               ]
@@ -155,15 +155,15 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
         }
 
      assert_algebra_expr "2 - 3 + 4 * 42 / 5",
-        %SPARQL.Algebra.FunctionCall{
+        %SPARQL.Algebra.FunctionCall.Builtin{
           arguments: [
-            %SPARQL.Algebra.FunctionCall{
+            %SPARQL.Algebra.FunctionCall.Builtin{
               arguments: [RDF.integer(2), RDF.integer(3)],
               name: :-
             },
-            %SPARQL.Algebra.FunctionCall{
+            %SPARQL.Algebra.FunctionCall.Builtin{
               arguments: [
-                %SPARQL.Algebra.FunctionCall{
+                %SPARQL.Algebra.FunctionCall.Builtin{
                   arguments: [RDF.integer(4), RDF.integer(42)],
                   name: :*
                 }, RDF.integer(5)
@@ -177,10 +177,10 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
 
   test "arithmetic expression signs quirk #1" do
      assert_algebra_expr "2-3+1",
-        %SPARQL.Algebra.FunctionCall{
+        %SPARQL.Algebra.FunctionCall.Builtin{
           name: :+,
           arguments: [
-            %SPARQL.Algebra.FunctionCall{
+            %SPARQL.Algebra.FunctionCall.Builtin{
               name: :-,
               arguments: [RDF.integer(2), RDF.integer(3)
               ]
@@ -189,10 +189,10 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
         }
 
      assert_algebra_expr "2-+3+1",
-        %SPARQL.Algebra.FunctionCall{
+        %SPARQL.Algebra.FunctionCall.Builtin{
           name: :+,
           arguments: [
-            %SPARQL.Algebra.FunctionCall{
+            %SPARQL.Algebra.FunctionCall.Builtin{
               name: :-,
               arguments: [RDF.integer(2), RDF.integer("+3")
               ]
@@ -201,10 +201,10 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
         }
 
      assert_algebra_expr "2-+3++1",
-        %SPARQL.Algebra.FunctionCall{
+        %SPARQL.Algebra.FunctionCall.Builtin{
           name: :+,
           arguments: [
-            %SPARQL.Algebra.FunctionCall{
+            %SPARQL.Algebra.FunctionCall.Builtin{
               name: :-,
               arguments: [RDF.integer(2), RDF.integer("+3")
               ]
@@ -213,10 +213,10 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
         }
 
      assert_algebra_expr "-2*+3+-1",
-        %SPARQL.Algebra.FunctionCall{
+        %SPARQL.Algebra.FunctionCall.Builtin{
           name: :+,
           arguments: [
-            %SPARQL.Algebra.FunctionCall{
+            %SPARQL.Algebra.FunctionCall.Builtin{
               name: :*,
               arguments: [RDF.integer(-2), RDF.integer("+3")
               ]
@@ -229,11 +229,11 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
 
   test "arithmetic expression signs quirk #2" do
      assert_algebra_expr "2-3*1",
-        %SPARQL.Algebra.FunctionCall{
+        %SPARQL.Algebra.FunctionCall.Builtin{
           name: :-,
           arguments: [
             RDF.integer(2),
-            %SPARQL.Algebra.FunctionCall{
+            %SPARQL.Algebra.FunctionCall.Builtin{
               name: :*,
               arguments: [RDF.integer(3), RDF.integer(1)
               ]
@@ -242,11 +242,11 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
         }
 
      assert_algebra_expr "-2-+3*-1",
-        %SPARQL.Algebra.FunctionCall{
+        %SPARQL.Algebra.FunctionCall.Builtin{
           name: :-,
           arguments: [
             RDF.integer(-2),
-            %SPARQL.Algebra.FunctionCall{
+            %SPARQL.Algebra.FunctionCall.Builtin{
               name: :*,
               arguments: [RDF.integer("+3"), RDF.integer(-1)
               ]
@@ -257,14 +257,14 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
 
   test "arithmetic expression signs quirk #3" do
      assert_algebra_expr "2-3*1+4",
-        %SPARQL.Algebra.FunctionCall{
+        %SPARQL.Algebra.FunctionCall.Builtin{
           name: :+,
           arguments: [
-            %SPARQL.Algebra.FunctionCall{
+            %SPARQL.Algebra.FunctionCall.Builtin{
               name: :-,
               arguments: [
                 RDF.integer(2),
-                %SPARQL.Algebra.FunctionCall{
+                %SPARQL.Algebra.FunctionCall.Builtin{
                   name: :*,
                   arguments: [RDF.integer(3), RDF.integer(1)]
                 }
@@ -274,17 +274,17 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
         }
 
      assert_algebra_expr "2-3*1/5+4",
-        %SPARQL.Algebra.FunctionCall{
+        %SPARQL.Algebra.FunctionCall.Builtin{
           name: :+,
           arguments: [
-            %SPARQL.Algebra.FunctionCall{
+            %SPARQL.Algebra.FunctionCall.Builtin{
               name: :-,
               arguments: [
                 RDF.integer(2),
-                %SPARQL.Algebra.FunctionCall{
+                %SPARQL.Algebra.FunctionCall.Builtin{
                   name: :/,
                   arguments: [
-                    %SPARQL.Algebra.FunctionCall{
+                    %SPARQL.Algebra.FunctionCall.Builtin{
                       name: :*,
                       arguments: [RDF.integer(3), RDF.integer(1)]
                     }, RDF.integer(5)
@@ -298,14 +298,14 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
 
   test "arithmetic expression signs quirk #4" do
      assert_algebra_expr "2-3*1/4",
-        %SPARQL.Algebra.FunctionCall{
+        %SPARQL.Algebra.FunctionCall.Builtin{
           name: :-,
           arguments: [
             RDF.integer(2),
-            %SPARQL.Algebra.FunctionCall{
+            %SPARQL.Algebra.FunctionCall.Builtin{
               name: :/,
               arguments: [
-                %SPARQL.Algebra.FunctionCall{
+                %SPARQL.Algebra.FunctionCall.Builtin{
                   name: :*,
                   arguments: [RDF.integer(3), RDF.integer(1)]
                 }, RDF.integer(4)
@@ -315,17 +315,17 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
         }
 
      assert_algebra_expr "2-3*1/4*5",
-        %SPARQL.Algebra.FunctionCall{
+        %SPARQL.Algebra.FunctionCall.Builtin{
           name: :-,
           arguments: [
             RDF.integer(2),
-            %SPARQL.Algebra.FunctionCall{
+            %SPARQL.Algebra.FunctionCall.Builtin{
               name: :*,
               arguments: [
-                %SPARQL.Algebra.FunctionCall{
+                %SPARQL.Algebra.FunctionCall.Builtin{
                   name: :/,
                   arguments: [
-                    %SPARQL.Algebra.FunctionCall{
+                    %SPARQL.Algebra.FunctionCall.Builtin{
                       name: :*,
                       arguments: [RDF.integer(3), RDF.integer(1)]
                     }, RDF.integer(4)

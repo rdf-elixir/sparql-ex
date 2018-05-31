@@ -561,7 +561,7 @@ aggregate -> 'GROUP_CONCAT' '(' expression ';' 'SEPARATOR' '=' string_literal_qu
 aggregate -> 'GROUP_CONCAT' '(' expression ')' .
 
 iriOrFunction -> iri argList .
-iriOrFunction -> iri .
+iriOrFunction -> iri : '$1' .
 
 rdfLiteral -> string_literal_quote '^^' iri    : to_literal('$1', {datatype, '$3'}) .
 rdfLiteral -> string_literal_quote langtag     : to_literal('$1', {language, to_langtag('$2')}) .

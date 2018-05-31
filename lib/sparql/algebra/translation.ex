@@ -144,7 +144,7 @@ defmodule SPARQL.Algebra.Translation do
   defp expand_syntax_form({:nil, _}, _),      do: RDF.nil()
 
   defp expand_syntax_form({:builtin_function_call, function_name, args}, prologue) do
-    %SPARQL.Algebra.FunctionCall{
+    %SPARQL.Algebra.FunctionCall.Builtin{
       name: function_name |> map(prologue, &expand_syntax_form/2),
       arguments: args |> map(prologue, &expand_syntax_form/2)
     }
