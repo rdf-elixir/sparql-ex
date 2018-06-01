@@ -67,4 +67,34 @@ defmodule SPARQL.Functions.BuiltinsTest do
     end
   end
 
+  test "IF function" do
+    examples = [
+        {RDF.true,        RDF.integer(1),  RDF.integer(2), RDF.integer(1)},
+        {RDF.false,       RDF.integer(1),  RDF.integer(2), RDF.integer(2)},
+        {:error,          RDF.integer(1),  RDF.integer(2), :error},
+        {RDF.integer(42), RDF.true,        :error,         RDF.true},
+        {RDF.string(""),  :error,          RDF.false,      RDF.false},
+        {nil,             RDF.true,        RDF.true,       :error},
+      ]
+
+    Enum.each examples, fn {condition, then_value, else_value, result} ->
+      assert Expression.evaluate(%FunctionCall.Builtin{name: :IF, arguments: [condition, then_value, else_value]}, nil) == result,
+         "expected SPARQL expression evaluation of IF(#{condition}, \n\t#{inspect then_value},\n\t#{inspect else_value}\nto be\n\t#{inspect result}\nbut got\n\t#{inspect Expression.evaluate(%FunctionCall.Builtin{name: :IF, arguments: [condition, then_value, else_value]}, nil)}"
+    end
+  end
+
+  test "COALESCE function" do
+    examples = [
+        {[RDF.integer(42)], RDF.integer(42)},
+        {[RDF.string(""), RDF.true], RDF.string("")},
+        {[:error], :error},
+        {[], :error},
+      ]
+
+    Enum.each examples, fn {expressions, result} ->
+      assert Expression.evaluate(%FunctionCall.Builtin{name: :COALESCE, arguments: expressions}, nil) == result,
+         "expected SPARQL expression evaluation of\n\tCOALESCE(#{expressions |> Enum.map(&inspect/1) |> Enum.join(",\n\t\t")})\nto be\n\t#{inspect result}\nbut got\n\t#{inspect Expression.evaluate(%FunctionCall.Builtin{name: :COALESCE, arguments: expressions}, nil)}"
+    end
+  end
+
 end

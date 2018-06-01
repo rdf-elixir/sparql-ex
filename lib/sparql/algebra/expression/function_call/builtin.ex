@@ -59,6 +59,20 @@ defmodule SPARQL.Algebra.FunctionCall.Builtin do
     end
   end
 
+  def invoke(:IF, [cond_expression, then_expression, else_expression], data) do
+    case evaluate_to_ebv(cond_expression, data) do
+      %RDF.Literal{value: true}  -> FunctionCall.evaluate_argument(then_expression, data)
+      %RDF.Literal{value: false} -> FunctionCall.evaluate_argument(else_expression, data)
+      nil                        -> :error
+    end
+  end
+
+  def invoke(:COALESCE, expressions, data) do
+    expressions
+    |> Stream.map(&(FunctionCall.evaluate_argument(&1, data)))
+    |> Enum.find(:error, &(&1 != :error))
+  end
+
   def invoke(name, arguments, data) do
     with {:ok, evaluated_arguments} <-
             FunctionCall.evaluate_arguments(arguments, data)
