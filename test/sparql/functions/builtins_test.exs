@@ -10,13 +10,7 @@ defmodule SPARQL.Functions.BuiltinsTest do
   alias RDF.NS.XSD
 
 
-  @equal_rdf_terms [
-    # IRIs
-    {RDF.iri("http://example.com/"), RDF.iri("http://example.com/")},
-
-    # Blank Nodes
-    {RDF.bnode("foo"), RDF.bnode("foo")},
-
+  @term_equal_rdf_literals [
     # String literals
     {RDF.string("foo"), RDF.string("foo")},
     {RDF.lang_string("foo", language: "de"), RDF.lang_string("foo", language: "de")},
@@ -31,6 +25,14 @@ defmodule SPARQL.Functions.BuiltinsTest do
     {RDF.date_time("2002-04-02T12:00:00-01:00"), RDF.date_time("2002-04-02T12:00:00-01:00")},
     {RDF.date_time("2002-04-02T12:00:00"),       RDF.date_time("2002-04-02T12:00:00")},
   ]
+
+  @equal_rdf_terms [
+    # IRIs
+    {RDF.iri("http://example.com/"), RDF.iri("http://example.com/")},
+
+    # Blank Nodes
+    {RDF.bnode("foo"), RDF.bnode("foo")},
+  ] ++ @term_equal_rdf_literals
 
   @unequal_rdf_terms [
     # IRIs
@@ -53,12 +55,7 @@ defmodule SPARQL.Functions.BuiltinsTest do
     {RDF.date_time("2002-04-02T12:00:00"), RDF.date_time("2002-04-02T17:00:00")},
   ]
 
-  @equal_rdf_values [
-    # IRIs
-    # RDF URI references are compatible with the anyURI datatype as defined by XML schema datatypes, constrained to be an absolute rather than a relative URI reference.
-    {RDF.iri("http://example.com/"),
-     RDF.Literal.new("http://example.com/", datatype: XSD.anyURI)},
-
+  @value_equal_rdf_literals [
     # Boolean literals
     {RDF.true,       RDF.boolean("TRUE")},
 
@@ -74,6 +71,13 @@ defmodule SPARQL.Functions.BuiltinsTest do
     {RDF.date_time("2002-04-02T23:00:00-04:00"), RDF.date_time("2002-04-03T02:00:00-01:00")},
     {RDF.date_time("1999-12-31T24:00:00"),       RDF.date_time("2000-01-01T00:00:00")},
   ]
+
+  @equal_rdf_values [
+    # IRIs
+    # RDF URI references are compatible with the anyURI datatype as defined by XML schema datatypes, constrained to be an absolute rather than a relative URI reference.
+    {RDF.iri("http://example.com/"),
+     RDF.Literal.new("http://example.com/", datatype: XSD.anyURI)},
+  ] ++ @value_equal_rdf_literals
 
   @unequal_rdf_values [
     # IRIs
@@ -91,13 +95,7 @@ defmodule SPARQL.Functions.BuiltinsTest do
     {RDF.date_time("2005-04-04T24:00:00"), RDF.date_time("2005-04-04T00:00:00")},
   ]
 
-  @incomparable_terms [
-    # IRIs
-    {RDF.iri("http://example.com/"), RDF.string("http://example.com/")},
-
-    # Blank Nodes
-    {RDF.bnode("foo"), RDF.string("foo")},
-
+  @incomparable_literals [
     # String literals
     {RDF.string("foo"), RDF.lang_string("foo", language: "de")},
     {RDF.string("foo"), RDF.bnode("foo")},
@@ -108,10 +106,45 @@ defmodule SPARQL.Functions.BuiltinsTest do
     {RDF.integer(0), RDF.true},
 
     # Numeric literals
-    {RDF.integer("42"), RDF.string("42")},
+    {RDF.integer("42"),   RDF.string("42")},
+# TODO: How to handle invalid number literals?
+#    {RDF.integer("3.14"), RDF.integer("007")},
 
     # DateTime literals
     {RDF.date_time("2002-04-02T12:00:00-01:00"), RDF.string("2002-04-02T12:00:00-01:00")},
+  ]
+
+  @incomparable_terms [
+    # IRIs
+    {RDF.iri("http://example.com/"), RDF.string("http://example.com/")},
+
+    # Blank Nodes
+    {RDF.bnode("foo"), RDF.string("foo")},
+
+  ] ++ @incomparable_literals
+
+  @ordered_numbers [
+    {RDF.integer(0),   RDF.integer(1)},
+    {RDF.integer("3"), RDF.integer("007")},
+    {RDF.double(1.1),  RDF.double(2.2)},
+    {RDF.double(3.14), RDF.integer(42)},
+# TODO: How to handle invalid number literals?
+#    {RDF.integer("3.14"), RDF.integer("007")},
+# TODO: We need a RDF.Decimal datatype for this
+#    {RDF.decimal(1.1), RDF.decimal(2.2)},
+#    {RDF.integer(3),   RDF.decimal(3.14)},
+# TODO: We need support for other derived numeric datatypes
+#    {RDF.Literal.new(0, datatype: XSD.byte), RDF.integer(1)},
+  ]
+
+  @ordered_strings [
+    {RDF.string("a"), RDF.string("b")},
+    {RDF.string("0"), RDF.string("1")},
+  ]
+
+  @ordered_datetimes [
+    {RDF.date_time("2002-04-02T12:00:00"), RDF.date_time("2002-04-02T17:00:00")},
+    {RDF.date_time("2002-04-02T12:00:00+01:00"), RDF.date_time("2002-04-02T12:00:00+00:00")},
   ]
 
 
@@ -226,6 +259,272 @@ defmodule SPARQL.Functions.BuiltinsTest do
     end
   end
 
+  describe "< operator" do
+    test "with booleans" do
+      assert_builtin_call_result(:<, [RDF.false, RDF.true], RDF.true)
+      assert_builtin_expression_evaluation_result(:<, [RDF.false, RDF.true], RDF.true)
+
+      assert_builtin_call_result(:<, [RDF.true, RDF.false], RDF.false)
+      assert_builtin_expression_evaluation_result(:<, [RDF.true, RDF.false], RDF.false)
+    end
+
+    test "with numbers: left number smaller than right number" do
+      Enum.each @ordered_numbers, fn {left, right} ->
+        assert_builtin_call_result(:<, [left, right], RDF.true)
+        assert_builtin_expression_evaluation_result(:<, [left, right], RDF.true)
+      end
+    end
+
+    test "with numbers: left number greater than right number" do
+      Enum.each @ordered_numbers, fn {left, right} ->
+        assert_builtin_call_result(:<, [right, left], RDF.false)
+        assert_builtin_expression_evaluation_result(:<, [right, left], RDF.false)
+      end
+    end
+
+    test "with date_times: left date_time before than right date_time" do
+      Enum.each @ordered_datetimes, fn {left, right} ->
+        assert_builtin_call_result(:<, [left, right], RDF.true)
+        assert_builtin_expression_evaluation_result(:<, [left, right], RDF.true)
+      end
+    end
+
+    test "with date_times: left date_time after than right date_time" do
+      Enum.each @ordered_datetimes, fn {left, right} ->
+        assert_builtin_call_result(:<, [right, left], RDF.false)
+        assert_builtin_expression_evaluation_result(:<, [right, left], RDF.false)
+      end
+    end
+
+    test "with strings: left string lexicographical before right string" do
+      Enum.each @ordered_strings, fn {left, right} ->
+        assert_builtin_call_result(:<, [left, right], RDF.true)
+        assert_builtin_expression_evaluation_result(:<, [left, right], RDF.true)
+      end
+    end
+
+    test "with strings: left string lexicographical after right string" do
+      Enum.each @ordered_strings, fn {left, right} ->
+        assert_builtin_call_result(:<, [right, left], RDF.false)
+        assert_builtin_expression_evaluation_result(:<, [right, left], RDF.false)
+      end
+    end
+
+    test "with equal literals" do
+      Enum.each @term_equal_rdf_literals ++ @value_equal_rdf_literals, fn {left, right} ->
+          assert_builtin_call_result(:<, [left, right], RDF.false)
+          assert_builtin_expression_evaluation_result(:<, [left, right], RDF.false)
+        end
+    end
+
+    test "with incomparable literals" do
+      Enum.each @incomparable_literals, fn {left, right} ->
+        assert_builtin_call_result(:<, [left, right], :error)
+        assert_builtin_expression_evaluation_result(:<, [left, right], :error)
+      end
+    end
+  end
+
+  describe "<= operator" do
+    test "with booleans" do
+      assert_builtin_call_result(:<=, [RDF.false, RDF.true], RDF.true)
+      assert_builtin_expression_evaluation_result(:<=, [RDF.false, RDF.true], RDF.true)
+
+      assert_builtin_call_result(:<=, [RDF.true, RDF.false], RDF.false)
+      assert_builtin_expression_evaluation_result(:<=, [RDF.true, RDF.false], RDF.false)
+    end
+
+    test "with numbers: left number smaller than right number" do
+      Enum.each @ordered_numbers, fn {left, right} ->
+        assert_builtin_call_result(:<=, [left, right], RDF.true)
+        assert_builtin_expression_evaluation_result(:<=, [left, right], RDF.true)
+      end
+    end
+
+    test "with numbers: left number greater than right number" do
+      Enum.each @ordered_numbers, fn {left, right} ->
+        assert_builtin_call_result(:<=, [right, left], RDF.false)
+        assert_builtin_expression_evaluation_result(:<=, [right, left], RDF.false)
+      end
+    end
+
+    test "with date_times: left date_time before than right date_time" do
+      Enum.each @ordered_datetimes, fn {left, right} ->
+        assert_builtin_call_result(:<=, [left, right], RDF.true)
+        assert_builtin_expression_evaluation_result(:<=, [left, right], RDF.true)
+      end
+    end
+
+    test "with date_times: left date_time after than right date_time" do
+      Enum.each @ordered_datetimes, fn {left, right} ->
+        assert_builtin_call_result(:<=, [right, left], RDF.false)
+        assert_builtin_expression_evaluation_result(:<=, [right, left], RDF.false)
+      end
+    end
+
+    test "with strings: left string lexicographical before right string" do
+      Enum.each @ordered_strings, fn {left, right} ->
+        assert_builtin_call_result(:<=, [left, right], RDF.true)
+        assert_builtin_expression_evaluation_result(:<=, [left, right], RDF.true)
+      end
+    end
+
+    test "with strings: left string lexicographical after right string" do
+      Enum.each @ordered_strings, fn {left, right} ->
+        assert_builtin_call_result(:<=, [right, left], RDF.false)
+        assert_builtin_expression_evaluation_result(:<=, [right, left], RDF.false)
+      end
+    end
+
+    test "with equal literals" do
+      Enum.each @term_equal_rdf_literals ++ @value_equal_rdf_literals, fn {left, right} ->
+          assert_builtin_call_result(:<=, [left, right], RDF.true)
+          assert_builtin_expression_evaluation_result(:<=, [left, right], RDF.true)
+        end
+    end
+
+    test "with incomparable literals" do
+      Enum.each @incomparable_literals, fn {left, right} ->
+        assert_builtin_call_result(:<=, [left, right], :error)
+        assert_builtin_expression_evaluation_result(:<=, [left, right], :error)
+      end
+    end
+  end
+
+  describe "> operator" do
+    test "with booleans" do
+      assert_builtin_call_result(:>, [RDF.false, RDF.true], RDF.false)
+      assert_builtin_expression_evaluation_result(:>, [RDF.false, RDF.true], RDF.false)
+
+      assert_builtin_call_result(:>, [RDF.true, RDF.false], RDF.true)
+      assert_builtin_expression_evaluation_result(:>, [RDF.true, RDF.false], RDF.true)
+    end
+
+    test "with numbers: left number smaller than right number" do
+      Enum.each @ordered_numbers, fn {left, right} ->
+        assert_builtin_call_result(:>, [left, right], RDF.false)
+        assert_builtin_expression_evaluation_result(:>, [left, right], RDF.false)
+      end
+    end
+
+    test "with numbers: left number greater than right number" do
+      Enum.each @ordered_numbers, fn {left, right} ->
+        assert_builtin_call_result(:>, [right, left], RDF.true)
+        assert_builtin_expression_evaluation_result(:>, [right, left], RDF.true)
+      end
+    end
+
+    test "with date_times: left date_time before than right date_time" do
+      Enum.each @ordered_datetimes, fn {left, right} ->
+        assert_builtin_call_result(:>, [left, right], RDF.false)
+        assert_builtin_expression_evaluation_result(:>, [left, right], RDF.false)
+      end
+    end
+
+    test "with date_times: left date_time after than right date_time" do
+      Enum.each @ordered_datetimes, fn {left, right} ->
+        assert_builtin_call_result(:>, [right, left], RDF.true)
+        assert_builtin_expression_evaluation_result(:>, [right, left], RDF.true)
+      end
+    end
+
+    test "with strings: left string lexicographical before right string" do
+      Enum.each @ordered_strings, fn {left, right} ->
+        assert_builtin_call_result(:>, [left, right], RDF.false)
+        assert_builtin_expression_evaluation_result(:>, [left, right], RDF.false)
+      end
+    end
+
+    test "with strings: left string lexicographical after right string" do
+      Enum.each @ordered_strings, fn {left, right} ->
+        assert_builtin_call_result(:>, [right, left], RDF.true)
+        assert_builtin_expression_evaluation_result(:>, [right, left], RDF.true)
+      end
+    end
+
+    test "with equal literals" do
+      Enum.each @term_equal_rdf_literals ++ @value_equal_rdf_literals, fn {left, right} ->
+          assert_builtin_call_result(:>, [left, right], RDF.false)
+          assert_builtin_expression_evaluation_result(:>, [left, right], RDF.false)
+        end
+    end
+
+    test "with incomparable literals" do
+      Enum.each @incomparable_literals, fn {left, right} ->
+        assert_builtin_call_result(:>, [left, right], :error)
+        assert_builtin_expression_evaluation_result(:>, [left, right], :error)
+      end
+    end
+  end
+
+  describe ">= operator" do
+    test "with booleans" do
+      assert_builtin_call_result(:>=, [RDF.false, RDF.true], RDF.false)
+      assert_builtin_expression_evaluation_result(:>=, [RDF.false, RDF.true], RDF.false)
+
+      assert_builtin_call_result(:>=, [RDF.true, RDF.false], RDF.true)
+      assert_builtin_expression_evaluation_result(:>=, [RDF.true, RDF.false], RDF.true)
+    end
+
+    test "with numbers: left number smaller than right number" do
+      Enum.each @ordered_numbers, fn {left, right} ->
+        assert_builtin_call_result(:>=, [left, right], RDF.false)
+        assert_builtin_expression_evaluation_result(:>=, [left, right], RDF.false)
+      end
+    end
+
+    test "with numbers: left number greater than right number" do
+      Enum.each @ordered_numbers, fn {left, right} ->
+        assert_builtin_call_result(:>=, [right, left], RDF.true)
+        assert_builtin_expression_evaluation_result(:>=, [right, left], RDF.true)
+      end
+    end
+
+    test "with date_times: left date_time before than right date_time" do
+      Enum.each @ordered_datetimes, fn {left, right} ->
+        assert_builtin_call_result(:>=, [left, right], RDF.false)
+        assert_builtin_expression_evaluation_result(:>=, [left, right], RDF.false)
+      end
+    end
+
+    test "with date_times: left date_time after than right date_time" do
+      Enum.each @ordered_datetimes, fn {left, right} ->
+        assert_builtin_call_result(:>=, [right, left], RDF.true)
+        assert_builtin_expression_evaluation_result(:>=, [right, left], RDF.true)
+      end
+    end
+
+    test "with strings: left string lexicographical before right string" do
+      Enum.each @ordered_strings, fn {left, right} ->
+        assert_builtin_call_result(:>=, [left, right], RDF.false)
+        assert_builtin_expression_evaluation_result(:>=, [left, right], RDF.false)
+      end
+    end
+
+    test "with strings: left string lexicographical after right string" do
+      Enum.each @ordered_strings, fn {left, right} ->
+        assert_builtin_call_result(:>=, [right, left], RDF.true)
+        assert_builtin_expression_evaluation_result(:>=, [right, left], RDF.true)
+      end
+    end
+
+    test "with equal literals" do
+      Enum.each @term_equal_rdf_literals ++ @value_equal_rdf_literals, fn {left, right} ->
+          assert_builtin_call_result(:>=, [left, right], RDF.true)
+          assert_builtin_expression_evaluation_result(:>=, [left, right], RDF.true)
+        end
+    end
+
+    test "with incomparable literals" do
+      Enum.each @incomparable_literals, fn {left, right} ->
+        assert_builtin_call_result(:>=, [left, right], :error)
+        assert_builtin_expression_evaluation_result(:>=, [left, right], :error)
+      end
+    end
+  end
+
+
+
   test "! operator" do
     [
       {RDF.true,               RDF.false},
@@ -313,7 +612,6 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   defp assert_builtin_expression_evaluation_result(builtin, args, expected) do
     result = Expression.evaluate(%FunctionCall.Builtin{name: builtin, arguments: args}, nil)
-    # TODO: use the SPARQL expression representation in the error message
     assert result == expected, """
       expected SPARQL builtin expression evaluation #{builtin}(\n\t#{args |> Stream.map(&inspect/1) |> Enum.join(",\n\t")})
       to be:   #{inspect expected}

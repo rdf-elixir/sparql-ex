@@ -35,6 +35,64 @@ defmodule SPARQL.Functions.Builtins do
   end
 
   @doc """
+  Less-than operator.
+
+  see
+  - <https://www.w3.org/TR/sparql11-query/#OperatorMapping>
+  """
+  def call(:<, [%Literal{} = left, %Literal{} = right]) do
+    cond do
+      RDF.Numeric.type?(left.datatype) and RDF.Numeric.type?(right.datatype) ->
+        ebv(left.value < right.value)
+
+      left.datatype == right.datatype ->
+        ebv(left.value < right.value)
+
+      true ->
+        :error
+    end
+  end
+
+  def call(:<, _), do: :error
+
+  @doc """
+  Greater-than operator.
+
+  see
+  - <https://www.w3.org/TR/sparql11-query/#OperatorMapping>
+  """
+  def call(:>, [arg1, arg2]) do
+    call(:<, [arg2, arg1])
+  end
+
+  @doc """
+  Greater-or-equal operator.
+
+  see
+  - <https://www.w3.org/TR/sparql11-query/#OperatorMapping>
+  """
+  def call(:>=, args) do
+    case call(:>, args) do
+      %RDF.Literal{value: false} -> call(:=, args)
+      true_or_error              -> true_or_error
+    end
+  end
+
+  @doc """
+  Less-or-equal operator.
+
+  see
+  - <https://www.w3.org/TR/sparql11-query/#OperatorMapping>
+  """
+  def call(:<=, args) do
+    case call(:<, args) do
+      %RDF.Literal{value: false} -> call(:=, args)
+      true_or_error              -> true_or_error
+    end
+  end
+
+
+  @doc """
   Logical `NOT`
 
   Returns `RDF.true` if the effective boolean value of the given argument is
