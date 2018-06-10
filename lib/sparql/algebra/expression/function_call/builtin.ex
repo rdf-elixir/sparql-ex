@@ -73,6 +73,44 @@ defmodule SPARQL.Algebra.FunctionCall.Builtin do
     |> Enum.find(:error, &(&1 != :error))
   end
 
+  def invoke(:IN, [lhs, expression_list], data) do
+    case FunctionCall.evaluate_argument(lhs, data) do
+      :error -> :error
+      value ->
+        expression_list
+        |> Enum.reduce_while(RDF.false, fn expression, acc ->
+             case FunctionCall.evaluate_argument(expression, data) do
+               :error -> {:cont, :error}
+               result ->
+                 case RDF.Term.equal_value?(value, result) do
+                   true  -> {:halt, RDF.true}
+                   false -> {:cont, acc}
+                   _     -> {:cont, :error}
+                 end
+             end
+           end)
+    end
+  end
+
+  def invoke(:NOT_IN, [lhs, expression_list], data) do
+    case FunctionCall.evaluate_argument(lhs, data) do
+      :error -> :error
+      value ->
+        expression_list
+        |> Enum.reduce_while(RDF.true, fn expression, acc ->
+             case FunctionCall.evaluate_argument(expression, data) do
+               :error -> {:cont, :error}
+               result ->
+                 case RDF.Term.equal_value?(value, result) do
+                   true  -> {:halt, RDF.false}
+                   false -> {:cont, acc}
+                   _     -> {:cont, :error}
+                 end
+             end
+           end)
+    end
+  end
+
   def invoke(name, arguments, data) do
     with {:ok, evaluated_arguments} <-
             FunctionCall.evaluate_arguments(arguments, data)

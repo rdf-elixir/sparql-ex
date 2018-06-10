@@ -601,6 +601,43 @@ defmodule SPARQL.Functions.BuiltinsTest do
        end)
   end
 
+  test "IN operator" do
+    [
+      {RDF.integer(2), [RDF.integer(1), RDF.integer(2), RDF.integer(3)], RDF.true},
+      {RDF.integer(2), [], RDF.false},
+      {RDF.integer(2), [~I<http://example/iri>, RDF.string("str"), RDF.double(2.0)], RDF.true},
+
+      {RDF.integer(2), [:error, RDF.integer(2)], RDF.true},
+      {RDF.integer(2), [RDF.integer(2), :error], RDF.true},
+      {RDF.integer(2), [RDF.integer(3), :error], :error},
+
+      {:error, [RDF.integer(2)], :error},
+      {:error, [:error, RDF.integer(2)], :error},
+    ]
+    |> Enum.each(fn {left, right, result} ->
+         assert_builtin_expression_evaluation_result(:IN, [left, right], result)
+       end)
+  end
+
+  test "NOT IN operator" do
+    [
+      {RDF.integer(2), [RDF.integer(1), RDF.integer(2), RDF.integer(3)],	RDF.false},
+      {RDF.integer(2), [],	RDF.true},
+      {RDF.integer(2), [~I<http://example/iri>, RDF.string("str"), RDF.double(2.0)],	RDF.false},
+
+      {RDF.integer(2), [:error, RDF.integer(2)], RDF.false},
+      {RDF.integer(2), [RDF.integer(2), :error], RDF.false},
+      {RDF.integer(2), [RDF.integer(3), :error], :error},
+
+      {:error, [RDF.integer(2)], :error},
+      {:error, [:error, RDF.integer(2)], :error},
+    ]
+    |> Enum.each(fn {left, right, result} ->
+         assert_builtin_expression_evaluation_result(:NOT_IN, [left, right], result)
+       end)
+  end
+
+
   defp assert_builtin_call_result(builtin, args, expected) do
     result = Builtins.call(builtin, args)
     assert result == expected, """
