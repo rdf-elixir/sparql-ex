@@ -638,6 +638,69 @@ defmodule SPARQL.Functions.BuiltinsTest do
   end
 
 
+  test "numeric + operator" do
+    [
+      {RDF.integer(1),  RDF.integer(2),    RDF.integer(3)},
+      {RDF.integer(42), RDF.decimal(3.14), RDF.decimal(45.14)},
+      {RDF.integer(42), RDF.double(3.14),  RDF.double(45.14)},
+
+      {RDF.integer(1), :error, :error},
+      {:error, RDF.integer(1), :error},
+      {:error, :error, :error},
+    ]
+    |> Enum.each(fn {left, right, result} ->
+      assert_builtin_call_result(:+, [left, right], result)
+      assert_builtin_expression_evaluation_result(:+, [left, right], result)
+    end)
+  end
+
+  test "numeric - operator" do
+    [
+      {RDF.integer(3),  RDF.integer(2),    RDF.integer(1)},
+      {RDF.integer(42), RDF.decimal(3.14), RDF.decimal(38.86)},
+      {RDF.integer(42), RDF.double(3.14),  RDF.double(38.86)},
+
+      {RDF.integer(1), :error, :error},
+      {:error, RDF.integer(1), :error},
+      {:error, :error, :error},
+    ]
+    |> Enum.each(fn {left, right, result} ->
+      assert_builtin_call_result(:-, [left, right], result)
+      assert_builtin_expression_evaluation_result(:-, [left, right], result)
+    end)
+  end
+
+  test "numeric * operator" do
+    [
+      {RDF.integer(2),   RDF.integer(3),   RDF.integer(6)},
+      {RDF.decimal(1.5), RDF.double(3.14), RDF.double(4.71)},
+
+      {RDF.integer(1), :error, :error},
+      {:error, RDF.integer(1), :error},
+      {:error, :error, :error},
+    ]
+    |> Enum.each(fn {left, right, result} ->
+      assert_builtin_call_result(:*, [left, right], result)
+      assert_builtin_expression_evaluation_result(:*, [left, right], result)
+    end)
+  end
+
+  test "numeric / operator" do
+    [
+      {RDF.integer(3),   RDF.integer(2), RDF.decimal(1.5)},
+      {RDF.decimal(1.5), RDF.double(2),  RDF.double(0.75)},
+
+      {RDF.integer(1), :error, :error},
+      {:error, RDF.integer(1), :error},
+      {:error, :error, :error},
+    ]
+    |> Enum.each(fn {left, right, result} ->
+      assert_builtin_call_result(:/, [left, right], result)
+      assert_builtin_expression_evaluation_result(:/, [left, right], result)
+    end)
+  end
+
+
   defp assert_builtin_call_result(builtin, args, expected) do
     result = Builtins.call(builtin, args)
     assert result == expected, """

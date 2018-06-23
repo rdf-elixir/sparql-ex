@@ -105,6 +105,43 @@ defmodule SPARQL.Functions.Builtins do
   end
 
 
+  @doc """
+  Numeric addition.
+
+  see <http://www.w3.org/TR/xpath-functions/#func-numeric-add>
+  """
+  def call(:+, [left, right]) do
+    RDF.Numeric.add(left, right) || :error
+  end
+
+  @doc """
+  Numeric subtraction.
+
+  see <http://www.w3.org/TR/xpath-functions/#func-numeric-subtract>
+  """
+  def call(:-, [left, right]) do
+    RDF.Numeric.subtract(left, right) || :error
+  end
+
+  @doc """
+  Numeric multiplication.
+
+  see <http://www.w3.org/TR/xpath-functions/#func-numeric-multiply>
+  """
+  def call(:*, [left, right]) do
+    RDF.Numeric.multiply(left, right) || :error
+  end
+
+  @doc """
+  Numeric division.
+
+  see <http://www.w3.org/TR/xpath-functions/#func-numeric-divide>
+  """
+  def call(:/, [left, right]) do
+    RDF.Numeric.divide(left, right) || :error
+  end
+
+
   # TODO: This just a preliminary implementation
   def call(:STR, [literal]) do
     literal |> Literal.lexical() |> Literal.new()
