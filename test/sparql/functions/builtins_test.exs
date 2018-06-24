@@ -754,6 +754,32 @@ defmodule SPARQL.Functions.BuiltinsTest do
     assert_builtin_expression_evaluation_result(:isBlank, [:error], :error)
   end
 
+  test "isLiteral function" do
+    [
+      RDF.literal("foo"),
+      RDF.literal("foo", language: "en"),
+      RDF.integer(42),
+    ]
+    |> Enum.each(fn positive_example ->
+      assert_builtin_call_result(:isLiteral, [positive_example], RDF.true)
+      assert_builtin_expression_evaluation_result(:isLiteral, [positive_example], RDF.true)
+    end)
+
+    [
+      RDF.iri("http://example.com/foo"),
+      RDF.bnode("foo"),
+      "foo",
+      42,
+    ]
+    |> Enum.each(fn negative_example ->
+      assert_builtin_call_result(:isLiteral, [negative_example], RDF.false)
+      assert_builtin_expression_evaluation_result(:isLiteral, [negative_example], RDF.false)
+    end)
+
+    assert_builtin_call_result(:isLiteral, [:error], :error)
+    assert_builtin_expression_evaluation_result(:isLiteral, [:error], :error)
+  end
+
 
   defp assert_builtin_call_result(builtin, args, expected) do
     result = Builtins.call(builtin, args)

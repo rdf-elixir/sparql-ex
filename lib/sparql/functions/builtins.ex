@@ -166,6 +166,15 @@ defmodule SPARQL.Functions.Builtins do
   def call(:isBlank, [:error]),           do: :error
   def call(:isBlank, _),                  do: RDF.false
 
+  @doc """
+  Checks if the given argument is a RDF literal.
+
+  see <https://www.w3.org/TR/sparql11-query/#func-isLiteral>
+  """
+  def call(:isLiteral, [%RDF.Literal{}]), do: RDF.true
+  def call(:isLiteral, [:error]),         do: :error
+  def call(:isLiteral, _),                do: RDF.false
+
 
   # TODO: This just a preliminary implementation
   def call(:STR, [literal]) do
