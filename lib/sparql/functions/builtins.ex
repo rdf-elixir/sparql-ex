@@ -175,6 +175,21 @@ defmodule SPARQL.Functions.Builtins do
   def call(:isLiteral, [:error]),         do: :error
   def call(:isLiteral, _),                do: RDF.false
 
+  @doc """
+  Checks if the given argument is a RDF literal with a numeric datatype.
+
+  see <https://www.w3.org/TR/sparql11-query/#func-isNumeric>
+  """
+  def call(:isNumeric, [%RDF.Literal{datatype: datatype} = literal]) do
+    if RDF.Numeric.type?(datatype) and RDF.Literal.valid?(literal) do
+      RDF.true
+    else
+      RDF.false
+    end
+  end
+  def call(:isNumeric, [:error]),         do: :error
+  def call(:isNumeric, _),                do: RDF.false
+
 
   # TODO: This just a preliminary implementation
   def call(:STR, [literal]) do
