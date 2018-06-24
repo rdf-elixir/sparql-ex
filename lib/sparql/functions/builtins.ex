@@ -157,6 +157,15 @@ defmodule SPARQL.Functions.Builtins do
   """
   def call(:isURI, args), do: call(:isIRI, args)
 
+  @doc """
+  Checks if the given argument is a blank node.
+
+  see <https://www.w3.org/TR/sparql11-query/#func-isBlank>
+  """
+  def call(:isBlank, [%RDF.BlankNode{}]), do: RDF.true
+  def call(:isBlank, [:error]),           do: :error
+  def call(:isBlank, _),                  do: RDF.false
+
 
   # TODO: This just a preliminary implementation
   def call(:STR, [literal]) do

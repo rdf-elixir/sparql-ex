@@ -712,8 +712,8 @@ defmodule SPARQL.Functions.BuiltinsTest do
     end)
 
     [
-      42,
-      "foo",
+      RDF.bnode("http://example.com/foo"),
+      RDF.literal("http://example.com/foo"),
       "http://example.com/foo",
     ]
     |> Enum.each(fn negative_example ->
@@ -727,6 +727,31 @@ defmodule SPARQL.Functions.BuiltinsTest do
     assert_builtin_expression_evaluation_result(:isIRI, [:error], :error)
     assert_builtin_call_result(:isURI, [:error], :error)
     assert_builtin_expression_evaluation_result(:isURI, [:error], :error)
+  end
+
+  test "isBlank function" do
+    [
+      RDF.bnode("foo"),
+      RDF.bnode(42),
+      RDF.bnode(),
+    ]
+    |> Enum.each(fn positive_example ->
+      assert_builtin_call_result(:isBlank, [positive_example], RDF.true)
+      assert_builtin_expression_evaluation_result(:isBlank, [positive_example], RDF.true)
+    end)
+
+    [
+      RDF.literal("foo"),
+      RDF.iri("foo"),
+      "foo",
+    ]
+    |> Enum.each(fn negative_example ->
+      assert_builtin_call_result(:isBlank, [negative_example], RDF.false)
+      assert_builtin_expression_evaluation_result(:isBlank, [negative_example], RDF.false)
+    end)
+
+    assert_builtin_call_result(:isBlank, [:error], :error)
+    assert_builtin_expression_evaluation_result(:isBlank, [:error], :error)
   end
 
 
