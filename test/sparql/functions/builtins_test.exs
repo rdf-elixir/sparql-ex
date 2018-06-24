@@ -700,6 +700,35 @@ defmodule SPARQL.Functions.BuiltinsTest do
     end)
   end
 
+  test "isIRI/isURI function" do
+    [
+      RDF.iri("http://example.com/foo"),
+    ]
+    |> Enum.each(fn positive_example ->
+      assert_builtin_call_result(:isIRI, [positive_example], RDF.true)
+      assert_builtin_expression_evaluation_result(:isIRI, [positive_example], RDF.true)
+      assert_builtin_call_result(:isURI, [positive_example], RDF.true)
+      assert_builtin_expression_evaluation_result(:isURI, [positive_example], RDF.true)
+    end)
+
+    [
+      42,
+      "foo",
+      "http://example.com/foo",
+    ]
+    |> Enum.each(fn negative_example ->
+      assert_builtin_call_result(:isIRI, [negative_example], RDF.false)
+      assert_builtin_expression_evaluation_result(:isIRI, [negative_example], RDF.false)
+      assert_builtin_call_result(:isURI, [negative_example], RDF.false)
+      assert_builtin_expression_evaluation_result(:isURI, [negative_example], RDF.false)
+    end)
+
+    assert_builtin_call_result(:isIRI, [:error], :error)
+    assert_builtin_expression_evaluation_result(:isIRI, [:error], :error)
+    assert_builtin_call_result(:isURI, [:error], :error)
+    assert_builtin_expression_evaluation_result(:isURI, [:error], :error)
+  end
+
 
   defp assert_builtin_call_result(builtin, args, expected) do
     result = Builtins.call(builtin, args)

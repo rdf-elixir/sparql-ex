@@ -141,6 +141,22 @@ defmodule SPARQL.Functions.Builtins do
     RDF.Numeric.divide(left, right) || :error
   end
 
+  @doc """
+  Checks if the given argument is an IRI.
+
+  see <https://www.w3.org/TR/sparql11-query/#func-isIRI>
+  """
+  def call(:isIRI, [%RDF.IRI{}]), do: RDF.true
+  def call(:isIRI, [:error]),     do: :error
+  def call(:isIRI, _),            do: RDF.false
+
+  @doc """
+  Checks if the given argument is an IRI.
+
+  see <https://www.w3.org/TR/sparql11-query/#func-isIRI>
+  """
+  def call(:isURI, args), do: call(:isIRI, args)
+
 
   # TODO: This just a preliminary implementation
   def call(:STR, [literal]) do
