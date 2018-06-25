@@ -190,6 +190,20 @@ defmodule SPARQL.Functions.Builtins do
   def call(:isNumeric, [:error]),         do: :error
   def call(:isNumeric, _),                do: RDF.false
 
+  @doc """
+  Returns the lexical form of a literal or the codepoint representation of an IRI.
+
+  It returns the empty string for all blank nodes.
+  (The W3C spec seems to leave the handling of blank nodes open, so we implemented
+  the behaviour mentioned in [DuCharme2013], which usually is oriented on ARQ).
+
+  see <https://www.w3.org/TR/sparql11-query/#func-str>
+  """
+  def call(:str, [%RDF.Literal{} = literal]), do: literal |> to_string() |> RDF.string()
+  def call(:str, [%RDF.IRI{} = iri]),         do: iri |> to_string() |> RDF.string()
+  def call(:str, [%RDF.BlankNode{}]),         do: RDF.string("")
+  def call(:str, [_]),                        do: :error
+
 
   # TODO: This just a preliminary implementation
   def call(:STR, [literal]) do

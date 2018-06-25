@@ -810,6 +810,26 @@ defmodule SPARQL.Functions.BuiltinsTest do
     assert_builtin_expression_evaluation_result(:isNumeric, [:error], :error)
   end
 
+  test "str function" do
+    [
+      {RDF.string("foo"), RDF.string("foo")},
+      {RDF.lang_string("foo", language: "en"), RDF.string("foo")},
+      {RDF.integer(42), RDF.string("42")},
+      {RDF.double("3.14"), RDF.string("3.14")},
+      {RDF.literal("42", datatype: XSD.nonPositiveInteger), RDF.string("42")},
+
+      {RDF.iri("http://example.com/"), RDF.string("http://example.com/")},
+
+      {RDF.bnode("foo"), RDF.string("")},
+
+      {:error, :error}
+    ]
+    |> Enum.each(fn {arg, result} ->
+      assert_builtin_call_result(:str, [arg], result)
+      assert_builtin_expression_evaluation_result(:str, [arg], result)
+    end)
+  end
+
 
   defp assert_builtin_call_result(builtin, args, expected) do
     result = Builtins.call(builtin, args)
