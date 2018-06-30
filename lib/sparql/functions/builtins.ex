@@ -193,9 +193,8 @@ defmodule SPARQL.Functions.Builtins do
   @doc """
   Returns the lexical form of a literal or the codepoint representation of an IRI.
 
-  It returns the empty string for all blank nodes.
-  (The W3C spec seems to leave the handling of blank nodes open, so we implemented
-  the behaviour mentioned in [DuCharme2013], which usually is oriented on ARQ).
+  It returns the empty string for all blank nodes, thereby following the behavior
+  mentioned in [DuCharme2013, p. 156].
 
   see <https://www.w3.org/TR/sparql11-query/#func-str>
   """
@@ -203,6 +202,18 @@ defmodule SPARQL.Functions.Builtins do
   def call(:str, [%RDF.IRI{} = iri]),         do: iri |> to_string() |> RDF.string()
   def call(:str, [%RDF.BlankNode{}]),         do: RDF.string("")
   def call(:str, [_]),                        do: :error
+
+  @doc """
+  Returns the language tag of language tagged literal.
+
+  It returns `~L""` if the given literal has no language tag. Note that the RDF
+  data model does not include literals with an empty language tag.
+
+  see <https://www.w3.org/TR/sparql11-query/#func-lang>
+  """
+  def call(:lang, [%RDF.Literal{language: language}]), do: language |> to_string() |> RDF.string()
+  def call(:lang, [%RDF.Literal{}]),                   do: RDF.string("")
+  def call(:lang, [_]),                                do: :error
 
 
   # TODO: This just a preliminary implementation

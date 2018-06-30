@@ -830,6 +830,24 @@ defmodule SPARQL.Functions.BuiltinsTest do
     end)
   end
 
+  test "lang function" do
+    [
+      {RDF.lang_string("foo", language: "en"), RDF.string("en")},
+
+      {RDF.string("foo"), ~L""},
+
+      {RDF.integer(42), ~L""},
+
+      {RDF.iri("http://example.com/"), :error},
+      {RDF.bnode("foo"), :error},
+      {:error, :error}
+    ]
+    |> Enum.each(fn {arg, result} ->
+      assert_builtin_call_result(:lang, [arg], result)
+      assert_builtin_expression_evaluation_result(:lang, [arg], result)
+    end)
+  end
+
 
   defp assert_builtin_call_result(builtin, args, expected) do
     result = Builtins.call(builtin, args)
