@@ -223,6 +223,16 @@ defmodule SPARQL.Functions.Builtins do
   def call(:datatype, [%RDF.Literal{datatype: datatype}]), do: datatype
   def call(:datatype, [_]),                                do: :error
 
+  @doc """
+  Constructs a literal with lexical form and type as specified by the arguments.
+
+  see <https://www.w3.org/TR/sparql11-query/#func-strdt>
+  """
+  def call(:STRDT, [%RDF.Literal{} = literal, %RDF.IRI{} = datatype]) do
+    RDF.Literal.new(to_string(literal), datatype: datatype)
+  end
+  def call(:STRDT, [_, _]), do: :error
+
 
   # TODO: This just a preliminary implementation
   def call(:STR, [literal]) do

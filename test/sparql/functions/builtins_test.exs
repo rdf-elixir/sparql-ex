@@ -865,6 +865,29 @@ defmodule SPARQL.Functions.BuiltinsTest do
     end)
   end
 
+  test "STRDT function" do
+    [
+      {RDF.string("123"),  XSD.integer, RDF.integer("123")},
+      {RDF.string("iiii"), RDF.iri("http://example/romanNumeral"),
+        RDF.literal("iiii", datatype: RDF.iri("http://example/romanNumeral"))},
+
+      {RDF.integer(123), XSD.string, RDF.string("123")},
+      {RDF.integer(123), XSD.double, RDF.double("123")},
+
+      # TODO: Should this be an error? An rdf:langString with an empty language is invalid.
+      {RDF.string("foo"), RDF.langString,
+        %RDF.Literal{value: "foo", datatype: ~I<http://www.w3.org/1999/02/22-rdf-syntax-ns#langString>, language: nil}},
+
+      {RDF.string("123"), :error, :error},
+      {:error, XSD.integer, :error},
+      {:error, :error, :error},
+    ]
+    |> Enum.each(fn {literal, datatype, result} ->
+      assert_builtin_call_result(:STRDT, [literal, datatype], result)
+      assert_builtin_expression_evaluation_result(:STRDT, [literal, datatype], result)
+    end)
+  end
+
 
   defp assert_builtin_call_result(builtin, args, expected) do
     result = Builtins.call(builtin, args)
