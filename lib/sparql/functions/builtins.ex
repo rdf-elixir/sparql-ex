@@ -215,6 +215,14 @@ defmodule SPARQL.Functions.Builtins do
   def call(:lang, [%RDF.Literal{}]),                   do: RDF.string("")
   def call(:lang, [_]),                                do: :error
 
+  @doc """
+  Returns the datatype IRI of a literal.
+
+  see <https://www.w3.org/TR/sparql11-query/#func-datatype>
+  """
+  def call(:datatype, [%RDF.Literal{datatype: datatype}]), do: datatype
+  def call(:datatype, [_]),                                do: :error
+
 
   # TODO: This just a preliminary implementation
   def call(:STR, [literal]) do

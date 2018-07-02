@@ -848,6 +848,23 @@ defmodule SPARQL.Functions.BuiltinsTest do
     end)
   end
 
+  test "datatype function" do
+    [
+      {RDF.integer(42),                        XSD.integer},
+      {RDF.string("foo"),                      XSD.string},
+      {RDF.lang_string("foo", language: "en"), RDF.langString},
+      {~L"foo",                                XSD.string},
+
+      {RDF.iri("http://example.com/"), :error},
+      {RDF.bnode("foo"), :error},
+      {:error, :error}
+    ]
+    |> Enum.each(fn {arg, result} ->
+      assert_builtin_call_result(:datatype, [arg], result)
+      assert_builtin_expression_evaluation_result(:datatype, [arg], result)
+    end)
+  end
+
 
   defp assert_builtin_call_result(builtin, args, expected) do
     result = Builtins.call(builtin, args)
