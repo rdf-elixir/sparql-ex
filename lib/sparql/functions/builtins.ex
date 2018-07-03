@@ -1,7 +1,9 @@
 defmodule SPARQL.Functions.Builtins do
 
   alias RDF.{Literal, Boolean}
+  alias RDF.NS.XSD
 
+  @xsd_string XSD.string
 
   @doc """
   Value equality
@@ -232,6 +234,22 @@ defmodule SPARQL.Functions.Builtins do
     RDF.Literal.new(to_string(literal), datatype: datatype)
   end
   def call(:STRDT, [_, _]), do: :error
+
+  @doc """
+  Constructs a literal with lexical form and language tag as specified by the arguments.
+
+  see <https://www.w3.org/TR/sparql11-query/#func-strlang>
+  """
+  def call(:STRLANG, [%RDF.Literal{datatype: @xsd_string} = lexical_form_literal,
+                      %RDF.Literal{datatype: @xsd_string} = language_literal]) do
+    language = language_literal |> to_string() |> String.trim()
+    if language != "" do
+      RDF.LangString.new(to_string(lexical_form_literal), language: language)
+    else
+      :error
+    end
+  end
+  def call(:STRLANG, [_, _]), do: :error
 
 
   # TODO: This just a preliminary implementation

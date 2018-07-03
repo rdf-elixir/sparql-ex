@@ -888,6 +888,28 @@ defmodule SPARQL.Functions.BuiltinsTest do
     end)
   end
 
+  test "STRLANG function" do
+    valid_language = RDF.string("en")
+    [
+      {RDF.string("foo"), valid_language, RDF.lang_string("foo", language: "en")},
+
+      {RDF.lang_string("foo"), valid_language, :error},
+      {RDF.integer(42),        valid_language, :error},
+      {:error,                 valid_language, :error},
+
+      {RDF.string("foo"), RDF.string(""),         :error},
+      {RDF.string("foo"), RDF.lang_string("en"),  :error},
+      {RDF.string("foo"), RDF.integer(42),        :error},
+      {RDF.string("foo"), :error,                 :error},
+
+      {:error, :error, :error},
+    ]
+    |> Enum.each(fn {literal, language, result} ->
+      assert_builtin_call_result(:STRLANG, [literal, language], result)
+      assert_builtin_expression_evaluation_result(:STRLANG, [literal, language], result)
+    end)
+  end
+
 
   defp assert_builtin_call_result(builtin, args, expected) do
     result = Builtins.call(builtin, args)
