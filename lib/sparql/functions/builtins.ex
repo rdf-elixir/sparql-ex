@@ -251,6 +251,30 @@ defmodule SPARQL.Functions.Builtins do
   end
   def call(:STRLANG, [_, _]), do: :error
 
+  @doc """
+  Constructs an IRI from the given string argument.
+
+  It constructs an IRI by resolving the string argument (see RFC 3986 and RFC 3987
+  or any later RFC that superceeds RFC 3986 or RFC 3987). The IRI is resolved
+  against the base IRI of the query and must result in an absolute IRI.
+
+  see <https://www.w3.org/TR/sparql11-query/#func-iri>
+  """
+  def call(:IRI, [%RDF.Literal{datatype: @xsd_string} = literal]) do
+    literal |> to_string() |> RDF.IRI.new()
+  end
+  def call(:IRI, [%RDF.IRI{} = iri]), do: iri
+  def call(:IRI, [_]),                do: :error
+
+  @doc """
+  Checks if the given argument is an IRI.
+
+  Alias for `IRI`.
+
+  see <https://www.w3.org/TR/sparql11-query/#func-isIRI>
+  """
+  def call(:URI, args), do: call(:IRI, args)
+
 
   # TODO: This just a preliminary implementation
   def call(:STR, [literal]) do

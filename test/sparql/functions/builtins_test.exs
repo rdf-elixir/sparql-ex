@@ -911,6 +911,34 @@ defmodule SPARQL.Functions.BuiltinsTest do
   end
 
 
+  describe "IRI/URI function" do
+    test "simple cases" do
+      [
+        {RDF.iri("http://example/"),    RDF.iri("http://example/")},
+        {RDF.string("http://example/"), RDF.iri("http://example/")},
+        {~L"http://example/",           RDF.iri("http://example/")},
+
+        {RDF.lang_string("http://example/", language: "en"), :error},
+        {RDF.integer(42),  :error},
+        {RDF.bnode("foo"), :error},
+        {:error, :error}
+      ]
+      |> Enum.each(fn {arg, result} ->
+        assert_builtin_call_result(:IRI, [arg], result)
+        assert_builtin_expression_evaluation_result(:IRI, [arg], result)
+        assert_builtin_call_result(:URI, [arg], result)
+        assert_builtin_expression_evaluation_result(:URI, [arg], result)
+      end)
+    end
+
+    @tag skip: "TODO: How do we get the base IRI here?"
+    test "relative IRIs"
+
+    @tag skip: "TODO: implement and use RDF.IRI.normalize/1"
+    test "normalization"
+
+  end
+
   defp assert_builtin_call_result(builtin, args, expected) do
     result = Builtins.call(builtin, args)
     assert result == expected, """
