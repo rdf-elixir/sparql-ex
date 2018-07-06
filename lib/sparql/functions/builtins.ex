@@ -275,6 +275,29 @@ defmodule SPARQL.Functions.Builtins do
   """
   def call(:URI, args), do: call(:IRI, args)
 
+  @doc """
+  Return a fresh IRI from the UUID URN scheme.
+
+  Each call of UUID() returns a different UUID.
+
+  Currently, UUID v4 ids according to RFC 4122 are produced.
+
+  see <https://www.w3.org/TR/sparql11-query/#func-uuid>
+  """
+  def call(:UUID, []), do: uuid(:urn) |> RDF.IRI.new()
+  def call(:UUID, _),  do: :error
+
+  @doc """
+  Return a string literal that is the scheme specific part of UUID.
+
+  Currently, UUID v4 ids according to RFC 4122 are produced.
+
+  see <https://www.w3.org/TR/sparql11-query/#func-struuid>
+  """
+  def call(:STRUUID, []), do: uuid(:default) |> RDF.string()
+  def call(:STRUUID, _),  do: :error
+
+
 
   # TODO: This just a preliminary implementation
   def call(:STR, [literal]) do
@@ -288,6 +311,8 @@ defmodule SPARQL.Functions.Builtins do
 
   defp ebv(value),    do: Boolean.ebv(value) || :error
   defp fn_not(value), do: Boolean.fn_not(value) || :error
+
+  defp uuid(format), do: UUID.uuid4(format)
 
 
 end

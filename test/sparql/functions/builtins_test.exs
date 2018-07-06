@@ -939,6 +939,22 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   end
 
+  test "UUID function" do
+    assert %RDF.IRI{value: "urn:uuid:" <> _} = uuid1 = Builtins.call(:UUID, [])
+    assert %RDF.IRI{value: "urn:uuid:" <> _} = uuid2 = Builtins.call(:UUID, [])
+    assert uuid1 != uuid2
+    assert %RDF.IRI{value: "urn:uuid:" <> _} =
+             Expression.evaluate(%FunctionCall.Builtin{name: :UUID, arguments: []}, nil)
+  end
+
+  test "STRUUID function" do
+    assert %RDF.Literal{datatype: @xsd_string} = uuid1 = Builtins.call(:STRUUID, [])
+    assert %RDF.Literal{datatype: @xsd_string} = uuid2 = Builtins.call(:STRUUID, [])
+    assert uuid1 != uuid2
+    assert %RDF.Literal{datatype: @xsd_string} =
+             Expression.evaluate(%FunctionCall.Builtin{name: :STRUUID, arguments: []}, nil)
+  end
+
   defp assert_builtin_call_result(builtin, args, expected) do
     result = Builtins.call(builtin, args)
     assert result == expected, """
