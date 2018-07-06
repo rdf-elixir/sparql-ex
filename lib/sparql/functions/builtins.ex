@@ -203,7 +203,7 @@ defmodule SPARQL.Functions.Builtins do
   def call(:str, [%RDF.Literal{} = literal]), do: literal |> to_string() |> RDF.string()
   def call(:str, [%RDF.IRI{} = iri]),         do: iri |> to_string() |> RDF.string()
   def call(:str, [%RDF.BlankNode{}]),         do: RDF.string("")
-  def call(:str, [_]),                        do: :error
+  def call(:str, _),                          do: :error
 
   @doc """
   Returns the language tag of language tagged literal.
@@ -215,7 +215,7 @@ defmodule SPARQL.Functions.Builtins do
   """
   def call(:lang, [%RDF.Literal{language: language}]), do: language |> to_string() |> RDF.string()
   def call(:lang, [%RDF.Literal{}]),                   do: RDF.string("")
-  def call(:lang, [_]),                                do: :error
+  def call(:lang, _),                                  do: :error
 
   @doc """
   Returns the datatype IRI of a literal.
@@ -223,7 +223,7 @@ defmodule SPARQL.Functions.Builtins do
   see <https://www.w3.org/TR/sparql11-query/#func-datatype>
   """
   def call(:datatype, [%RDF.Literal{datatype: datatype}]), do: datatype
-  def call(:datatype, [_]),                                do: :error
+  def call(:datatype, _),                                  do: :error
 
   @doc """
   Constructs a literal with lexical form and type as specified by the arguments.
@@ -233,7 +233,7 @@ defmodule SPARQL.Functions.Builtins do
   def call(:STRDT, [%RDF.Literal{} = literal, %RDF.IRI{} = datatype]) do
     RDF.Literal.new(to_string(literal), datatype: datatype)
   end
-  def call(:STRDT, [_, _]), do: :error
+  def call(:STRDT, _), do: :error
 
   @doc """
   Constructs a literal with lexical form and language tag as specified by the arguments.
@@ -249,7 +249,7 @@ defmodule SPARQL.Functions.Builtins do
       :error
     end
   end
-  def call(:STRLANG, [_, _]), do: :error
+  def call(:STRLANG, _), do: :error
 
   @doc """
   Constructs an IRI from the given string argument.
@@ -264,7 +264,7 @@ defmodule SPARQL.Functions.Builtins do
     literal |> to_string() |> RDF.IRI.new()
   end
   def call(:IRI, [%RDF.IRI{} = iri]), do: iri
-  def call(:IRI, [_]),                do: :error
+  def call(:IRI, _),                  do: :error
 
   @doc """
   Checks if the given argument is an IRI.
