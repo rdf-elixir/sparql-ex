@@ -315,6 +315,16 @@ defmodule SPARQL.Functions.Builtins do
   def call(:STRUUID, []), do: uuid(:default) |> RDF.string()
   def call(:STRUUID, _),  do: :error
 
+  @doc """
+  Returns an `xsd:integer` equal to the length in characters of the lexical form of a literal.
+
+  see <https://www.w3.org/TR/sparql11-query/#func-strlen>
+  """
+  def call(:STRLEN, [%RDF.Literal{datatype: datatype} = literal])
+      when datatype in [@xsd_string, @lang_string],
+      do: literal |> to_string() |> String.length() |> RDF.Integer.new()
+  def call(:STRLEN, _), do: :error
+
 
 
   # TODO: This just a preliminary implementation

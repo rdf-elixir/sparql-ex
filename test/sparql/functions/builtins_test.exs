@@ -975,6 +975,21 @@ defmodule SPARQL.Functions.BuiltinsTest do
              Expression.evaluate(%FunctionCall.Builtin{name: :STRUUID, arguments: []}, nil)
   end
 
+  test "STRLEN function" do
+    [
+      {~L"chat",           RDF.integer(4)},
+      {RDF.string("chat"), RDF.integer(4)},
+      {~L"chat"en,         RDF.integer(4)},
+      {RDF.integer(42),    :error},
+      {:error,             :error},
+    ]
+    |> Enum.each(fn {string, result} ->
+      assert_builtin_call_result(:STRLEN, [string], result)
+      assert_builtin_expression_evaluation_result(:STRLEN, [string], result)
+    end)
+  end
+
+
   test "compatible_arguments?/2" do
     [
       {RDF.Literal.new("abc"),	                     RDF.Literal.new("b"),                       true},
