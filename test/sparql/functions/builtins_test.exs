@@ -152,36 +152,31 @@ defmodule SPARQL.Functions.BuiltinsTest do
   describe "= operator" do
     test "with equal terms" do
       Enum.each @equal_rdf_terms, fn {left, right} ->
-        assert_builtin_call_result(:=, [left, right], RDF.true)
-        assert_builtin_expression_evaluation_result(:=, [left, right], RDF.true)
+        assert_builtin_result(:=, [left, right], RDF.true)
       end
     end
 
     test "with equal values" do
       Enum.each @equal_rdf_values, fn {left, right} ->
-        assert_builtin_call_result(:=, [left, right], RDF.true)
-        assert_builtin_expression_evaluation_result(:=, [left, right], RDF.true)
+        assert_builtin_result(:=, [left, right], RDF.true)
       end
     end
 
     test "with unequal terms" do
       Enum.each @unequal_rdf_terms, fn {left, right} ->
-        assert_builtin_call_result(:=, [left, right], RDF.false)
-        assert_builtin_expression_evaluation_result(:=, [left, right], RDF.false)
+        assert_builtin_result(:=, [left, right], RDF.false)
       end
     end
 
     test "with unequal values" do
       Enum.each @unequal_rdf_values, fn {left, right} ->
-        assert_builtin_call_result(:=, [left, right], RDF.false)
-        assert_builtin_expression_evaluation_result(:=, [left, right], RDF.false)
+        assert_builtin_result(:=, [left, right], RDF.false)
       end
     end
 
     test "with incompatible terms" do
       Enum.each @incomparable_terms, fn {left, right} ->
-        assert_builtin_call_result(:=, [left, right], :error)
-        assert_builtin_expression_evaluation_result(:=, [left, right], :error)
+        assert_builtin_result(:=, [left, right], :error)
       end
     end
   end
@@ -189,36 +184,31 @@ defmodule SPARQL.Functions.BuiltinsTest do
   describe "!= operator" do
     test "with equal terms" do
       Enum.each @equal_rdf_terms, fn {left, right} ->
-        assert_builtin_call_result(:!=, [left, right], RDF.false)
-        assert_builtin_expression_evaluation_result(:!=, [left, right], RDF.false)
+        assert_builtin_result(:!=, [left, right], RDF.false)
       end
     end
 
     test "with equal values" do
       Enum.each @equal_rdf_values, fn {left, right} ->
-        assert_builtin_call_result(:!=, [left, right], RDF.false)
-        assert_builtin_expression_evaluation_result(:!=, [left, right], RDF.false)
+        assert_builtin_result(:!=, [left, right], RDF.false)
       end
     end
 
     test "with unequal terms" do
       Enum.each @unequal_rdf_terms, fn {left, right} ->
-        assert_builtin_call_result(:!=, [left, right], RDF.true)
-        assert_builtin_expression_evaluation_result(:!=, [left, right], RDF.true)
+        assert_builtin_result(:!=, [left, right], RDF.true)
       end
     end
 
     test "with unequal values" do
       Enum.each @unequal_rdf_values, fn {left, right} ->
-        assert_builtin_call_result(:!=, [left, right], RDF.true)
-        assert_builtin_expression_evaluation_result(:!=, [left, right], RDF.true)
+        assert_builtin_result(:!=, [left, right], RDF.true)
       end
     end
 
     test "with incompatible terms" do
       Enum.each @incomparable_terms, fn {left, right} ->
-        assert_builtin_call_result(:!=, [left, right], :error)
-        assert_builtin_expression_evaluation_result(:!=, [left, right], :error)
+        assert_builtin_result(:!=, [left, right], :error)
       end
     end
   end
@@ -226,300 +216,251 @@ defmodule SPARQL.Functions.BuiltinsTest do
   describe "sameTerm function" do
     test "with equal terms" do
       Enum.each @equal_rdf_terms, fn {left, right} ->
-        assert_builtin_call_result(:sameTerm, [left, right], RDF.true)
-        assert_builtin_expression_evaluation_result(:sameTerm, [left, right], RDF.true)
+        assert_builtin_result(:sameTerm, [left, right], RDF.true)
       end
     end
 
     test "with equal values, but unequal terms" do
       Enum.each @equal_rdf_values, fn {left, right} ->
-        assert_builtin_call_result(:sameTerm, [left, right], RDF.false)
-        assert_builtin_expression_evaluation_result(:sameTerm, [left, right], RDF.false)
+        assert_builtin_result(:sameTerm, [left, right], RDF.false)
       end
     end
 
     test "with unequal terms" do
       Enum.each @unequal_rdf_terms, fn {left, right} ->
-        assert_builtin_call_result(:sameTerm, [left, right], RDF.false)
-        assert_builtin_expression_evaluation_result(:sameTerm, [left, right], RDF.false)
+        assert_builtin_result(:sameTerm, [left, right], RDF.false)
       end
     end
 
     test "with unequal values" do
       Enum.each @unequal_rdf_values, fn {left, right} ->
-        assert_builtin_call_result(:sameTerm, [left, right], RDF.false)
-        assert_builtin_expression_evaluation_result(:sameTerm, [left, right], RDF.false)
+        assert_builtin_result(:sameTerm, [left, right], RDF.false)
       end
     end
 
     test "with incompatible terms" do
       Enum.each @incomparable_terms, fn {left, right} ->
-        assert_builtin_call_result(:sameTerm, [left, right], RDF.false)
-        assert_builtin_expression_evaluation_result(:sameTerm, [left, right], RDF.false)
+        assert_builtin_result(:sameTerm, [left, right], RDF.false)
       end
     end
   end
 
   describe "< operator" do
     test "with booleans" do
-      assert_builtin_call_result(:<, [RDF.false, RDF.true], RDF.true)
-      assert_builtin_expression_evaluation_result(:<, [RDF.false, RDF.true], RDF.true)
-
-      assert_builtin_call_result(:<, [RDF.true, RDF.false], RDF.false)
-      assert_builtin_expression_evaluation_result(:<, [RDF.true, RDF.false], RDF.false)
+      assert_builtin_result(:<, [RDF.false, RDF.true], RDF.true)
+      assert_builtin_result(:<, [RDF.true, RDF.false], RDF.false)
     end
 
     test "with numbers: left number smaller than right number" do
       Enum.each @ordered_numbers, fn {left, right} ->
-        assert_builtin_call_result(:<, [left, right], RDF.true)
-        assert_builtin_expression_evaluation_result(:<, [left, right], RDF.true)
+        assert_builtin_result(:<, [left, right], RDF.true)
       end
     end
 
     test "with numbers: left number greater than right number" do
       Enum.each @ordered_numbers, fn {left, right} ->
-        assert_builtin_call_result(:<, [right, left], RDF.false)
-        assert_builtin_expression_evaluation_result(:<, [right, left], RDF.false)
+        assert_builtin_result(:<, [right, left], RDF.false)
       end
     end
 
     test "with date_times: left date_time before than right date_time" do
       Enum.each @ordered_datetimes, fn {left, right} ->
-        assert_builtin_call_result(:<, [left, right], RDF.true)
-        assert_builtin_expression_evaluation_result(:<, [left, right], RDF.true)
+        assert_builtin_result(:<, [left, right], RDF.true)
       end
     end
 
     test "with date_times: left date_time after than right date_time" do
       Enum.each @ordered_datetimes, fn {left, right} ->
-        assert_builtin_call_result(:<, [right, left], RDF.false)
-        assert_builtin_expression_evaluation_result(:<, [right, left], RDF.false)
+        assert_builtin_result(:<, [right, left], RDF.false)
       end
     end
 
     test "with strings: left string lexicographical before right string" do
       Enum.each @ordered_strings, fn {left, right} ->
-        assert_builtin_call_result(:<, [left, right], RDF.true)
-        assert_builtin_expression_evaluation_result(:<, [left, right], RDF.true)
+        assert_builtin_result(:<, [left, right], RDF.true)
       end
     end
 
     test "with strings: left string lexicographical after right string" do
       Enum.each @ordered_strings, fn {left, right} ->
-        assert_builtin_call_result(:<, [right, left], RDF.false)
-        assert_builtin_expression_evaluation_result(:<, [right, left], RDF.false)
+        assert_builtin_result(:<, [right, left], RDF.false)
       end
     end
 
     test "with equal literals" do
       Enum.each @term_equal_rdf_literals ++ @value_equal_rdf_literals, fn {left, right} ->
-          assert_builtin_call_result(:<, [left, right], RDF.false)
-          assert_builtin_expression_evaluation_result(:<, [left, right], RDF.false)
-        end
+        assert_builtin_result(:<, [left, right], RDF.false)
+      end
     end
 
     test "with incomparable literals" do
       Enum.each @incomparable_literals, fn {left, right} ->
-        assert_builtin_call_result(:<, [left, right], :error)
-        assert_builtin_expression_evaluation_result(:<, [left, right], :error)
+        assert_builtin_result(:<, [left, right], :error)
       end
     end
   end
 
   describe "<= operator" do
     test "with booleans" do
-      assert_builtin_call_result(:<=, [RDF.false, RDF.true], RDF.true)
-      assert_builtin_expression_evaluation_result(:<=, [RDF.false, RDF.true], RDF.true)
-
-      assert_builtin_call_result(:<=, [RDF.true, RDF.false], RDF.false)
-      assert_builtin_expression_evaluation_result(:<=, [RDF.true, RDF.false], RDF.false)
+      assert_builtin_result(:<=, [RDF.false, RDF.true], RDF.true)
+      assert_builtin_result(:<=, [RDF.true, RDF.false], RDF.false)
     end
 
     test "with numbers: left number smaller than right number" do
       Enum.each @ordered_numbers, fn {left, right} ->
-        assert_builtin_call_result(:<=, [left, right], RDF.true)
-        assert_builtin_expression_evaluation_result(:<=, [left, right], RDF.true)
+        assert_builtin_result(:<=, [left, right], RDF.true)
       end
     end
 
     test "with numbers: left number greater than right number" do
       Enum.each @ordered_numbers, fn {left, right} ->
-        assert_builtin_call_result(:<=, [right, left], RDF.false)
-        assert_builtin_expression_evaluation_result(:<=, [right, left], RDF.false)
+        assert_builtin_result(:<=, [right, left], RDF.false)
       end
     end
 
     test "with date_times: left date_time before than right date_time" do
       Enum.each @ordered_datetimes, fn {left, right} ->
-        assert_builtin_call_result(:<=, [left, right], RDF.true)
-        assert_builtin_expression_evaluation_result(:<=, [left, right], RDF.true)
+        assert_builtin_result(:<=, [left, right], RDF.true)
       end
     end
 
     test "with date_times: left date_time after than right date_time" do
       Enum.each @ordered_datetimes, fn {left, right} ->
-        assert_builtin_call_result(:<=, [right, left], RDF.false)
-        assert_builtin_expression_evaluation_result(:<=, [right, left], RDF.false)
+        assert_builtin_result(:<=, [right, left], RDF.false)
       end
     end
 
     test "with strings: left string lexicographical before right string" do
       Enum.each @ordered_strings, fn {left, right} ->
-        assert_builtin_call_result(:<=, [left, right], RDF.true)
-        assert_builtin_expression_evaluation_result(:<=, [left, right], RDF.true)
+        assert_builtin_result(:<=, [left, right], RDF.true)
       end
     end
 
     test "with strings: left string lexicographical after right string" do
       Enum.each @ordered_strings, fn {left, right} ->
-        assert_builtin_call_result(:<=, [right, left], RDF.false)
-        assert_builtin_expression_evaluation_result(:<=, [right, left], RDF.false)
+        assert_builtin_result(:<=, [right, left], RDF.false)
       end
     end
 
     test "with equal literals" do
       Enum.each @term_equal_rdf_literals ++ @value_equal_rdf_literals, fn {left, right} ->
-          assert_builtin_call_result(:<=, [left, right], RDF.true)
-          assert_builtin_expression_evaluation_result(:<=, [left, right], RDF.true)
-        end
+        assert_builtin_result(:<=, [left, right], RDF.true)
+      end
     end
 
     test "with incomparable literals" do
       Enum.each @incomparable_literals, fn {left, right} ->
-        assert_builtin_call_result(:<=, [left, right], :error)
-        assert_builtin_expression_evaluation_result(:<=, [left, right], :error)
+        assert_builtin_result(:<=, [left, right], :error)
       end
     end
   end
 
   describe "> operator" do
     test "with booleans" do
-      assert_builtin_call_result(:>, [RDF.false, RDF.true], RDF.false)
-      assert_builtin_expression_evaluation_result(:>, [RDF.false, RDF.true], RDF.false)
-
-      assert_builtin_call_result(:>, [RDF.true, RDF.false], RDF.true)
-      assert_builtin_expression_evaluation_result(:>, [RDF.true, RDF.false], RDF.true)
+      assert_builtin_result(:>, [RDF.false, RDF.true], RDF.false)
+      assert_builtin_result(:>, [RDF.true, RDF.false], RDF.true)
     end
 
     test "with numbers: left number smaller than right number" do
       Enum.each @ordered_numbers, fn {left, right} ->
-        assert_builtin_call_result(:>, [left, right], RDF.false)
-        assert_builtin_expression_evaluation_result(:>, [left, right], RDF.false)
+        assert_builtin_result(:>, [left, right], RDF.false)
       end
     end
 
     test "with numbers: left number greater than right number" do
       Enum.each @ordered_numbers, fn {left, right} ->
-        assert_builtin_call_result(:>, [right, left], RDF.true)
-        assert_builtin_expression_evaluation_result(:>, [right, left], RDF.true)
+        assert_builtin_result(:>, [right, left], RDF.true)
       end
     end
 
     test "with date_times: left date_time before than right date_time" do
       Enum.each @ordered_datetimes, fn {left, right} ->
-        assert_builtin_call_result(:>, [left, right], RDF.false)
-        assert_builtin_expression_evaluation_result(:>, [left, right], RDF.false)
+        assert_builtin_result(:>, [left, right], RDF.false)
       end
     end
 
     test "with date_times: left date_time after than right date_time" do
       Enum.each @ordered_datetimes, fn {left, right} ->
-        assert_builtin_call_result(:>, [right, left], RDF.true)
-        assert_builtin_expression_evaluation_result(:>, [right, left], RDF.true)
+        assert_builtin_result(:>, [right, left], RDF.true)
       end
     end
 
     test "with strings: left string lexicographical before right string" do
       Enum.each @ordered_strings, fn {left, right} ->
-        assert_builtin_call_result(:>, [left, right], RDF.false)
-        assert_builtin_expression_evaluation_result(:>, [left, right], RDF.false)
+        assert_builtin_result(:>, [left, right], RDF.false)
       end
     end
 
     test "with strings: left string lexicographical after right string" do
       Enum.each @ordered_strings, fn {left, right} ->
-        assert_builtin_call_result(:>, [right, left], RDF.true)
-        assert_builtin_expression_evaluation_result(:>, [right, left], RDF.true)
+        assert_builtin_result(:>, [right, left], RDF.true)
       end
     end
 
     test "with equal literals" do
       Enum.each @term_equal_rdf_literals ++ @value_equal_rdf_literals, fn {left, right} ->
-          assert_builtin_call_result(:>, [left, right], RDF.false)
-          assert_builtin_expression_evaluation_result(:>, [left, right], RDF.false)
-        end
+        assert_builtin_result(:>, [left, right], RDF.false)
+      end
     end
 
     test "with incomparable literals" do
       Enum.each @incomparable_literals, fn {left, right} ->
-        assert_builtin_call_result(:>, [left, right], :error)
-        assert_builtin_expression_evaluation_result(:>, [left, right], :error)
+        assert_builtin_result(:>, [left, right], :error)
       end
     end
   end
 
   describe ">= operator" do
     test "with booleans" do
-      assert_builtin_call_result(:>=, [RDF.false, RDF.true], RDF.false)
-      assert_builtin_expression_evaluation_result(:>=, [RDF.false, RDF.true], RDF.false)
-
-      assert_builtin_call_result(:>=, [RDF.true, RDF.false], RDF.true)
-      assert_builtin_expression_evaluation_result(:>=, [RDF.true, RDF.false], RDF.true)
+      assert_builtin_result(:>=, [RDF.false, RDF.true], RDF.false)
+      assert_builtin_result(:>=, [RDF.true, RDF.false], RDF.true)
     end
 
     test "with numbers: left number smaller than right number" do
       Enum.each @ordered_numbers, fn {left, right} ->
-        assert_builtin_call_result(:>=, [left, right], RDF.false)
-        assert_builtin_expression_evaluation_result(:>=, [left, right], RDF.false)
+        assert_builtin_result(:>=, [left, right], RDF.false)
       end
     end
 
     test "with numbers: left number greater than right number" do
       Enum.each @ordered_numbers, fn {left, right} ->
-        assert_builtin_call_result(:>=, [right, left], RDF.true)
-        assert_builtin_expression_evaluation_result(:>=, [right, left], RDF.true)
+        assert_builtin_result(:>=, [right, left], RDF.true)
       end
     end
 
     test "with date_times: left date_time before than right date_time" do
       Enum.each @ordered_datetimes, fn {left, right} ->
-        assert_builtin_call_result(:>=, [left, right], RDF.false)
-        assert_builtin_expression_evaluation_result(:>=, [left, right], RDF.false)
+        assert_builtin_result(:>=, [left, right], RDF.false)
       end
     end
 
     test "with date_times: left date_time after than right date_time" do
       Enum.each @ordered_datetimes, fn {left, right} ->
-        assert_builtin_call_result(:>=, [right, left], RDF.true)
-        assert_builtin_expression_evaluation_result(:>=, [right, left], RDF.true)
+        assert_builtin_result(:>=, [right, left], RDF.true)
       end
     end
 
     test "with strings: left string lexicographical before right string" do
       Enum.each @ordered_strings, fn {left, right} ->
-        assert_builtin_call_result(:>=, [left, right], RDF.false)
-        assert_builtin_expression_evaluation_result(:>=, [left, right], RDF.false)
+        assert_builtin_result(:>=, [left, right], RDF.false)
       end
     end
 
     test "with strings: left string lexicographical after right string" do
       Enum.each @ordered_strings, fn {left, right} ->
-        assert_builtin_call_result(:>=, [right, left], RDF.true)
-        assert_builtin_expression_evaluation_result(:>=, [right, left], RDF.true)
+        assert_builtin_result(:>=, [right, left], RDF.true)
       end
     end
 
     test "with equal literals" do
       Enum.each @term_equal_rdf_literals ++ @value_equal_rdf_literals, fn {left, right} ->
-          assert_builtin_call_result(:>=, [left, right], RDF.true)
-          assert_builtin_expression_evaluation_result(:>=, [left, right], RDF.true)
+          assert_builtin_result(:>=, [left, right], RDF.true)
         end
     end
 
     test "with incomparable literals" do
       Enum.each @incomparable_literals, fn {left, right} ->
-        assert_builtin_call_result(:>=, [left, right], :error)
-        assert_builtin_expression_evaluation_result(:>=, [left, right], :error)
+        assert_builtin_result(:>=, [left, right], :error)
       end
     end
   end
@@ -537,8 +478,7 @@ defmodule SPARQL.Functions.BuiltinsTest do
       {:error,                 :error},
     ]
     |> Enum.each(fn {value, result} ->
-         assert_builtin_call_result(:!, [value], result)
-         assert_builtin_expression_evaluation_result(:!, [value], result)
+         assert_builtin_result(:!, [value], result)
        end)
   end
 
@@ -650,9 +590,8 @@ defmodule SPARQL.Functions.BuiltinsTest do
       {:error, :error, :error},
     ]
     |> Enum.each(fn {left, right, result} ->
-      assert_builtin_call_result(:+, [left, right], result)
-      assert_builtin_expression_evaluation_result(:+, [left, right], result)
-    end)
+         assert_builtin_result(:+, [left, right], result)
+       end)
   end
 
   test "numeric - operator" do
@@ -666,9 +605,8 @@ defmodule SPARQL.Functions.BuiltinsTest do
       {:error, :error, :error},
     ]
     |> Enum.each(fn {left, right, result} ->
-      assert_builtin_call_result(:-, [left, right], result)
-      assert_builtin_expression_evaluation_result(:-, [left, right], result)
-    end)
+         assert_builtin_result(:-, [left, right], result)
+       end)
   end
 
   test "numeric * operator" do
@@ -681,9 +619,8 @@ defmodule SPARQL.Functions.BuiltinsTest do
       {:error, :error, :error},
     ]
     |> Enum.each(fn {left, right, result} ->
-      assert_builtin_call_result(:*, [left, right], result)
-      assert_builtin_expression_evaluation_result(:*, [left, right], result)
-    end)
+         assert_builtin_result(:*, [left, right], result)
+       end)
   end
 
   test "numeric / operator" do
@@ -696,9 +633,8 @@ defmodule SPARQL.Functions.BuiltinsTest do
       {:error, :error, :error},
     ]
     |> Enum.each(fn {left, right, result} ->
-      assert_builtin_call_result(:/, [left, right], result)
-      assert_builtin_expression_evaluation_result(:/, [left, right], result)
-    end)
+         assert_builtin_result(:/, [left, right], result)
+       end)
   end
 
   test "isIRI/isURI function" do
@@ -706,11 +642,9 @@ defmodule SPARQL.Functions.BuiltinsTest do
       RDF.iri("http://example.com/foo"),
     ]
     |> Enum.each(fn positive_example ->
-      assert_builtin_call_result(:isIRI, [positive_example], RDF.true)
-      assert_builtin_expression_evaluation_result(:isIRI, [positive_example], RDF.true)
-      assert_builtin_call_result(:isURI, [positive_example], RDF.true)
-      assert_builtin_expression_evaluation_result(:isURI, [positive_example], RDF.true)
-    end)
+         assert_builtin_result(:isIRI, [positive_example], RDF.true)
+         assert_builtin_result(:isURI, [positive_example], RDF.true)
+       end)
 
     [
       RDF.bnode("http://example.com/foo"),
@@ -718,16 +652,12 @@ defmodule SPARQL.Functions.BuiltinsTest do
       "http://example.com/foo",
     ]
     |> Enum.each(fn negative_example ->
-      assert_builtin_call_result(:isIRI, [negative_example], RDF.false)
-      assert_builtin_expression_evaluation_result(:isIRI, [negative_example], RDF.false)
-      assert_builtin_call_result(:isURI, [negative_example], RDF.false)
-      assert_builtin_expression_evaluation_result(:isURI, [negative_example], RDF.false)
-    end)
+         assert_builtin_result(:isIRI, [negative_example], RDF.false)
+         assert_builtin_result(:isURI, [negative_example], RDF.false)
+       end)
 
-    assert_builtin_call_result(:isIRI, [:error], :error)
-    assert_builtin_expression_evaluation_result(:isIRI, [:error], :error)
-    assert_builtin_call_result(:isURI, [:error], :error)
-    assert_builtin_expression_evaluation_result(:isURI, [:error], :error)
+    assert_builtin_result(:isIRI, [:error], :error)
+    assert_builtin_result(:isURI, [:error], :error)
   end
 
   test "isBlank function" do
@@ -737,9 +667,8 @@ defmodule SPARQL.Functions.BuiltinsTest do
       RDF.bnode(),
     ]
     |> Enum.each(fn positive_example ->
-      assert_builtin_call_result(:isBLANK, [positive_example], RDF.true)
-      assert_builtin_expression_evaluation_result(:isBLANK, [positive_example], RDF.true)
-    end)
+         assert_builtin_result(:isBLANK, [positive_example], RDF.true)
+       end)
 
     [
       RDF.literal("foo"),
@@ -747,12 +676,10 @@ defmodule SPARQL.Functions.BuiltinsTest do
       "foo",
     ]
     |> Enum.each(fn negative_example ->
-      assert_builtin_call_result(:isBLANK, [negative_example], RDF.false)
-      assert_builtin_expression_evaluation_result(:isBLANK, [negative_example], RDF.false)
-    end)
+         assert_builtin_result(:isBLANK, [negative_example], RDF.false)
+       end)
 
-    assert_builtin_call_result(:isBLANK, [:error], :error)
-    assert_builtin_expression_evaluation_result(:isBLANK, [:error], :error)
+    assert_builtin_result(:isBLANK, [:error], :error)
   end
 
   test "isLiteral function" do
@@ -762,9 +689,8 @@ defmodule SPARQL.Functions.BuiltinsTest do
       RDF.integer(42),
     ]
     |> Enum.each(fn positive_example ->
-      assert_builtin_call_result(:isLITERAL, [positive_example], RDF.true)
-      assert_builtin_expression_evaluation_result(:isLITERAL, [positive_example], RDF.true)
-    end)
+         assert_builtin_result(:isLITERAL, [positive_example], RDF.true)
+       end)
 
     [
       RDF.iri("http://example.com/foo"),
@@ -773,12 +699,10 @@ defmodule SPARQL.Functions.BuiltinsTest do
       42,
     ]
     |> Enum.each(fn negative_example ->
-      assert_builtin_call_result(:isLITERAL, [negative_example], RDF.false)
-      assert_builtin_expression_evaluation_result(:isLITERAL, [negative_example], RDF.false)
-    end)
+         assert_builtin_result(:isLITERAL, [negative_example], RDF.false)
+       end)
 
-    assert_builtin_call_result(:isLITERAL, [:error], :error)
-    assert_builtin_expression_evaluation_result(:isLITERAL, [:error], :error)
+    assert_builtin_result(:isLITERAL, [:error], :error)
   end
 
   test "isNumeric function" do
@@ -788,9 +712,8 @@ defmodule SPARQL.Functions.BuiltinsTest do
       RDF.literal("42", datatype: XSD.nonPositiveInteger),
     ]
     |> Enum.each(fn positive_example ->
-      assert_builtin_call_result(:isNUMERIC, [positive_example], RDF.true)
-      assert_builtin_expression_evaluation_result(:isNUMERIC, [positive_example], RDF.true)
-    end)
+         assert_builtin_result(:isNUMERIC, [positive_example], RDF.true)
+       end)
 
     [
       RDF.literal("42"),
@@ -803,12 +726,10 @@ defmodule SPARQL.Functions.BuiltinsTest do
       42,
     ]
     |> Enum.each(fn negative_example ->
-      assert_builtin_call_result(:isNUMERIC, [negative_example], RDF.false)
-      assert_builtin_expression_evaluation_result(:isNUMERIC, [negative_example], RDF.false)
-    end)
+         assert_builtin_result(:isNUMERIC, [negative_example], RDF.false)
+       end)
 
-    assert_builtin_call_result(:isNUMERIC, [:error], :error)
-    assert_builtin_expression_evaluation_result(:isNUMERIC, [:error], :error)
+    assert_builtin_result(:isNUMERIC, [:error], :error)
   end
 
   test "str function" do
@@ -826,9 +747,8 @@ defmodule SPARQL.Functions.BuiltinsTest do
       {:error, :error}
     ]
     |> Enum.each(fn {arg, result} ->
-      assert_builtin_call_result(:STR, [arg], result)
-      assert_builtin_expression_evaluation_result(:STR, [arg], result)
-    end)
+         assert_builtin_result(:STR, [arg], result)
+       end)
   end
 
   test "lang function" do
@@ -844,9 +764,8 @@ defmodule SPARQL.Functions.BuiltinsTest do
       {:error, :error}
     ]
     |> Enum.each(fn {arg, result} ->
-      assert_builtin_call_result(:LANG, [arg], result)
-      assert_builtin_expression_evaluation_result(:LANG, [arg], result)
-    end)
+         assert_builtin_result(:LANG, [arg], result)
+       end)
   end
 
   test "datatype function" do
@@ -861,9 +780,8 @@ defmodule SPARQL.Functions.BuiltinsTest do
       {:error, :error}
     ]
     |> Enum.each(fn {arg, result} ->
-      assert_builtin_call_result(:DATATYPE, [arg], result)
-      assert_builtin_expression_evaluation_result(:DATATYPE, [arg], result)
-    end)
+         assert_builtin_result(:DATATYPE, [arg], result)
+       end)
   end
 
   test "STRDT function" do
@@ -883,9 +801,8 @@ defmodule SPARQL.Functions.BuiltinsTest do
       {:error, :error, :error},
     ]
     |> Enum.each(fn {literal, datatype, result} ->
-      assert_builtin_call_result(:STRDT, [literal, datatype], result)
-      assert_builtin_expression_evaluation_result(:STRDT, [literal, datatype], result)
-    end)
+         assert_builtin_result(:STRDT, [literal, datatype], result)
+       end)
   end
 
   test "STRLANG function" do
@@ -905,9 +822,8 @@ defmodule SPARQL.Functions.BuiltinsTest do
       {:error, :error, :error},
     ]
     |> Enum.each(fn {literal, language, result} ->
-      assert_builtin_call_result(:STRLANG, [literal, language], result)
-      assert_builtin_expression_evaluation_result(:STRLANG, [literal, language], result)
-    end)
+         assert_builtin_result(:STRLANG, [literal, language], result)
+       end)
   end
 
 
@@ -924,11 +840,9 @@ defmodule SPARQL.Functions.BuiltinsTest do
         {:error, :error}
       ]
       |> Enum.each(fn {arg, result} ->
-        assert_builtin_call_result(:IRI, [arg], result)
-        assert_builtin_expression_evaluation_result(:IRI, [arg], result)
-        assert_builtin_call_result(:URI, [arg], result)
-        assert_builtin_expression_evaluation_result(:URI, [arg], result)
-      end)
+           assert_builtin_result(:IRI, [arg], result)
+           assert_builtin_result(:URI, [arg], result)
+         end)
     end
 
     @tag skip: "TODO: How do we get the base IRI here?"
@@ -984,9 +898,8 @@ defmodule SPARQL.Functions.BuiltinsTest do
       {:error,             :error},
     ]
     |> Enum.each(fn {string, result} ->
-      assert_builtin_call_result(:STRLEN, [string], result)
-      assert_builtin_expression_evaluation_result(:STRLEN, [string], result)
-    end)
+         assert_builtin_result(:STRLEN, [string], result)
+       end)
   end
 
 
@@ -1011,6 +924,11 @@ defmodule SPARQL.Functions.BuiltinsTest do
               else: "expected #{inspect left} to not be compatible with #{inspect right}, but it is"
            )
     end)
+  end
+
+  defp assert_builtin_result(builtin, args, expected) do
+    assert_builtin_call_result(builtin, args, expected)
+    assert_builtin_expression_evaluation_result(builtin, args, expected)
   end
 
   defp assert_builtin_call_result(builtin, args, expected) do
