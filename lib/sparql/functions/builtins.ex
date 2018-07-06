@@ -276,6 +276,23 @@ defmodule SPARQL.Functions.Builtins do
   def call(:URI, args), do: call(:IRI, args)
 
   @doc """
+  Constructs a blank node.
+
+  The constructed blank node is distinct from all blank nodes in the dataset
+  being queried and distinct from all blank nodes created by calls to this
+  constructor for other query solutions.
+
+  If the no argument form is used, every call results in a distinct blank node.
+  If the form with a simple literal is used, every call results in distinct
+  blank nodes for different simple literals, and the same blank node for calls
+  with the same simple literal within expressions for one solution mapping.
+
+  see <https://www.w3.org/TR/sparql11-query/#func-bnode>
+  """
+  def call(:BNODE, []), do: RDF.bnode()
+  def call(:BNODE, _), do: :error
+
+  @doc """
   Return a fresh IRI from the UUID URN scheme.
 
   Each call of UUID() returns a different UUID.

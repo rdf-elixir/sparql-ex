@@ -876,8 +876,7 @@ defmodule SPARQL.Functions.BuiltinsTest do
       {RDF.integer(123), XSD.double, RDF.double("123")},
 
       # TODO: Should this be an error? An rdf:langString with an empty language is invalid.
-      {RDF.string("foo"), RDF.langString,
-        %RDF.Literal{value: "foo", datatype: ~I<http://www.w3.org/1999/02/22-rdf-syntax-ns#langString>, language: nil}},
+      {RDF.string("foo"), RDF.langString, RDF.lang_string("foo")},
 
       {RDF.string("123"), :error, :error},
       {:error, XSD.integer, :error},
@@ -938,6 +937,26 @@ defmodule SPARQL.Functions.BuiltinsTest do
     @tag skip: "TODO: implement and use RDF.IRI.normalize/1"
     test "normalization"
 
+  end
+
+  describe "BNODE function" do
+    test "without args" do
+      assert %RDF.BlankNode{} = bnode1 = Builtins.call(:BNODE, [])
+      assert %RDF.BlankNode{} = bnode2 = Builtins.call(:BNODE, [])
+      assert bnode1 != bnode2
+      assert %RDF.BlankNode{} =
+               Expression.evaluate(%FunctionCall.Builtin{name: :BNODE, arguments: []}, nil)
+    end
+
+    @tag skip: "TODO: We need some form of global state for this"
+    test "with a string" do
+      assert %RDF.BlankNode{} = bnode1 = Builtins.call(:BNODE, [~L"foo"])
+      assert Builtins.call(:BNODE, [~L"foo"]) == bnode1
+      assert %RDF.BlankNode{} = bnode2 = Builtins.call(:BNODE, [~L"bar"])
+      assert bnode1 != bnode2
+      assert Expression.evaluate(%FunctionCall.Builtin{name: :BNODE, arguments: [~L"foo"]}, nil)
+             == bnode1
+    end
   end
 
   test "UUID function" do
