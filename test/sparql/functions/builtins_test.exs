@@ -9,6 +9,7 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   alias RDF.NS.XSD
 
+  @xsd_string XSD.string
 
   @term_equal_rdf_literals [
     # String literals
