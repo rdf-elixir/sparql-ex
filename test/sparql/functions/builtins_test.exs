@@ -737,8 +737,8 @@ defmodule SPARQL.Functions.BuiltinsTest do
       RDF.bnode(),
     ]
     |> Enum.each(fn positive_example ->
-      assert_builtin_call_result(:isBlank, [positive_example], RDF.true)
-      assert_builtin_expression_evaluation_result(:isBlank, [positive_example], RDF.true)
+      assert_builtin_call_result(:isBLANK, [positive_example], RDF.true)
+      assert_builtin_expression_evaluation_result(:isBLANK, [positive_example], RDF.true)
     end)
 
     [
@@ -747,12 +747,12 @@ defmodule SPARQL.Functions.BuiltinsTest do
       "foo",
     ]
     |> Enum.each(fn negative_example ->
-      assert_builtin_call_result(:isBlank, [negative_example], RDF.false)
-      assert_builtin_expression_evaluation_result(:isBlank, [negative_example], RDF.false)
+      assert_builtin_call_result(:isBLANK, [negative_example], RDF.false)
+      assert_builtin_expression_evaluation_result(:isBLANK, [negative_example], RDF.false)
     end)
 
-    assert_builtin_call_result(:isBlank, [:error], :error)
-    assert_builtin_expression_evaluation_result(:isBlank, [:error], :error)
+    assert_builtin_call_result(:isBLANK, [:error], :error)
+    assert_builtin_expression_evaluation_result(:isBLANK, [:error], :error)
   end
 
   test "isLiteral function" do
@@ -762,8 +762,8 @@ defmodule SPARQL.Functions.BuiltinsTest do
       RDF.integer(42),
     ]
     |> Enum.each(fn positive_example ->
-      assert_builtin_call_result(:isLiteral, [positive_example], RDF.true)
-      assert_builtin_expression_evaluation_result(:isLiteral, [positive_example], RDF.true)
+      assert_builtin_call_result(:isLITERAL, [positive_example], RDF.true)
+      assert_builtin_expression_evaluation_result(:isLITERAL, [positive_example], RDF.true)
     end)
 
     [
@@ -773,12 +773,12 @@ defmodule SPARQL.Functions.BuiltinsTest do
       42,
     ]
     |> Enum.each(fn negative_example ->
-      assert_builtin_call_result(:isLiteral, [negative_example], RDF.false)
-      assert_builtin_expression_evaluation_result(:isLiteral, [negative_example], RDF.false)
+      assert_builtin_call_result(:isLITERAL, [negative_example], RDF.false)
+      assert_builtin_expression_evaluation_result(:isLITERAL, [negative_example], RDF.false)
     end)
 
-    assert_builtin_call_result(:isLiteral, [:error], :error)
-    assert_builtin_expression_evaluation_result(:isLiteral, [:error], :error)
+    assert_builtin_call_result(:isLITERAL, [:error], :error)
+    assert_builtin_expression_evaluation_result(:isLITERAL, [:error], :error)
   end
 
   test "isNumeric function" do
@@ -788,8 +788,8 @@ defmodule SPARQL.Functions.BuiltinsTest do
       RDF.literal("42", datatype: XSD.nonPositiveInteger),
     ]
     |> Enum.each(fn positive_example ->
-      assert_builtin_call_result(:isNumeric, [positive_example], RDF.true)
-      assert_builtin_expression_evaluation_result(:isNumeric, [positive_example], RDF.true)
+      assert_builtin_call_result(:isNUMERIC, [positive_example], RDF.true)
+      assert_builtin_expression_evaluation_result(:isNUMERIC, [positive_example], RDF.true)
     end)
 
     [
@@ -803,12 +803,12 @@ defmodule SPARQL.Functions.BuiltinsTest do
       42,
     ]
     |> Enum.each(fn negative_example ->
-      assert_builtin_call_result(:isNumeric, [negative_example], RDF.false)
-      assert_builtin_expression_evaluation_result(:isNumeric, [negative_example], RDF.false)
+      assert_builtin_call_result(:isNUMERIC, [negative_example], RDF.false)
+      assert_builtin_expression_evaluation_result(:isNUMERIC, [negative_example], RDF.false)
     end)
 
-    assert_builtin_call_result(:isNumeric, [:error], :error)
-    assert_builtin_expression_evaluation_result(:isNumeric, [:error], :error)
+    assert_builtin_call_result(:isNUMERIC, [:error], :error)
+    assert_builtin_expression_evaluation_result(:isNUMERIC, [:error], :error)
   end
 
   test "str function" do
@@ -826,8 +826,8 @@ defmodule SPARQL.Functions.BuiltinsTest do
       {:error, :error}
     ]
     |> Enum.each(fn {arg, result} ->
-      assert_builtin_call_result(:str, [arg], result)
-      assert_builtin_expression_evaluation_result(:str, [arg], result)
+      assert_builtin_call_result(:STR, [arg], result)
+      assert_builtin_expression_evaluation_result(:STR, [arg], result)
     end)
   end
 
@@ -844,8 +844,8 @@ defmodule SPARQL.Functions.BuiltinsTest do
       {:error, :error}
     ]
     |> Enum.each(fn {arg, result} ->
-      assert_builtin_call_result(:lang, [arg], result)
-      assert_builtin_expression_evaluation_result(:lang, [arg], result)
+      assert_builtin_call_result(:LANG, [arg], result)
+      assert_builtin_expression_evaluation_result(:LANG, [arg], result)
     end)
   end
 
@@ -861,8 +861,8 @@ defmodule SPARQL.Functions.BuiltinsTest do
       {:error, :error}
     ]
     |> Enum.each(fn {arg, result} ->
-      assert_builtin_call_result(:datatype, [arg], result)
-      assert_builtin_expression_evaluation_result(:datatype, [arg], result)
+      assert_builtin_call_result(:DATATYPE, [arg], result)
+      assert_builtin_expression_evaluation_result(:DATATYPE, [arg], result)
     end)
   end
 

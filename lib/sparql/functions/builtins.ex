@@ -165,33 +165,33 @@ defmodule SPARQL.Functions.Builtins do
 
   see <https://www.w3.org/TR/sparql11-query/#func-isBlank>
   """
-  def call(:isBlank, [%RDF.BlankNode{}]), do: RDF.true
-  def call(:isBlank, [:error]),           do: :error
-  def call(:isBlank, _),                  do: RDF.false
+  def call(:isBLANK, [%RDF.BlankNode{}]), do: RDF.true
+  def call(:isBLANK, [:error]),           do: :error
+  def call(:isBLANK, _),                  do: RDF.false
 
   @doc """
   Checks if the given argument is a RDF literal.
 
   see <https://www.w3.org/TR/sparql11-query/#func-isLiteral>
   """
-  def call(:isLiteral, [%RDF.Literal{}]), do: RDF.true
-  def call(:isLiteral, [:error]),         do: :error
-  def call(:isLiteral, _),                do: RDF.false
+  def call(:isLITERAL, [%RDF.Literal{}]), do: RDF.true
+  def call(:isLITERAL, [:error]),         do: :error
+  def call(:isLITERAL, _),                do: RDF.false
 
   @doc """
   Checks if the given argument is a RDF literal with a numeric datatype.
 
   see <https://www.w3.org/TR/sparql11-query/#func-isNumeric>
   """
-  def call(:isNumeric, [%RDF.Literal{datatype: datatype} = literal]) do
+  def call(:isNUMERIC, [%RDF.Literal{datatype: datatype} = literal]) do
     if RDF.Numeric.type?(datatype) and RDF.Literal.valid?(literal) do
       RDF.true
     else
       RDF.false
     end
   end
-  def call(:isNumeric, [:error]),         do: :error
-  def call(:isNumeric, _),                do: RDF.false
+  def call(:isNUMERIC, [:error]), do: :error
+  def call(:isNUMERIC, _),        do: RDF.false
 
   @doc """
   Returns the lexical form of a literal or the codepoint representation of an IRI.
@@ -201,10 +201,10 @@ defmodule SPARQL.Functions.Builtins do
 
   see <https://www.w3.org/TR/sparql11-query/#func-str>
   """
-  def call(:str, [%RDF.Literal{} = literal]), do: literal |> to_string() |> RDF.string()
-  def call(:str, [%RDF.IRI{} = iri]),         do: iri |> to_string() |> RDF.string()
-  def call(:str, [%RDF.BlankNode{}]),         do: RDF.string("")
-  def call(:str, _),                          do: :error
+  def call(:STR, [%RDF.Literal{} = literal]), do: literal |> to_string() |> RDF.string()
+  def call(:STR, [%RDF.IRI{} = iri]),         do: iri |> to_string() |> RDF.string()
+  def call(:STR, [%RDF.BlankNode{}]),         do: RDF.string("")
+  def call(:STR, _),                          do: :error
 
   @doc """
   Returns the language tag of language tagged literal.
@@ -214,17 +214,17 @@ defmodule SPARQL.Functions.Builtins do
 
   see <https://www.w3.org/TR/sparql11-query/#func-lang>
   """
-  def call(:lang, [%RDF.Literal{language: language}]), do: language |> to_string() |> RDF.string()
-  def call(:lang, [%RDF.Literal{}]),                   do: RDF.string("")
-  def call(:lang, _),                                  do: :error
+  def call(:LANG, [%RDF.Literal{language: language}]), do: language |> to_string() |> RDF.string()
+  def call(:LANG, [%RDF.Literal{}]),                   do: RDF.string("")
+  def call(:LANG, _),                                  do: :error
 
   @doc """
   Returns the datatype IRI of a literal.
 
   see <https://www.w3.org/TR/sparql11-query/#func-datatype>
   """
-  def call(:datatype, [%RDF.Literal{datatype: datatype}]), do: datatype
-  def call(:datatype, _),                                  do: :error
+  def call(:DATATYPE, [%RDF.Literal{datatype: datatype}]), do: datatype
+  def call(:DATATYPE, _),                                  do: :error
 
   @doc """
   Constructs a literal with lexical form and type as specified by the arguments.
@@ -316,11 +316,6 @@ defmodule SPARQL.Functions.Builtins do
   def call(:STRUUID, _),  do: :error
 
 
-
-  # TODO: This just a preliminary implementation
-  def call(:STR, [literal]) do
-    literal |> Literal.lexical() |> Literal.new()
-  end
 
   # TODO: This just a preliminary implementation
   def call(:UCASE, [literal]) do
