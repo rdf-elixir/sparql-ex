@@ -4,6 +4,7 @@ defmodule SPARQL.Functions.Builtins do
   alias RDF.NS.XSD
 
   @xsd_string XSD.string
+  @lang_string RDF.langString
 
   @doc """
   Value equality
@@ -326,10 +327,30 @@ defmodule SPARQL.Functions.Builtins do
     literal |> Literal.lexical() |> String.upcase() |> Literal.new()
   end
 
+
+  @doc """
+  Argument Compatibility Rules
+
+  see <https://www.w3.org/TR/sparql11-query/#func-arg-compatibility>
+  """
+  def compatible_arguments?(left, right)
+
+  # The arguments are simple literals or literals typed as xsd:string
+  def compatible_arguments?(%RDF.Literal{datatype: @xsd_string},
+                            %RDF.Literal{datatype: @xsd_string}), do: true
+  # The first argument is a plain literal with language tag and the second argument is a simple literal or literal typed as xsd:string
+  def compatible_arguments?(%RDF.Literal{datatype: @lang_string},
+                            %RDF.Literal{datatype: @xsd_string}), do: true
+  # The arguments are plain literals with identical language tags
+  def compatible_arguments?(%RDF.Literal{datatype: @lang_string, language: language},
+                            %RDF.Literal{datatype: @lang_string, language: language}), do: true
+
+  def compatible_arguments?(_, _), do: false
+
+
   defp ebv(value),    do: Boolean.ebv(value) || :error
   defp fn_not(value), do: Boolean.fn_not(value) || :error
 
   defp uuid(format), do: UUID.uuid4(format)
-
 
 end

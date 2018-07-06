@@ -975,6 +975,29 @@ defmodule SPARQL.Functions.BuiltinsTest do
              Expression.evaluate(%FunctionCall.Builtin{name: :STRUUID, arguments: []}, nil)
   end
 
+  test "compatible_arguments?/2" do
+    [
+      {RDF.Literal.new("abc"),	                     RDF.Literal.new("b"),                       true},
+      {RDF.Literal.new("abc"),	                     RDF.Literal.new("b", datatype: XSD.string), true},
+      {RDF.Literal.new("abc", datatype: XSD.string), RDF.Literal.new("b"),                       true},
+      {RDF.Literal.new("abc", datatype: XSD.string), RDF.Literal.new("b", datatype: XSD.string), true},
+      {RDF.Literal.new("abc", language: "en"),	     RDF.Literal.new("b"),                       true},
+      {RDF.Literal.new("abc", language: "en"),	     RDF.Literal.new("b", datatype: XSD.string), true},
+      {RDF.Literal.new("abc", language: "en"),	     RDF.Literal.new("b", language: "en"),       true},
+      {RDF.Literal.new("abc", language: "fr"),	     RDF.Literal.new("b", language: "ja"),       false},
+      {RDF.Literal.new("abc"),	                     RDF.Literal.new("b", language: "ja"),       false},
+      {RDF.Literal.new("abc"),	                     RDF.Literal.new("b", language: "en"),       false},
+      {RDF.Literal.new("abc", datatype: XSD.string), RDF.Literal.new("b", language: "en"),       false},
+    ]
+    |> Enum.each(fn {left, right, result} ->
+         assert Builtins.compatible_arguments?(left, right) == result, (
+            if result,
+              do:   "expected #{inspect left} to be compatible with #{inspect right}, but it's not",
+              else: "expected #{inspect left} to not be compatible with #{inspect right}, but it is"
+           )
+    end)
+  end
+
   defp assert_builtin_call_result(builtin, args, expected) do
     result = Builtins.call(builtin, args)
     assert result == expected, """
