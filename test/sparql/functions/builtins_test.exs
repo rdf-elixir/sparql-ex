@@ -902,6 +902,62 @@ defmodule SPARQL.Functions.BuiltinsTest do
        end)
   end
 
+  describe "SUBSTR function" do
+    test "without length" do
+      [
+        {RDF.string("foobar"), RDF.integer(4), RDF.string("bar")},
+        {~L"foobar",           RDF.integer(4), ~L"bar"},
+        {~L"foobar"en,         RDF.integer(4), ~L"bar"en},
+
+        {RDF.integer(42),      RDF.integer(4), :error},
+        {RDF.string("foo"),    RDF.string(4),  :error},
+
+        {:error,               RDF.integer(4), :error},
+        {RDF.string("foo"),    :error,         :error},
+        {:error,               :error,         :error},
+      ]
+      |> Enum.each(fn {source, starting_loc, result} ->
+           assert_builtin_result(:SUBSTR, [source, starting_loc], result)
+         end)
+    end
+
+    test "with length" do
+      [
+        {RDF.string("foobar"), RDF.integer(4), RDF.integer(1), RDF.string("b")},
+        {~L"foobar",           RDF.integer(4), RDF.integer(1), ~L"b"},
+        {~L"foobar"en,         RDF.integer(4), RDF.integer(1), ~L"b"en},
+
+        {RDF.integer(42),      RDF.integer(4), RDF.integer(1), :error},
+        {RDF.string("foo"),    RDF.string(4),  RDF.integer(1), :error},
+        {RDF.string("foo"),    RDF.integer(4), RDF.string(1),  :error},
+
+        {:error,               RDF.integer(4), RDF.integer(1), :error},
+        {RDF.string("foo"),    :error,         RDF.integer(1), :error},
+        {RDF.string("foo"),    RDF.integer(4), :error,         :error},
+        {:error,               :error,         :error,         :error},
+      ]
+      |> Enum.each(fn {source, starting_loc, length, result} ->
+           assert_builtin_result(:SUBSTR, [source, starting_loc, length], result)
+         end)
+    end
+
+    @tag skip: "TODO: We need support for derived datatypes in general and integers in particular"
+    test "with derived integer as starting location" do
+      assert_builtin_result(:SUBSTR,
+        [RDF.string("foobar"), RDF.literal(4, datatype: XSD.byte)], RDF.string("bar"))
+    end
+
+    @tag skip: "TODO: We need support for derived datatypes in general and integers in particular"
+    test "with derived integer as length" do
+      assert_builtin_result(:SUBSTR, [
+          RDF.string("foobar"),
+          RDF.integer(4),
+          RDF.literal(1, datatype: XSD.byte)
+        ],
+        RDF.string("b"))
+    end
+  end
+
 
   test "compatible_arguments?/2" do
     [

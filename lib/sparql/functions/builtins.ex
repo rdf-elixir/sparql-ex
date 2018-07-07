@@ -5,6 +5,7 @@ defmodule SPARQL.Functions.Builtins do
 
   @xsd_string XSD.string
   @lang_string RDF.langString
+  @xsd_integer XSD.integer
 
   @doc """
   Value equality
@@ -318,12 +319,55 @@ defmodule SPARQL.Functions.Builtins do
   @doc """
   Returns an `xsd:integer` equal to the length in characters of the lexical form of a literal.
 
-  see <https://www.w3.org/TR/sparql11-query/#func-strlen>
+  see:
+  - <https://www.w3.org/TR/sparql11-query/#func-strlen>
+  - <http://www.w3.org/TR/xpath-functions/#func-string-length>
   """
   def call(:STRLEN, [%RDF.Literal{datatype: datatype} = literal])
       when datatype in [@xsd_string, @lang_string],
       do: literal |> to_string() |> String.length() |> RDF.Integer.new()
   def call(:STRLEN, _), do: :error
+
+  @doc """
+  Returns a portion of a string .
+
+  The arguments startingLoc and length may be derived types of `xsd:integer`. The
+  index of the first character in a strings is 1.
+
+  Returns a literal of the same kind (simple literal, literal with language tag,
+  xsd:string typed literal) as the source input parameter but with a lexical form
+  formed from the substring of the lexcial form of the source.
+
+  The substr function corresponds to the XPath `fn:substring` function.
+
+  see:
+  - <https://www.w3.org/TR/sparql11-query/#func-substr>
+  - <http://www.w3.org/TR/xpath-functions/#func-substring>
+  """
+  def call(:SUBSTR, [%RDF.Literal{datatype: datatype} = source,
+                     %RDF.Literal{datatype: @xsd_integer} = starting_loc])
+      when datatype in [@xsd_string, @lang_string] do
+    %RDF.Literal{source |
+      value:
+        source
+        |> to_string()
+        |> String.slice((starting_loc.value - 1) .. -1)
+    }
+  end
+
+  def call(:SUBSTR, [%RDF.Literal{datatype: datatype} = source,
+                     %RDF.Literal{datatype: @xsd_integer} = starting_loc,
+                     %RDF.Literal{datatype: @xsd_integer} = length])
+      when datatype in [@xsd_string, @lang_string] do
+    %RDF.Literal{source |
+      value:
+        source
+        |> to_string()
+        |> String.slice((starting_loc.value - 1), length.value)
+    }
+  end
+
+  def call(:SUBSTR, _), do: :error
 
 
 
