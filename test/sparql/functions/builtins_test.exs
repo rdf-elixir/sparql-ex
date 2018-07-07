@@ -984,6 +984,82 @@ defmodule SPARQL.Functions.BuiltinsTest do
        end)
   end
 
+  test "STRSTARTS function" do
+    [
+      {~L"foobar",           ~L"foo",           RDF.true},
+      {~L"foobar"en,         ~L"foo"en,         RDF.true},
+      {RDF.string("foobar"), RDF.string("foo"), RDF.true},
+      {RDF.string("foobar"), ~L"foo",           RDF.true},
+      {~L"foobar",           RDF.string("foo"), RDF.true},
+      {~L"foobar"en,         ~L"foo",           RDF.true},
+      {~L"foobar"en,         RDF.string("foo"), RDF.true},
+      {~L"foo",           ~L"foobar",           RDF.false},
+
+      {~L"foobar"en, ~L"foo"de, :error},
+      {~L"foobar",   ~L"foo"de, :error},
+
+      {RDF.string("42"),  RDF.integer("4"), :error},
+      {RDF.integer("42"), RDF.string("4"),  :error},
+      {:error,            RDF.integer(42),  :error},
+      {RDF.integer(42),   :error,           :error},
+      {:error,            :error,           :error},
+    ]
+    |> Enum.each(fn {arg1, arg2, result} ->
+         assert_builtin_result(:STRSTARTS, [arg1, arg2], result)
+       end)
+  end
+
+  test "STRENDS function" do
+    [
+      {~L"foobar",           ~L"bar",           RDF.true},
+      {~L"foobar"en,         ~L"bar"en,         RDF.true},
+      {RDF.string("foobar"), RDF.string("bar"), RDF.true},
+      {RDF.string("foobar"), ~L"bar",           RDF.true},
+      {~L"foobar",           RDF.string("bar"), RDF.true},
+      {~L"foobar"en,         ~L"bar",           RDF.true},
+      {~L"foobar"en,         RDF.string("bar"), RDF.true},
+      {~L"foo",           ~L"foobar",           RDF.false},
+
+      {~L"foobar"en, ~L"bar"de, :error},
+      {~L"foobar",   ~L"bar"de, :error},
+
+      {RDF.string("42"),  RDF.integer("2"), :error},
+      {RDF.integer("42"), RDF.string("2"),  :error},
+      {:error,            RDF.integer(42),  :error},
+      {RDF.integer(42),   :error,           :error},
+      {:error,            :error,           :error},
+    ]
+    |> Enum.each(fn {arg1, arg2, result} ->
+         assert_builtin_result(:STRENDS, [arg1, arg2], result)
+       end)
+  end
+
+  test "CONTAINS function" do
+    [
+      {~L"foobar",           ~L"bar",           RDF.true},
+      {~L"foobar"en,         ~L"foo"en,         RDF.true},
+      {RDF.string("foobar"), RDF.string("bar"), RDF.true},
+      {RDF.string("foobar"), ~L"foo",           RDF.true},
+      {~L"foobar",           RDF.string("bar"), RDF.true},
+      {~L"foobar"en,         ~L"foo",           RDF.true},
+      {~L"foobar"en,         RDF.string("bar"), RDF.true},
+      {~L"foo",           ~L"foobar",           RDF.false},
+
+      {~L"foobar"en, ~L"bar"de, :error},
+      {~L"foobar",   ~L"bar"de, :error},
+
+      {RDF.string("42"),  RDF.integer("2"), :error},
+      {RDF.integer("42"), RDF.string("2"),  :error},
+      {:error,            RDF.integer(42),  :error},
+      {RDF.integer(42),   :error,           :error},
+      {:error,            :error,           :error},
+    ]
+    |> Enum.each(fn {arg1, arg2, result} ->
+      assert_builtin_result(:CONTAINS, [arg1, arg2], result)
+    end)
+  end
+
+
   test "compatible_arguments?/2" do
     [
       {RDF.Literal.new("abc"),	                     RDF.Literal.new("b"),                       true},

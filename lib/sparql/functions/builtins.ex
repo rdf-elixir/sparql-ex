@@ -380,7 +380,7 @@ defmodule SPARQL.Functions.Builtins do
   """
   def call(:UCASE, [%RDF.Literal{datatype: datatype} = str])
       when datatype in [@xsd_string, @lang_string] do
-    %RDF.Literal{str | value: str |> Literal.lexical() |> String.upcase()}
+    %RDF.Literal{str | value: str |> to_string() |> String.upcase()}
   end
 
   def call(:UCASE, _), do: :error
@@ -396,10 +396,85 @@ defmodule SPARQL.Functions.Builtins do
   """
   def call(:LCASE, [%RDF.Literal{datatype: datatype} = str])
       when datatype in [@xsd_string, @lang_string] do
-    %RDF.Literal{str | value: str |> Literal.lexical() |> String.downcase()}
+    %RDF.Literal{str | value: str |> to_string() |> String.downcase()}
   end
 
   def call(:LCASE, _), do: :error
+
+  @doc """
+  Returns true if the lexical form of arg1 starts with the lexical form of arg2, otherwise it returns false.
+
+  The STRSTARTS function corresponds to the XPath `fn:starts-with` function.
+
+  The arguments must be `compatible_arguments?/2` otherwise `:error` is returned.
+
+  see:
+  - <https://www.w3.org/TR/sparql11-query/#func-strstarts>
+  - <http://www.w3.org/TR/xpath-functions/#func-starts-with>
+  """
+  def call(:STRSTARTS, [arg1, arg2]) do
+    if compatible_arguments?(arg1, arg2) do
+      if arg1 |> to_string() |> String.starts_with?(to_string(arg2)) do
+        RDF.true
+      else
+        RDF.false
+      end
+    else
+      :error
+    end
+  end
+
+  def call(:STRSTARTS, _), do: :error
+
+  @doc """
+  Returns true if the lexical form of arg1 ends with the lexical form of arg2, otherwise it returns false.
+
+  The STRENDS function corresponds to the XPath `fn:ends-with` function.
+
+  The arguments must be `compatible_arguments?/2` otherwise `:error` is returned.
+
+  see:
+  - <https://www.w3.org/TR/sparql11-query/#func-strends>
+  - <http://www.w3.org/TR/xpath-functions/#func-ends-with>
+  """
+  def call(:STRENDS, [arg1, arg2]) do
+    if compatible_arguments?(arg1, arg2) do
+      if arg1 |> to_string() |> String.ends_with?(to_string(arg2)) do
+        RDF.true
+      else
+        RDF.false
+      end
+    else
+      :error
+    end
+  end
+
+  def call(:STRENDS, _), do: :error
+
+  @doc """
+  Returns true if the lexical form of arg1 contains the lexical form of arg2, otherwise it returns false.
+
+  The CONTAINS function corresponds to the XPath `fn:contains` function.
+
+  The arguments must be `compatible_arguments?/2` otherwise `:error` is returned.
+
+  see:
+  - <https://www.w3.org/TR/sparql11-query/#func-contains>
+  - <http://www.w3.org/TR/xpath-functions/#func-contains>
+  """
+  def call(:CONTAINS, [arg1, arg2]) do
+    if compatible_arguments?(arg1, arg2) do
+      if arg1 |> to_string() |> String.contains?(to_string(arg2)) do
+        RDF.true
+      else
+        RDF.false
+      end
+    else
+      :error
+    end
+  end
+
+  def call(:CONTAINS, _), do: :error
 
 
   @doc """
@@ -407,7 +482,7 @@ defmodule SPARQL.Functions.Builtins do
 
   see <https://www.w3.org/TR/sparql11-query/#func-arg-compatibility>
   """
-  def compatible_arguments?(left, right)
+  def compatible_arguments?(arg1, arg2)
 
   # The arguments are simple literals or literals typed as xsd:string
   def compatible_arguments?(%RDF.Literal{datatype: @xsd_string},
