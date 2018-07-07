@@ -958,6 +958,31 @@ defmodule SPARQL.Functions.BuiltinsTest do
     end
   end
 
+  test "UCASE function" do
+    [
+      {RDF.string("foo"), RDF.string("FOO")},
+      {~L"foo",           ~L"FOO"},
+      {~L"foo"en,         ~L"FOO"en},
+      {RDF.integer(42),    :error},
+      {:error,             :error},
+    ]
+    |> Enum.each(fn {string, result} ->
+         assert_builtin_result(:UCASE, [string], result)
+       end)
+  end
+
+  test "LCASE function" do
+    [
+      {RDF.string("BAR"), RDF.string("bar")},
+      {~L"BAR",           ~L"bar"},
+      {~L"BAR"en,         ~L"bar"en},
+      {RDF.integer(42),    :error},
+      {:error,             :error},
+    ]
+    |> Enum.each(fn {string, result} ->
+         assert_builtin_result(:LCASE, [string], result)
+       end)
+  end
 
   test "compatible_arguments?/2" do
     [

@@ -369,12 +369,37 @@ defmodule SPARQL.Functions.Builtins do
 
   def call(:SUBSTR, _), do: :error
 
+  @doc """
+  Returns a string literal whose lexical form is the upper case of the lexcial form of the argument.
 
+  The UCASE function corresponds to the XPath `fn:upper-case` function.
 
-  # TODO: This just a preliminary implementation
-  def call(:UCASE, [literal]) do
-    literal |> Literal.lexical() |> String.upcase() |> Literal.new()
+  see:
+  - <https://www.w3.org/TR/sparql11-query/#func-ucase>
+  - <http://www.w3.org/TR/xpath-functions/#func-upper-case>
+  """
+  def call(:UCASE, [%RDF.Literal{datatype: datatype} = str])
+      when datatype in [@xsd_string, @lang_string] do
+    %RDF.Literal{str | value: str |> Literal.lexical() |> String.upcase()}
   end
+
+  def call(:UCASE, _), do: :error
+
+  @doc """
+  Returns a string literal whose lexical form is the lower case of the lexcial form of the argument.
+
+  The LCASE function corresponds to the XPath `fn:lower-case` function.
+
+  see:
+  - <https://www.w3.org/TR/sparql11-query/#func-lcase>
+  - <http://www.w3.org/TR/xpath-functions/#func-lower-case>
+  """
+  def call(:LCASE, [%RDF.Literal{datatype: datatype} = str])
+      when datatype in [@xsd_string, @lang_string] do
+    %RDF.Literal{str | value: str |> Literal.lexical() |> String.downcase()}
+  end
+
+  def call(:LCASE, _), do: :error
 
 
   @doc """
