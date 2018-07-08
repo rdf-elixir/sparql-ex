@@ -565,7 +565,48 @@ defmodule SPARQL.Functions.Builtins do
 
   def call(:ENCODE_FOR_URI, _), do: :error
 
+  @doc """
+  Returns a string literal with the lexical form being obtained by concatenating the lexical forms of its inputs.
 
+  If all input literals are typed literals of type `xsd:string`, then the returned
+  literal is also of type `xsd:string`, if all input literals are plain literals
+  with identical language tag, then the returned literal is a plain literal with
+  the same language tag, in all other cases, the returned literal is a simple literal.
+
+  The CONCAT function corresponds to the XPath `fn:concat` function.
+
+  see:
+  - <https://www.w3.org/TR/sparql11-query/#func-concat>
+  - <http://www.w3.org/TR/xpath-functions/#func-concat>
+  """
+  def call(:CONCAT, []), do: RDF.string("")
+  def call(:CONCAT, [%RDF.Literal{datatype: datatype} = first |rest])
+      when datatype in [@xsd_string, @lang_string] do
+    rest
+    |> Enum.reduce_while({to_string(first), first.language}, fn
+         %RDF.Literal{datatype: datatype} = str, {acc, language}
+               when datatype in [@xsd_string, @lang_string] ->
+           {:cont, {
+               acc <> to_string(str),
+               if language && language == str.language do
+                 language
+               else
+                 nil
+               end
+             }
+           }
+         _, _ ->
+           {:halt, :error}
+       end)
+    |> case do
+         {str, nil}      -> RDF.string(str)
+         {str, language} -> RDF.lang_string(str, language: language)
+         _               -> :error
+       end
+  end
+  def call(:CONCAT, _), do: :error
+
+  
   @doc """
   Argument Compatibility Rules
 

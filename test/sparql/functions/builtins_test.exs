@@ -1124,6 +1124,33 @@ defmodule SPARQL.Functions.BuiltinsTest do
        end)
   end
 
+  test "CONCAT function" do
+    [
+      {[~L"foo",           ~L"bar"          ], ~L"foobar"},
+      {[~L"foo"en,         ~L"bar"en        ], ~L"foobar"en},
+      {[RDF.string("foo"), RDF.string("bar")], RDF.string("foobar")},
+      {[~L"foo",           RDF.string("bar")], ~L"foobar"},
+      {[~L"foo"en,         ~L"bar"          ], ~L"foobar"},
+      {[~L"foo"en,         RDF.string("bar")], ~L"foobar"},
+
+
+      {[~L"foo"en, RDF.string("bar"), ~L"baz"],  ~L"foobarbaz"},
+
+      {[~L"foo"],   ~L"foo"},
+      {[~L"foo"en], ~L"foo"en},
+      {[], ~L""},
+
+      {[RDF.string("4"),   RDF.integer("2")], :error},
+      {[RDF.integer("4"),  RDF.string("2")],  :error},
+      {[:error,            RDF.integer(42)],  :error},
+      {[RDF.integer(42),   :error         ],  :error},
+      {[:error,            :error         ],  :error},
+    ]
+    |> Enum.each(fn {args, result} ->
+      assert_builtin_result(:CONCAT, args, result)
+    end)
+  end
+
 
   test "compatible_arguments?/2" do
     [
