@@ -479,7 +479,7 @@ defmodule SPARQL.Functions.Builtins do
   @doc """
   Returns the substring of the lexical form of arg1 that precedes the first occurrence of the lexical form of arg2.
 
-  The STRBEFORE function corresponds to the XPath §fn:substring-before§ function.
+  The STRBEFORE function corresponds to the XPath `fn:substring-before` function.
 
   The arguments must be `compatible_arguments?/2` otherwise `:error` is returned.
 
@@ -515,7 +515,7 @@ defmodule SPARQL.Functions.Builtins do
   @doc """
   Returns the substring of the lexical form of arg1 that follows the first occurrence of the lexical form of arg2.
 
-  The STRAFTER function corresponds to the XPath §fn:substring-before§ function.
+  The STRAFTER function corresponds to the XPath `fn:substring-before` function.
 
   The arguments must be `compatible_arguments?/2` otherwise `:error` is returned.
 
@@ -547,6 +547,23 @@ defmodule SPARQL.Functions.Builtins do
   end
 
   def call(:STRAFTER, _), do: :error
+
+  @doc """
+  Returns a simple literal with the lexical form obtained from the lexical form of its input after translating reserved characters according to the fn:encode-for-uri function.
+
+  The ENCODE_FOR_URI function corresponds to the XPath `fn:encode-for-uri` function.
+
+  see:
+  - <https://www.w3.org/TR/sparql11-query/#func-encode>
+  - <http://www.w3.org/TR/xpath-functions/#func-encode-for-uri>
+  """
+  def call(:ENCODE_FOR_URI, [%RDF.Literal{datatype: datatype} = str])
+      when datatype in [@xsd_string, @lang_string] do
+    %RDF.Literal{str |
+      value: str |> to_string() |> URI.encode(&URI.char_unreserved?/1)}
+  end
+
+  def call(:ENCODE_FOR_URI, _), do: :error
 
 
   @doc """

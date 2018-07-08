@@ -1101,8 +1101,27 @@ defmodule SPARQL.Functions.BuiltinsTest do
       {:error,            :error,           :error},
     ]
     |> Enum.each(fn {arg1, arg2, result} ->
-      assert_builtin_result(:STRAFTER, [arg1, arg2], result)
-    end)
+         assert_builtin_result(:STRAFTER, [arg1, arg2], result)
+       end)
+  end
+
+  test "ENCODE_FOR_URI function" do
+    [
+      {~L"Los Angeles",           ~L"Los%20Angeles"},
+      {~L"Los Angeles"en,         ~L"Los%20Angeles"en},
+      {RDF.string("Los Angeles"), RDF.string("Los%20Angeles")},
+
+      {~L"http://www.example.com/00/Weather/CA/Los%20Angeles#ocean",
+       ~L"http%3A%2F%2Fwww.example.com%2F00%2FWeather%2FCA%2FLos%2520Angeles%23ocean"},
+      {~L"~bébé",        ~L"~b%C3%A9b%C3%A9"},
+      {~L"100% organic", ~L"100%25%20organic"},
+
+      {RDF.integer("42"), :error},
+      {:error,            :error},
+    ]
+    |> Enum.each(fn {string, result} ->
+         assert_builtin_result(:ENCODE_FOR_URI, [string], result)
+       end)
   end
 
 
