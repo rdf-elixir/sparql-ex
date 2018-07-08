@@ -1059,6 +1059,52 @@ defmodule SPARQL.Functions.BuiltinsTest do
     end)
   end
 
+  test "STRBEFORE function" do
+    [
+      {~L"abc",           ~L"b",           ~L"a"},
+      {~L"abc"en,         ~L"bc",          ~L"a"en},
+      {~L"abc"en,         ~L"b"cy,         :error},
+      {RDF.string("abc"), ~L"",            RDF.string("")},
+      {~L"abc",           ~L"xyz",         ~L""},
+      {~L"abc"en,         ~L"z"en,         ~L""},
+      {~L"abc"en,         ~L"z",           ~L""},
+      {~L"abc"en,         ~L""en,          ~L""en},
+      {~L"abc"en,         ~L"",            ~L""en},
+
+      {RDF.string("42"),  RDF.integer("2"), :error},
+      {RDF.integer("42"), RDF.string("2"),  :error},
+      {:error,            RDF.integer(42),  :error},
+      {RDF.integer(42),   :error,           :error},
+      {:error,            :error,           :error},
+    ]
+    |> Enum.each(fn {arg1, arg2, result} ->
+         assert_builtin_result(:STRBEFORE, [arg1, arg2], result)
+       end)
+  end
+
+  test "STRAFTER function" do
+    [
+      {~L"abc",           ~L"b",           ~L"c"},
+      {~L"abc"en,         ~L"ab",          ~L"c"en},
+      {~L"abc"en,         ~L"b"cy,        :error},
+      {RDF.string("abc"), ~L"",            RDF.string("abc")},
+      {~L"abc",           ~L"xyz",         ~L""},
+      {~L"abc"en,         ~L"z"en,         ~L""},
+      {~L"abc"en,         ~L"z",           ~L""},
+      {~L"abc"en,         ~L""en,          ~L"abc"en},
+      {~L"abc"en,         ~L"",            ~L"abc"en},
+
+      {RDF.string("42"),  RDF.integer("2"), :error},
+      {RDF.integer("42"), RDF.string("2"),  :error},
+      {:error,            RDF.integer(42),  :error},
+      {RDF.integer(42),   :error,           :error},
+      {:error,            :error,           :error},
+    ]
+    |> Enum.each(fn {arg1, arg2, result} ->
+      assert_builtin_result(:STRAFTER, [arg1, arg2], result)
+    end)
+  end
+
 
   test "compatible_arguments?/2" do
     [

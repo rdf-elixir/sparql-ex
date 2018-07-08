@@ -476,6 +476,78 @@ defmodule SPARQL.Functions.Builtins do
 
   def call(:CONTAINS, _), do: :error
 
+  @doc """
+  Returns the substring of the lexical form of arg1 that precedes the first occurrence of the lexical form of arg2.
+
+  The STRBEFORE function corresponds to the XPath §fn:substring-before§ function.
+
+  The arguments must be `compatible_arguments?/2` otherwise `:error` is returned.
+
+  For compatible arguments, if the lexical part of the second argument occurs as
+  a substring of the lexical part of the first argument, the function returns a
+  literal of the same kind as the first argument arg1 (simple literal, plain
+  literal same language tag, xsd:string). The lexical form of the result is the
+  substring of the lexical form of arg1 that precedes the first occurrence of
+  the lexical form of arg2. If the lexical form of arg2 is the empty string,
+  this is considered to be a match and the lexical form of the result is the
+  empty string.
+
+  If there is no such occurrence, an empty simple literal is returned.
+
+  see:
+  - <https://www.w3.org/TR/sparql11-query/#func-strbefore>
+  - <http://www.w3.org/TR/xpath-functions/#func-substring-before>
+  """
+  def call(:STRBEFORE, [arg1, arg2]) do
+    cond do
+      not compatible_arguments?(arg1, arg2) ->  :error
+      arg2.value == ""                      -> %RDF.Literal{arg1 | value: ""}
+      true ->
+        case String.split(arg1.value, arg2.value, parts: 2) do
+          [left, _] -> %RDF.Literal{arg1 | value: left}
+          [_]       -> RDF.Literal.new("")
+        end
+    end
+  end
+
+  def call(:STRBEFORE, _), do: :error
+
+  @doc """
+  Returns the substring of the lexical form of arg1 that follows the first occurrence of the lexical form of arg2.
+
+  The STRAFTER function corresponds to the XPath §fn:substring-before§ function.
+
+  The arguments must be `compatible_arguments?/2` otherwise `:error` is returned.
+
+  For compatible arguments, if the lexical part of the second argument occurs as
+  a substring of the lexical part of the first argument, the function returns a
+  literal of the same kind as the first argument arg1 (simple literal, plain
+  literal same language tag, xsd:string). The lexical form of the result is the
+  substring of the lexical form of arg1 that precedes the first occurrence of
+  the lexical form of arg2. If the lexical form of arg2 is the empty string,
+  this is considered to be a match and the lexical form of the result is the
+  lexical form of arg1.
+
+  If there is no such occurrence, an empty simple literal is returned.
+
+  see:
+  - <https://www.w3.org/TR/sparql11-query/#func-strafter>
+  - <http://www.w3.org/TR/xpath-functions/#func-substring-after>
+  """
+  def call(:STRAFTER, [arg1, arg2]) do
+    cond do
+      not compatible_arguments?(arg1, arg2) ->  :error
+      arg2.value == ""                      -> arg1
+      true ->
+        case String.split(arg1.value, arg2.value, parts: 2) do
+          [_, right] -> %RDF.Literal{arg1 | value: right}
+          [_]        -> RDF.Literal.new("")
+        end
+    end
+  end
+
+  def call(:STRAFTER, _), do: :error
+
 
   @doc """
   Argument Compatibility Rules
