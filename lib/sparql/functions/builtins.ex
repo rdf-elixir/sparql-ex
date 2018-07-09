@@ -604,9 +604,32 @@ defmodule SPARQL.Functions.Builtins do
          _               -> :error
        end
   end
+
   def call(:CONCAT, _), do: :error
 
-  
+  @doc """
+  Checks if a language tagged string literal or language tag matches a language range.
+
+  The check is performed per the basic filtering scheme defined in
+  [RFC4647](http://www.ietf.org/rfc/rfc4647.txt) section 3.3.1.
+  A language range is a basic language range per _Matching of Language Tags_ in
+  RFC4647 section 2.1.
+  A language range of `"*"` matches any non-empty language-tag string.
+
+  see <https://www.w3.org/TR/sparql11-query/#func-langMatches>
+  """
+  def call(:LANGMATCHES, [%RDF.Literal{datatype: @xsd_string} = language_tag,
+                          %RDF.Literal{datatype: @xsd_string} = language_range]) do
+    if RDF.LangString.match_language?(language_tag.value, language_range.value) do
+      RDF.true
+    else
+      RDF.false
+    end
+  end
+
+  def call(:LANGMATCHES, _), do: :error
+
+
   @doc """
   Argument Compatibility Rules
 

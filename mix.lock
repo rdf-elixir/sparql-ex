@@ -17,7 +17,7 @@
   "mimerl": {:hex, :mimerl, "1.0.2", "993f9b0e084083405ed8252b99460c4f0563e41729ab42d9074fd5e52439be88", [:rebar3], []},
   "multiset": {:hex, :multiset, "0.0.4", "b7b68aeea142f7cb4e744b1e3ef220ac69e60f4fb3919d7c4a1046aeeaba3892", [:mix], []},
   "nimble_csv": {:hex, :nimble_csv, "0.4.0", "e2a21d93071cb3b3278411b5b49fe6b55a0e4b3e90485d1187e0c9c75c74f977", [:mix], []},
-  "rdf": {:git, "https://github.com/marcelotto/rdf-ex", "d29f7295639743278e17d399a9a7ba246f0aaaae", []},
+  "rdf": {:git, "https://github.com/marcelotto/rdf-ex", "34898cd696767d2bd6347eafbe31d78e2deb4b7a", []},
   "ssl_verify_fun": {:hex, :ssl_verify_fun, "1.1.1", "28a4d65b7f59893bc2c7de786dec1e1555bd742d336043fe644ae956c3497fbe", [:make, :rebar], []},
   "sweet_xml": {:hex, :sweet_xml, "0.6.5", "dd9cde443212b505d1b5f9758feb2000e66a14d3c449f04c572f3048c66e6697", [:mix], []},
   "unicode_util_compat": {:hex, :unicode_util_compat, "0.3.1", "a1f612a7b512638634a603c8f401892afbf99b8ce93a45041f8aaca99cadb85e", [:rebar3], []},

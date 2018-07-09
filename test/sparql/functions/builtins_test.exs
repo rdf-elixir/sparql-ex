@@ -1151,6 +1151,33 @@ defmodule SPARQL.Functions.BuiltinsTest do
     end)
   end
 
+  test "langMatches function" do
+    [
+      {~L"de",         ~L"de",    RDF.true},
+      {~L"de",         ~L"DE",    RDF.true},
+      {~L"de-DE",      ~L"de",    RDF.true},
+      {~L"de-CH",      ~L"de",    RDF.true},
+      {~L"de-CH",      ~L"de-ch", RDF.true},
+      {~L"de-DE-1996", ~L"de-de", RDF.true},
+
+      {~L"en",         ~L"de",    RDF.false},
+      {~L"de",         ~L"de-CH", RDF.false},
+      {~L"de-Deva",    ~L"de-de", RDF.false},
+      {~L"de-Latn-DE", ~L"de-de", RDF.false},
+
+      {~L"en",            ~L"en"en,          :error},
+      {~L"en"en,          ~L"en",            :error},
+      {~L"en",            RDF.integer("42"), :error},
+      {RDF.integer("42"), ~L"en",            :error},
+      {:error,            ~L"en",            :error},
+      {~L"en",            :error,            :error},
+      {:error,            :error,            :error},
+    ]
+    |> Enum.each(fn {language_tag, language_range, result} ->
+         assert_builtin_result(:LANGMATCHES, [language_tag, language_range], result)
+       end)
+  end
+
 
   test "compatible_arguments?/2" do
     [
