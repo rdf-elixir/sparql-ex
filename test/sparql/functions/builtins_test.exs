@@ -1178,6 +1178,20 @@ defmodule SPARQL.Functions.BuiltinsTest do
        end)
   end
 
+  test "abs function" do
+    [
+      {RDF.integer(1),    RDF.integer(1)},
+      {RDF.integer(-1),   RDF.integer(1)},
+      {RDF.decimal(-1.5), RDF.decimal(1.5)},
+      {RDF.double(-1.5),  RDF.double(1.5)},
+
+      {~L"-42", :error},
+      {:error,  :error},
+    ]
+    |> Enum.each(fn {numeric, result} ->
+         assert_builtin_result(:ABS, [numeric], result)
+       end)
+  end
 
   test "compatible_arguments?/2" do
     [

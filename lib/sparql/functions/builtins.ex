@@ -629,7 +629,22 @@ defmodule SPARQL.Functions.Builtins do
 
   def call(:LANGMATCHES, _), do: :error
 
+  @doc """
+  Returns the absolute value of the argument.
 
+  If the argument is not a numeric value `:error` is returned.
+
+  see
+  - <https://www.w3.org/TR/sparql11-query/#func-abs>
+  - <http://www.w3.org/TR/xpath-functions/#func-abs>
+  """
+  def call(:ABS, [%RDF.Literal{} = literal]) do
+    RDF.Numeric.abs(literal) || :error
+  end
+
+  def call(:ABS, _), do: :error
+
+  
   @doc """
   Argument Compatibility Rules
 
