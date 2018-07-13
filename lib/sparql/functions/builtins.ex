@@ -665,6 +665,36 @@ defmodule SPARQL.Functions.Builtins do
 
   def call(:ROUND, _), do: :error
 
+  @doc """
+  Rounds a numeric value upwards to a whole number.
+
+  If the argument is not a numeric value `:error` is returned.
+
+  see
+  - <https://www.w3.org/TR/sparql11-query/#func-ceil>
+  - <http://www.w3.org/TR/xpath-functions/#func-ceil>
+  """
+  def call(:CEIL, [%RDF.Literal{} = literal]) do
+    RDF.Numeric.ceil(literal) || :error
+  end
+
+  def call(:CEIL, _), do: :error
+
+  @doc """
+  Rounds a numeric value downwards to a whole number.
+
+  If the argument is not a numeric value `:error` is returned.
+
+  see
+  - <https://www.w3.org/TR/sparql11-query/#func-floor>
+  - <http://www.w3.org/TR/xpath-functions/#func-floor>
+  """
+  def call(:FLOOR, [%RDF.Literal{} = literal]) do
+    RDF.Numeric.floor(literal) || :error
+  end
+
+  def call(:FLOOR, _), do: :error
+
 
   @doc """
   Argument Compatibility Rules

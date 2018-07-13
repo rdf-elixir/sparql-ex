@@ -1211,6 +1211,38 @@ defmodule SPARQL.Functions.BuiltinsTest do
        end)
   end
 
+  test "ceil function" do
+    [
+      {RDF.integer(1),      RDF.integer(1)},
+      {RDF.decimal(10.5),   RDF.integer(11)},
+      {RDF.decimal(-10.5),  RDF.integer(-10)},
+      {RDF.double(10.5),    RDF.integer(11)},
+      {RDF.double(-10.5),   RDF.integer(-10)},
+
+      {~L"42", :error},
+      {:error,  :error},
+    ]
+    |> Enum.each(fn {numeric, result} ->
+         assert_builtin_result(:CEIL, [numeric], result)
+       end)
+  end
+
+  test "floor function" do
+    [
+      {RDF.integer(1),      RDF.integer(1)},
+      {RDF.decimal(10.5),   RDF.integer(10)},
+      {RDF.decimal(-10.5),  RDF.integer(-11)},
+      {RDF.double(10.5),    RDF.integer(10)},
+      {RDF.double(-10.5),   RDF.integer(-11)},
+
+      {~L"42", :error},
+      {:error,  :error},
+    ]
+    |> Enum.each(fn {numeric, result} ->
+         assert_builtin_result(:FLOOR, [numeric], result)
+       end)
+  end
+
 
   test "compatible_arguments?/2" do
     [
