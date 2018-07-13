@@ -1193,6 +1193,25 @@ defmodule SPARQL.Functions.BuiltinsTest do
        end)
   end
 
+  test "round function" do
+    [
+      {RDF.integer(1),      RDF.integer(1)},
+      {RDF.decimal(2.4999), RDF.decimal(2.0)},
+      {RDF.decimal(2.5),    RDF.decimal(3.0)},
+      {RDF.decimal(-2.5),   RDF.decimal(-2.0)},
+      {RDF.double(2.4999),  RDF.double(2.0)},
+      {RDF.double(2.5),     RDF.double(3.0)},
+      {RDF.double(-2.5),    RDF.double(-2.0)},
+
+      {~L"42", :error},
+      {:error,  :error},
+    ]
+    |> Enum.each(fn {numeric, result} ->
+         assert_builtin_result(:ROUND, [numeric], result)
+       end)
+  end
+
+
   test "compatible_arguments?/2" do
     [
       {RDF.Literal.new("abc"),	                     RDF.Literal.new("b"),                       true},

@@ -644,7 +644,28 @@ defmodule SPARQL.Functions.Builtins do
 
   def call(:ABS, _), do: :error
 
-  
+  @doc """
+  Rounds a value to a specified number of decimal places, rounding upwards if two such values are equally near.
+
+  The function returns the nearest (that is, numerically closest) value to the
+  given literal value that is a multiple of ten to the power of minus `precision`.
+  If two such values are equally near (for example, if the fractional part in the
+  literal value is exactly .5), the function returns the one that is closest to
+  positive infinity.
+
+  If the argument is not a numeric value `:error` is returned.
+
+  see
+  - <https://www.w3.org/TR/sparql11-query/#func-round>
+  - <http://www.w3.org/TR/xpath-functions/#func-round>
+  """
+  def call(:ROUND, [%RDF.Literal{} = literal]) do
+    RDF.Numeric.round(literal) || :error
+  end
+
+  def call(:ROUND, _), do: :error
+
+
   @doc """
   Argument Compatibility Rules
 
