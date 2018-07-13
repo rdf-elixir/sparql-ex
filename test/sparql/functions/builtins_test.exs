@@ -7,6 +7,7 @@ defmodule SPARQL.Functions.BuiltinsTest do
   alias SPARQL.Algebra.Expression
   alias SPARQL.Algebra.FunctionCall
 
+  alias RDF.Literal
   alias RDF.NS.XSD
 
   @xsd_string XSD.string
@@ -77,7 +78,7 @@ defmodule SPARQL.Functions.BuiltinsTest do
     # IRIs
     # RDF URI references are compatible with the anyURI datatype as defined by XML schema datatypes, constrained to be an absolute rather than a relative URI reference.
     {RDF.iri("http://example.com/"),
-     RDF.Literal.new("http://example.com/", datatype: XSD.anyURI)},
+     RDF.literal("http://example.com/", datatype: XSD.anyURI)},
   ] ++ @value_equal_rdf_literals
 
   @unequal_rdf_values [
@@ -135,7 +136,7 @@ defmodule SPARQL.Functions.BuiltinsTest do
 #    {RDF.decimal(1.1), RDF.decimal(2.2)},
 #    {RDF.integer(3),   RDF.decimal(3.14)},
 # TODO: We need support for other derived numeric datatypes
-#    {RDF.Literal.new(0, datatype: XSD.byte), RDF.integer(1)},
+#    {RDF.literal(0, datatype: XSD.byte), RDF.integer(1)},
   ]
 
   @ordered_strings [
@@ -882,10 +883,10 @@ defmodule SPARQL.Functions.BuiltinsTest do
   end
 
   test "STRUUID function" do
-    assert %RDF.Literal{datatype: @xsd_string} = uuid1 = Builtins.call(:STRUUID, [])
-    assert %RDF.Literal{datatype: @xsd_string} = uuid2 = Builtins.call(:STRUUID, [])
+    assert %Literal{datatype: @xsd_string} = uuid1 = Builtins.call(:STRUUID, [])
+    assert %Literal{datatype: @xsd_string} = uuid2 = Builtins.call(:STRUUID, [])
     assert uuid1 != uuid2
-    assert %RDF.Literal{datatype: @xsd_string} =
+    assert %Literal{datatype: @xsd_string} =
              Expression.evaluate(%FunctionCall.Builtin{name: :STRUUID, arguments: []}, nil)
   end
 
@@ -1246,17 +1247,17 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "compatible_arguments?/2" do
     [
-      {RDF.Literal.new("abc"),	                     RDF.Literal.new("b"),                       true},
-      {RDF.Literal.new("abc"),	                     RDF.Literal.new("b", datatype: XSD.string), true},
-      {RDF.Literal.new("abc", datatype: XSD.string), RDF.Literal.new("b"),                       true},
-      {RDF.Literal.new("abc", datatype: XSD.string), RDF.Literal.new("b", datatype: XSD.string), true},
-      {RDF.Literal.new("abc", language: "en"),	     RDF.Literal.new("b"),                       true},
-      {RDF.Literal.new("abc", language: "en"),	     RDF.Literal.new("b", datatype: XSD.string), true},
-      {RDF.Literal.new("abc", language: "en"),	     RDF.Literal.new("b", language: "en"),       true},
-      {RDF.Literal.new("abc", language: "fr"),	     RDF.Literal.new("b", language: "ja"),       false},
-      {RDF.Literal.new("abc"),	                     RDF.Literal.new("b", language: "ja"),       false},
-      {RDF.Literal.new("abc"),	                     RDF.Literal.new("b", language: "en"),       false},
-      {RDF.Literal.new("abc", datatype: XSD.string), RDF.Literal.new("b", language: "en"),       false},
+      {RDF.literal("abc"),	                     RDF.literal("b"),                       true},
+      {RDF.literal("abc"),	                     RDF.literal("b", datatype: XSD.string), true},
+      {RDF.literal("abc", datatype: XSD.string), RDF.literal("b"),                       true},
+      {RDF.literal("abc", datatype: XSD.string), RDF.literal("b", datatype: XSD.string), true},
+      {RDF.literal("abc", language: "en"),	     RDF.literal("b"),                       true},
+      {RDF.literal("abc", language: "en"),	     RDF.literal("b", datatype: XSD.string), true},
+      {RDF.literal("abc", language: "en"),	     RDF.literal("b", language: "en"),       true},
+      {RDF.literal("abc", language: "fr"),	     RDF.literal("b", language: "ja"),       false},
+      {RDF.literal("abc"),	                     RDF.literal("b", language: "ja"),       false},
+      {RDF.literal("abc"),	                     RDF.literal("b", language: "en"),       false},
+      {RDF.literal("abc", datatype: XSD.string), RDF.literal("b", language: "en"),       false},
     ]
     |> Enum.each(fn {left, right, result} ->
          assert Builtins.compatible_arguments?(left, right) == result, (
