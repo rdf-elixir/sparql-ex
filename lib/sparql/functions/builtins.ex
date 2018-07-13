@@ -695,6 +695,17 @@ defmodule SPARQL.Functions.Builtins do
 
   def call(:FLOOR, _), do: :error
 
+  @doc """
+  Returns a pseudo-random number between 0 (inclusive) and 1.0e0 (exclusive).
+
+  see <https://www.w3.org/TR/sparql11-query/#idp2130040>
+  """
+  def call(:RAND, []) do
+    :rand.uniform() |> RDF.Double.new()
+  end
+
+  def call(:RAND, _), do: :error
+
 
   @doc """
   Argument Compatibility Rules

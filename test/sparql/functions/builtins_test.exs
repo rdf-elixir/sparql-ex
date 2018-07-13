@@ -1244,6 +1244,18 @@ defmodule SPARQL.Functions.BuiltinsTest do
        end)
   end
 
+  test "RAND function" do
+    xsd_double = XSD.double
+    assert %Literal{datatype: ^xsd_double, value: value} = Builtins.call(:RAND, [])
+    assert value >= 0 and value < 1
+    assert %Literal{datatype: ^xsd_double, value: another_value} = Builtins.call(:RAND, [])
+    assert value != another_value
+
+    assert %Literal{datatype: ^xsd_double, value: value} =
+             Expression.evaluate(%FunctionCall.Builtin{name: :RAND, arguments: []}, nil)
+    assert value >= 0 and value < 1
+  end
+
 
   test "compatible_arguments?/2" do
     [
