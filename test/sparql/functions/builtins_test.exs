@@ -1241,6 +1241,83 @@ defmodule SPARQL.Functions.BuiltinsTest do
     end
   end
 
+  describe "REPLACE function" do
+    test "without flags" do
+      [
+        {~L"abcd",        ~L"b",     ~L"Z",	    ~L"aZcd"},
+        {~L"abracadabra", ~L"bra",   ~L"*",     ~L"a*cada*"},
+        {~L"abracadabra", ~L"a.*a",  ~L"*",     ~L"*"},
+        {~L"abracadabra", ~L"a.*?a", ~L"*",     ~L"*c*bra"},
+        {~L"abracadabra", ~L"a",     ~L"",      ~L"brcdbr"},
+        {~L"AAAA",        ~L"A+",    ~L"b",     ~L"b"},
+        {~L"AAAA",        ~L"A+?",   ~L"b",     ~L"bbbb"},
+
+        {~L"en"en, ~L"en",   ~L"de",   :error},
+        {~L"en",   ~L"en"en, ~L"de",   :error},
+        {~L"en",   ~L"en",   ~L"de"en, :error},
+        {:error,   ~L"en",   ~L"de",   :error},
+        {~L"en",   :error,   ~L"de",   :error},
+        {~L"en",   ~L"en",   :error,   :error},
+        {:error,   :error,   :error,   :error},
+      ]
+      |> Enum.each(fn {text, pattern, replacement, result} ->
+           assert_builtin_result(:REPLACE, [text, pattern, replacement], result)
+         end)
+    end
+
+    test "with flags" do
+      [
+        {~L"abab", ~L"B",  ~L"Z", ~L"i", ~L"aZaZ"},
+        {~L"abab", ~L"B.", ~L"Z", ~L"i", ~L"aZb"},
+
+        {~L"en",   ~L"en",   ~L"en",   ~L"i"en, :error},
+        {:error,   ~L"en",   ~L"en",   ~L"i",   :error},
+        {~L"en",   :error,   ~L"en",   ~L"i",   :error},
+        {~L"en",   ~L"en",   :error,   ~L"i",   :error},
+        {~L"en",   ~L"en",   ~L"en",   :error,  :error},
+        {:error,   :error,   :error,   :error,  :error},
+      ]
+      |> Enum.each(fn {text, pattern, replacement, flags, result} ->
+           assert_builtin_result(:REPLACE, [text, pattern, replacement, flags], result)
+         end)
+    end
+
+    test "with q flag" do
+      [
+        {~L"a\b\c", RDF.string("\\"), ~L"\\", ~L"q", ~L"a\\b\\c"},
+        {~L"a/b/c", ~L"/",            ~L"$",    ~L"q", ~L"a$b$c"},
+      ]
+      |> Enum.each(fn {text, pattern, replacement, flags, result} ->
+           assert_builtin_result(:REPLACE, [text, pattern, replacement, flags], result)
+         end)
+    end
+
+    @tag skip: "TODO"
+    test "with combination of q and i flag"
+
+    test "with variables in replacement" do
+      [
+        {~L"abracadabra", ~L"a(.)",         ~L"a$1$1", ~L"abbraccaddabbra"},
+        {~L"darted",      ~L"^(.*?)d(.*)$", ~L"$1c$2", ~L"carted"}, # (The first d is replaced.)
+      ]
+      |> Enum.each(fn {text, pattern, replacement, result} ->
+           assert_builtin_result(:REPLACE, [text, pattern, replacement], result)
+         end)
+    end
+
+    @tag skip: "TODO"
+    test "error Conditions" do
+      [
+        {~L"abracadabra", ~L".*?", ~L"$1", :error}, # because the pattern matches the zero-length string
+        {~L"abracadabra", ~L"a(.)", ~L"$foo", :error}, # because replacement contains a $ that is not immediately followed by a digit and not immediately preceded by a backslash
+        {~L"abracadabra", ~L"a(.)", RDF.string("\\"), :error}, # because replacement contains a backslash character that is not part of a \\ pair, or immediately followed by a $ character
+      ]
+      |> Enum.each(fn {text, pattern, replacement, result} ->
+           assert_builtin_result(:REPLACE, [text, pattern, replacement], result)
+         end)
+    end
+  end
+
   test "abs function" do
     [
       {RDF.integer(1),    RDF.integer(1)},

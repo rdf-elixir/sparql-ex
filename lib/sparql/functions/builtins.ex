@@ -1,5 +1,7 @@
 defmodule SPARQL.Functions.Builtins do
 
+  require Logger
+
   alias RDF.{Literal, Boolean}
   alias RDF.NS.XSD
 
@@ -643,6 +645,21 @@ defmodule SPARQL.Functions.Builtins do
   def call(:REGEX, _),                      do: :error
 
   @doc """
+  Replaces each non-overlapping occurrence of the regular expression pattern with the replacement string.
+
+  Regular expession matching may involve modifier flags. See REGEX.
+
+  see
+  - <https://www.w3.org/TR/sparql11-query/#func-replace>
+  - <http://www.w3.org/TR/xpath-functions/#func-replace>
+  """
+  def call(:REPLACE, [text, pattern, replacement]),
+    do: replace_regex(text, pattern, replacement, RDF.string(""))
+  def call(:REPLACE, [text, pattern, replacement, flags]),
+    do: replace_regex(text, pattern, replacement, flags)
+  def call(:REPLACE, _), do: :error
+
+  @doc """
   Returns the absolute value of the argument.
 
   If the argument is not a numeric value `:error` is returned.
@@ -742,6 +759,30 @@ defmodule SPARQL.Functions.Builtins do
   end
 
   defp match_regex(_, _, _), do: :error
+
+  defp replace_regex(%RDF.Literal{datatype: @xsd_string} = text,
+                     %RDF.Literal{datatype: @xsd_string} = pattern,
+                     %RDF.Literal{datatype: @xsd_string} = replacement,
+                     %RDF.Literal{datatype: @xsd_string} = flags) do
+    case xpath_pattern(pattern.value, flags.value) do
+      {:regex, regex} ->
+        String.replace(text.value, regex, xpath_to_erlang_regex_variables(replacement.value))
+        |> RDF.string()
+
+      {:q, pattern} ->
+        String.replace(text.value, pattern, replacement.value)
+        |> RDF.string()
+
+      {:qi, pattern} ->
+        Logger.error "The combination of the q and the i flag is currently not supported in REPLACE"
+        :error
+
+      _ ->
+        :error
+    end
+  end
+
+  defp replace_regex(_, _, _, _), do: :error
 
   defp xpath_pattern(pattern, flags) do
     q_pattern(pattern, flags) || xpath_regex_pattern(pattern, flags)
