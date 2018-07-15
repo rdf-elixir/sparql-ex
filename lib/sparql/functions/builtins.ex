@@ -800,6 +800,9 @@ defmodule SPARQL.Functions.Builtins do
     end
   end
 
+  defp xpath_to_erlang_regex_variables(text) do
+    String.replace(text, ~r/(?<!\\)\$/, "\\")
+  end
   
   @doc """
   Argument Compatibility Rules
