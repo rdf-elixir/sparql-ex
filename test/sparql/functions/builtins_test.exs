@@ -1179,6 +1179,68 @@ defmodule SPARQL.Functions.BuiltinsTest do
        end)
   end
 
+  describe "REGEX function" do
+    @poem RDF.string """
+      <poem author="Wilhelm Busch">
+      Kaum hat dies der Hahn gesehen,
+      Fängt er auch schon an zu krähen:
+      Kikeriki! Kikikerikih!!
+      Tak, tak, tak! - da kommen sie.
+      </poem>
+      """
+
+    test "without flags" do
+      [
+        {~L"abracadabra", ~L"bra",    RDF.true},
+        {~L"abracadabra", ~L"^a.*a$", RDF.true},
+        {~L"abracadabra", ~L"^bra",   RDF.false},
+        {@poem, ~L"Kaum.*krähen",     RDF.false},
+        {@poem, ~L"^Kaum.*gesehen,$", RDF.false},
+
+        {~L"en"en,          ~L"en",            :error},
+        {~L"en",            ~L"en"en,          :error},
+        {~L"en",            RDF.integer("42"), :error},
+        {RDF.integer("42"), ~L"en",            :error},
+        {:error,            ~L"en",            :error},
+        {~L"en",            :error,            :error},
+        {:error,            :error,            :error},
+      ]
+      |> Enum.each(fn {text, pattern, result} ->
+           assert_builtin_result(:REGEX, [text, pattern], result)
+         end)
+    end
+
+    test "with flags" do
+      [
+        {@poem, ~L"Kaum.*krähen",     ~L"s", RDF.true},
+        {@poem, ~L"^Kaum.*gesehen,$", ~L"m", RDF.true},
+        {@poem, ~L"kiki",             ~L"i", RDF.true},
+
+        {~L"en", ~L"en", RDF.integer("42"), :error},
+        {~L"en", ~L"en", :error, :error},
+        {:error, :error, :error, :error},
+      ]
+      |> Enum.each(fn {text, pattern, flags, result} ->
+           assert_builtin_result(:REGEX, [text, pattern, flags], result)
+         end)
+    end
+
+    test "with q flag" do
+      [
+        {~L"abcd",         ~L".*",       ~L"q",  RDF.false},
+        {~L"Mr. B. Obama", ~L"B. OBAMA", ~L"iq", RDF.true},
+
+        # If the q flag is used together with the m, s, or x flag, that flag has no effect.
+        {~L"abcd",         ~L".*",       ~L"mq",   RDF.true},
+        {~L"abcd",         ~L".*",       ~L"qim",  RDF.true},
+        {~L"abcd",         ~L".*",       ~L"xqm",  RDF.true},
+      ]
+      |> Enum.each(fn {text, pattern, flags, result} ->
+           assert_builtin_result(:REGEX, [text, pattern, flags], result)
+         end)
+    end
+  end
+
   test "abs function" do
     [
       {RDF.integer(1),    RDF.integer(1)},

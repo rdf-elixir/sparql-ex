@@ -619,7 +619,7 @@ defmodule SPARQL.Functions.Builtins do
   see <https://www.w3.org/TR/sparql11-query/#func-langMatches>
   """
   def call(:LANGMATCHES, [%RDF.Literal{datatype: @xsd_string} = language_tag,
-                          %RDF.Literal{datatype: @xsd_string} = language_range]) do
+    %RDF.Literal{datatype: @xsd_string} = language_range]) do
     if RDF.LangString.match_language?(language_tag.value, language_range.value) do
       RDF.true
     else
@@ -628,6 +628,19 @@ defmodule SPARQL.Functions.Builtins do
   end
 
   def call(:LANGMATCHES, _), do: :error
+
+  @doc """
+  Matches text against a regular expression pattern.
+
+  The regular expression language is defined in _XQuery 1.0 and XPath 2.0 Functions and Operators_.
+
+  see
+  - <https://www.w3.org/TR/sparql11-query/#func-regex>
+  - <https://www.w3.org/TR/xpath-functions/#func-matches>
+  """
+  def call(:REGEX, [text, pattern]),        do: match_regex(text, pattern, RDF.string(""))
+  def call(:REGEX, [text, pattern, flags]), do: match_regex(text, pattern, flags)
+  def call(:REGEX, _),                      do: :error
 
   @doc """
   Returns the absolute value of the argument.
@@ -707,6 +720,46 @@ defmodule SPARQL.Functions.Builtins do
   def call(:RAND, _), do: :error
 
 
+  defp match_regex(%RDF.Literal{datatype: @xsd_string} = text,
+                   %RDF.Literal{datatype: @xsd_string} = pattern,
+                   %RDF.Literal{datatype: @xsd_string} = flags) do
+    case xpath_pattern(pattern.value, flags.value) do
+      {:regex, regex} ->
+        Regex.match?(regex, text.value) |> ebv()
+
+      {:q, pattern} ->
+        String.contains?(text.value, pattern) |> ebv()
+
+      {:qi, pattern} ->
+        text.value
+        |> String.downcase()
+        |> String.contains?(String.downcase(pattern))
+        |> ebv()
+
+      _ ->
+        :error
+    end
+  end
+
+  defp match_regex(_, _, _), do: :error
+
+  defp xpath_pattern(pattern, flags) do
+    q_pattern(pattern, flags) || xpath_regex_pattern(pattern, flags)
+  end
+
+  defp q_pattern(pattern, flags) do
+    if String.contains?(flags, "q") and String.replace(flags, ~r/[qi]/, "") == "" do
+      {(if String.contains?(flags, "i"), do: :qi, else: :q), pattern}
+    end
+  end
+
+  defp xpath_regex_pattern(pattern, flags) do
+    with {:ok, regex} <- Regex.compile(pattern, String.replace(flags, "q", "")) do
+      {:regex, regex}
+    end
+  end
+
+  
   @doc """
   Argument Compatibility Rules
 
