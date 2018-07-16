@@ -5,11 +5,7 @@ defmodule SPARQL.W3C.TestSuite.BasicTest do
   <https://www.w3.org/2001/sw/DataAccess/tests/data-r2/basic/>
   """
 
-  use ExUnit.Case, async: false
-  ExUnit.Case.register_attribute __ENV__, :test_case
-
-  alias SPARQL.W3C.TestSuite
-  alias TestSuite.NS.MF
+  use SPARQL.W3C.TestSuite.Case, async: false
 
   @test_suite {"1.0", "basic"}
   @manifest_graph TestSuite.manifest_graph(@test_suite)
@@ -22,22 +18,8 @@ defmodule SPARQL.W3C.TestSuite.BasicTest do
      end)
   |> Enum.each(fn test_case ->
        @tag test_case: test_case
-
        test TestSuite.test_title(test_case), %{test_case: test_case} do
-         query = TestSuite.test_input_query(test_case, @manifest_graph)
-         data  = TestSuite.test_input_data(test_case, @manifest_graph)
-         expected_result =
-           TestSuite.test_result_file_path(test_case, @manifest_graph)
-           |> File.read!()
-           |> SPARQL.Query.Result.XML.decode!()
-
-         assert %SPARQL.Query.Result{} = actual_result =
-                  SPARQL.Processor.query(data, query)
-
-         assert Multiset.new(actual_result.variables) ==
-                Multiset.new(expected_result.variables)
-         assert Multiset.new(actual_result.results) ==
-                Multiset.new(expected_result.results)
+         assert_query_evaluation_case_result(test_case, @manifest_graph)
        end
      end)
 

@@ -6,11 +6,7 @@ defmodule SPARQL.W3C.TestSuite.SyntaxQueryTest do
   <https://www.w3.org/2001/sw/DataAccess/tests/data-r2/syntax-sparql1/>
   """
 
-  use ExUnit.Case, async: false
-  ExUnit.Case.register_attribute __ENV__, :test_case
-
-  alias SPARQL.W3C.TestSuite
-  alias TestSuite.NS.MF
+  use SPARQL.W3C.TestSuite.Case, async: false
 
   @base "http://example.org/"
 
