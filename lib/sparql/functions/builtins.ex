@@ -112,6 +112,32 @@ defmodule SPARQL.Functions.Builtins do
 
 
   @doc """
+  Numeric unary plus.
+
+  see <http://www.w3.org/TR/xpath-functions/#func-numeric-unary-plus>
+  """
+  def call(:+, [number]) do
+    if RDF.Numeric.literal?(number) do
+      number
+    else
+      :error
+    end
+  end
+
+  @doc """
+  Numeric unary minus.
+
+  see <http://www.w3.org/TR/xpath-functions/#func-numeric-unary-minus>
+  """
+  def call(:-, [number]) do
+    if RDF.Numeric.literal?(number) do
+      RDF.Numeric.multiply(number, RDF.integer(-1))
+    else
+      :error
+    end
+  end
+
+  @doc """
   Numeric addition.
 
   see <http://www.w3.org/TR/xpath-functions/#func-numeric-add>

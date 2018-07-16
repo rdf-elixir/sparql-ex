@@ -579,6 +579,38 @@ defmodule SPARQL.Functions.BuiltinsTest do
        end)
   end
 
+  test "unary + operator" do
+    [
+      {RDF.integer(42),   RDF.integer(42)},
+      {RDF.double(3.14),  RDF.double(3.14)},
+      {RDF.decimal(3.14), RDF.decimal(3.14)},
+      {RDF.string("42"),  :error},
+      {RDF.true,          :error},
+      {nil,               :error},
+      {:error,            :error},
+    ]
+    |> Enum.each(fn {value, result} ->
+         assert_builtin_result(:+, [value], result)
+       end)
+  end
+
+  test "unary - operator" do
+    [
+      {RDF.integer(42),    RDF.integer(-42)},
+      {RDF.double(3.14),   RDF.double(-3.14)},
+      {RDF.decimal(3.14),  RDF.decimal(-3.14)},
+      {RDF.integer(-42),   RDF.integer(42)},
+      {RDF.double(-3.14),  RDF.double(3.14)},
+      {RDF.decimal(-3.14), RDF.decimal(3.14)},
+      {RDF.string("42"),   :error},
+      {RDF.true,           :error},
+      {nil,                :error},
+      {:error,             :error},
+    ]
+    |> Enum.each(fn {value, result} ->
+         assert_builtin_result(:-, [value], result)
+       end)
+  end
 
   test "numeric + operator" do
     [
