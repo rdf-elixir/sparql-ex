@@ -288,9 +288,9 @@ a                                  : {token, {'a', TokenLine}}.
 \-	                               : {token, {'-', TokenLine}}.
 \<	                               : {token, {'<', TokenLine}}.
 \>	                               : {token, {'>', TokenLine}}.
-\<=	                               : {token, {'<', TokenLine}}.
-\>=	                               : {token, {'>', TokenLine}}.
-\!=	                               : {token, {'<', TokenLine}}.
+\<=	                               : {token, {'<=', TokenLine}}.
+\>=	                               : {token, {'>=', TokenLine}}.
+\!=	                               : {token, {'!=', TokenLine}}.
 \|\|	                             : {token, {'||', TokenLine}}.
 \&\&	                             : {token, {'&&', TokenLine}}.
 
