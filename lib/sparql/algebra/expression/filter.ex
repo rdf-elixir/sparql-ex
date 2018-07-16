@@ -10,7 +10,17 @@ defmodule SPARQL.Algebra.Filter do
 
   defp apply?(solution, filters, data) do
     filters
-    |> Stream.map(&(SPARQL.Algebra.Expression.evaluate(&1, %{solution: solution, data: data})))
+    |> Stream.map(fn
+         %RDF.Literal{} = literal -> literal
+         %RDF.IRI{} = iri         -> iri
+         %RDF.BlankNode{} = bnode -> bnode
+
+         variable when is_binary(variable) ->
+           Map.get(solution, variable)
+
+         filter ->
+           SPARQL.Algebra.Expression.evaluate(filter, %{solution: solution, data: data})
+       end)
     |> Stream.map(&(RDF.Boolean.ebv/1))
     |> conjunction()
   end
