@@ -1376,7 +1376,7 @@ defmodule SPARQL.Functions.BuiltinsTest do
       {RDF.double(-2.5),    RDF.double(-2.0)},
 
       {~L"42", :error},
-      {:error,  :error},
+      {:error, :error},
     ]
     |> Enum.each(fn {numeric, result} ->
          assert_builtin_result(:ROUND, [numeric], result)
@@ -1392,7 +1392,7 @@ defmodule SPARQL.Functions.BuiltinsTest do
       {RDF.double(-10.5),   RDF.integer(-10)},
 
       {~L"42", :error},
-      {:error,  :error},
+      {:error, :error},
     ]
     |> Enum.each(fn {numeric, result} ->
          assert_builtin_result(:CEIL, [numeric], result)
@@ -1408,7 +1408,7 @@ defmodule SPARQL.Functions.BuiltinsTest do
       {RDF.double(-10.5),   RDF.integer(-11)},
 
       {~L"42", :error},
-      {:error,  :error},
+      {:error, :error},
     ]
     |> Enum.each(fn {numeric, result} ->
          assert_builtin_result(:FLOOR, [numeric], result)
@@ -1425,6 +1425,64 @@ defmodule SPARQL.Functions.BuiltinsTest do
     assert %Literal{datatype: ^xsd_double, value: value} =
              Expression.evaluate(%FunctionCall.Builtin{name: :RAND, arguments: []}, nil)
     assert value >= 0 and value < 1
+  end
+
+  test "year function" do
+    [
+      {RDF.date_time("2011-01-10T14:45:13.815-05:00"), RDF.integer(2011)},
+      {RDF.date_time("1999-12-31T19:20:00"), RDF.integer(1999)},
+      {RDF.date_time("1999-12-31T24:00:00"), RDF.integer(2000)},
+      {RDF.date_time("1999-05-31T13:20:00Z"),      RDF.integer(1999)},
+      {RDF.date_time("1999-05-31T13:20:00-05:00"), RDF.integer(1999)},
+      {RDF.date_time("1999-05-31T13:20:00-05:00"), RDF.integer(1999)},
+      {RDF.date_time("1999-05-31T21:30:00-05:00"), RDF.integer(1999)},
+      {RDF.date_time("1999-12-31T21:30:00-05:00"), RDF.integer(1999)},
+# TODO: support for negative years in RDF.DateTime datatype
+#      {RDF.date_time("-0002-06-06T00:00:00"), RDF.integer(-2)},
+
+      {RDF.integer(1999), :error},
+      {~L"1999-05-31T13:20:00-05:00", :error},
+      {:error, :error},
+    ]
+    |> Enum.each(fn {datetime, result} ->
+         assert_builtin_result(:YEAR, [datetime], result)
+       end)
+  end
+
+  test "month function" do
+    [
+      {RDF.date_time("2011-01-10T14:45:13.815-05:00"), RDF.integer(1)},
+      {RDF.date_time("1999-12-31T19:20:00"), RDF.integer(12)},
+      {RDF.date_time("1999-12-31T24:00:00"), RDF.integer(1)},
+      {RDF.date_time("1999-12-31T19:20:00Z"), RDF.integer(12)},
+      {RDF.date_time("1999-05-31T13:20:00-05:00"), RDF.integer(5)},
+      {RDF.date_time("1999-12-31T19:20:00-05:00"), RDF.integer(12)},
+
+      {RDF.integer(1), :error},
+      {~L"1999-05-31T13:20:00-05:00", :error},
+      {:error, :error},
+    ]
+    |> Enum.each(fn {datetime, result} ->
+         assert_builtin_result(:MONTH, [datetime], result)
+       end)
+  end
+
+  test "day function" do
+    [
+      {RDF.date_time("2011-01-10T14:45:13.815-05:00"), RDF.integer(10)},
+      {RDF.date_time("1999-12-31T19:20:00"), RDF.integer(31)},
+      {RDF.date_time("1999-12-31T24:00:00"), RDF.integer(1)},
+      {RDF.date_time("1999-12-31T19:20:00Z"), RDF.integer(31)},
+      {RDF.date_time("1999-05-31T13:20:00-05:00"), RDF.integer(31)},
+      {RDF.date_time("1999-12-31T20:00:00-05:00"), RDF.integer(31)},
+
+      {RDF.integer(1), :error},
+      {~L"1999-05-31T13:20:00-05:00", :error},
+      {:error, :error},
+    ]
+    |> Enum.each(fn {datetime, result} ->
+         assert_builtin_result(:DAY, [datetime], result)
+       end)
   end
 
 

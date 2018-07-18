@@ -8,6 +8,7 @@ defmodule SPARQL.Functions.Builtins do
   @xsd_string XSD.string
   @lang_string RDF.langString
   @xsd_integer XSD.integer
+  @xsd_datetime XSD.dateTime
 
   @doc """
   Value equality
@@ -762,6 +763,45 @@ defmodule SPARQL.Functions.Builtins do
 
   def call(:RAND, _), do: :error
 
+  @doc """
+  Returns the year part of the given datetime as an integer.
+
+  see
+  - <https://www.w3.org/TR/sparql11-query/#func-year>
+  - <https://www.w3.org/TR/xpath-functions/#func-year-from-dateTime>
+  """
+  def call(:YEAR, [%RDF.Literal{datatype: @xsd_datetime} = literal]) do
+    naive_datetime_part(literal, :year)
+  end
+
+  def call(:YEAR, _), do: :error
+
+  @doc """
+  Returns the month part of the given datetime as an integer.
+
+  see
+  - <https://www.w3.org/TR/sparql11-query/#func-month>
+  - <https://www.w3.org/TR/xpath-functions/#func-month-from-dateTime>
+  """
+  def call(:MONTH, [%RDF.Literal{datatype: @xsd_datetime} = literal]) do
+    naive_datetime_part(literal, :month)
+  end
+
+  def call(:MONTH, _), do: :error
+
+  @doc """
+  Returns the day part of the given datetime as an integer.
+
+  see
+  - <https://www.w3.org/TR/sparql11-query/#func-day>
+  - <https://www.w3.org/TR/xpath-functions/#func-day-from-dateTime>
+  """
+  def call(:DAY, [%RDF.Literal{datatype: @xsd_datetime} = literal]) do
+    naive_datetime_part(literal, :day)
+  end
+
+  def call(:DAY, _), do: :error
+
 
   defp match_regex(%RDF.Literal{datatype: @xsd_string} = text,
                    %RDF.Literal{datatype: @xsd_string} = pattern,
@@ -829,7 +869,36 @@ defmodule SPARQL.Functions.Builtins do
   defp xpath_to_erlang_regex_variables(text) do
     String.replace(text, ~r/(?<!\\)\$/, "\\")
   end
-  
+
+
+  defp naive_datetime_part(%RDF.Literal{value: %DateTime{} = datetime,
+                                        uncanonical_lexical: nil}, field) do
+    datetime
+    |> Map.get(field)
+    |> RDF.integer()
+  end
+
+  defp naive_datetime_part(%RDF.Literal{value: %NaiveDateTime{} = datetime}, field) do
+    datetime
+    |> Map.get(field)
+    |> RDF.integer()
+  end
+
+  defp naive_datetime_part(literal, field) do
+    with {:ok, datetime} <-
+           literal
+           |> RDF.DateTime.lexical()
+           |> NaiveDateTime.from_iso8601()
+    do
+      datetime
+      |> Map.get(field)
+      |> RDF.integer()
+    else
+      _ -> :error
+    end
+  end
+
+
   @doc """
   Argument Compatibility Rules
 
