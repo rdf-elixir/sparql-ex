@@ -1485,6 +1485,41 @@ defmodule SPARQL.Functions.BuiltinsTest do
        end)
   end
 
+  test "hours function" do
+    [
+      {RDF.date_time("2011-01-10T14:45:13.815-05:00"), RDF.integer(14)},
+      {RDF.date_time("1999-12-31T12:00:00"), RDF.integer(12)},
+      {RDF.date_time("1999-12-31T24:00:00"), RDF.integer(0)},
+      {RDF.date_time("1999-12-31T19:20:00Z"), RDF.integer(19)},
+      {RDF.date_time("1999-05-31T08:20:00-05:00"), RDF.integer(8)},
+      {RDF.date_time("1999-12-31T21:20:00-05:00"), RDF.integer(21)},
+
+      {RDF.integer(1), :error},
+      {~L"1999-05-31T13:20:00-05:00", :error},
+      {:error, :error},
+    ]
+    |> Enum.each(fn {datetime, result} ->
+         assert_builtin_result(:HOURS, [datetime], result)
+       end)
+  end
+
+  test "minutes function" do
+    [
+      {RDF.date_time("2011-01-10T14:45:13.815-05:00"), RDF.integer(45)},
+      {RDF.date_time("1999-05-31T13:30:00"), RDF.integer(30)},
+      {RDF.date_time("1999-05-31T13:30:00Z"), RDF.integer(30)},
+      {RDF.date_time("1999-05-31T13:20:00-05:00"), RDF.integer(20)},
+      {RDF.date_time("1999-05-31T13:30:00+05:30"), RDF.integer(30)},
+
+      {RDF.integer(1), :error},
+      {~L"1999-05-31T13:20:00-05:00", :error},
+      {:error, :error},
+    ]
+    |> Enum.each(fn {datetime, result} ->
+         assert_builtin_result(:MINUTES, [datetime], result)
+       end)
+  end
+
 
   test "compatible_arguments?/2" do
     [

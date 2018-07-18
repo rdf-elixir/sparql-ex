@@ -802,6 +802,32 @@ defmodule SPARQL.Functions.Builtins do
 
   def call(:DAY, _), do: :error
 
+  @doc """
+  Returns the hours part of the given datetime as an integer.
+
+  see
+  - <https://www.w3.org/TR/sparql11-query/#func-hours>
+  - <https://www.w3.org/TR/xpath-functions/#func-hours-from-dateTime>
+  """
+  def call(:HOURS, [%RDF.Literal{datatype: @xsd_datetime} = literal]) do
+    naive_datetime_part(literal, :hour)
+  end
+
+  def call(:HOURS, _), do: :error
+
+  @doc """
+  Returns the minutes part of the given datetime as an integer.
+
+  see
+  - <https://www.w3.org/TR/sparql11-query/#func-minutes>
+  - <https://www.w3.org/TR/xpath-functions/#func-minutes-from-dateTime>
+  """
+  def call(:MINUTES, [%RDF.Literal{datatype: @xsd_datetime} = literal]) do
+    naive_datetime_part(literal, :minute)
+  end
+
+  def call(:MINUTES, _), do: :error
+
 
   defp match_regex(%RDF.Literal{datatype: @xsd_string} = text,
                    %RDF.Literal{datatype: @xsd_string} = pattern,
