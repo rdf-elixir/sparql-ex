@@ -828,6 +828,35 @@ defmodule SPARQL.Functions.Builtins do
 
   def call(:MINUTES, _), do: :error
 
+  @doc """
+  Returns the seconds part of the given datetime as a decimal.
+
+  see
+  - <https://www.w3.org/TR/sparql11-query/#func-seconds>
+  - <https://www.w3.org/TR/xpath-functions/#func-seconds-from-dateTime>
+  """
+  def call(:SECONDS, [%RDF.Literal{datatype: @xsd_datetime} = literal]) do
+    if RDF.DateTime.valid?(literal) do
+      case literal.value.microsecond do
+        {_, 0} ->
+          Decimal.new(literal.value.second)
+          |> RDF.decimal()
+
+        {microsecond, _} ->
+          %Decimal{coef: microsecond, exp: -6}
+          |> Decimal.add(literal.value.second)
+          |> RDF.decimal()
+
+        _ ->
+          :error
+      end
+    else
+      :error
+    end
+  end
+
+  def call(:SECONDS, _), do: :error
+
 
   defp match_regex(%RDF.Literal{datatype: @xsd_string} = text,
                    %RDF.Literal{datatype: @xsd_string} = pattern,
