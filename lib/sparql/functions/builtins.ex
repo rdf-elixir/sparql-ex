@@ -839,7 +839,7 @@ defmodule SPARQL.Functions.Builtins do
     if RDF.DateTime.valid?(literal) do
       case literal.value.microsecond do
         {_, 0} ->
-          Decimal.new(literal.value.second)
+          literal.value.second
           |> RDF.decimal()
 
         {microsecond, _} ->
@@ -857,6 +857,67 @@ defmodule SPARQL.Functions.Builtins do
 
   def call(:SECONDS, _), do: :error
 
+  @doc """
+  Returns the MD5 checksum, as a hex digit string.
+
+  see <https://www.w3.org/TR/sparql11-query/#func-md5>
+  """
+  def call(:MD5, [%RDF.Literal{datatype: @xsd_string} = literal]) do
+    hash(:md5, literal.value)
+  end
+
+  def call(:MD5, _), do: :error
+
+  @doc """
+  Returns the SHA1 checksum, as a hex digit string.
+
+  see <https://www.w3.org/TR/sparql11-query/#func-sha1>
+  """
+  def call(:SHA1, [%RDF.Literal{datatype: @xsd_string} = literal]) do
+    hash(:sha, literal.value)
+  end
+
+  def call(:SHA1, _), do: :error
+
+  @doc """
+  Returns the SHA256 checksum, as a hex digit string.
+
+  see <https://www.w3.org/TR/sparql11-query/#func-sha256>
+  """
+  def call(:SHA256, [%RDF.Literal{datatype: @xsd_string} = literal]) do
+    hash(:sha256, literal.value)
+  end
+
+  def call(:SHA256, _), do: :error
+
+  @doc """
+  Returns the SHA384 checksum, as a hex digit string.
+
+  see <https://www.w3.org/TR/sparql11-query/#fun  c-sha384>
+  """
+  def call(:SHA384, [%RDF.Literal{datatype: @xsd_string} = literal]) do
+    hash(:sha384, literal.value)
+  end
+
+  def call(:SHA384, _), do: :error
+
+  @doc """
+  Returns the SHA512 checksum, as a hex digit string.
+
+  see <https://www.w3.org/TR/sparql11-query/#func-sha512>
+  """
+  def call(:SHA512, [%RDF.Literal{datatype: @xsd_string} = literal]) do
+    hash(:sha512, literal.value)
+  end
+
+  def call(:SHA512, _), do: :error
+
+  defp hash(type, value) do
+    :crypto.hash(type, value)
+    |> Base.encode16()
+    |> String.downcase()
+    |> RDF.string()
+  end
 
   defp match_regex(%RDF.Literal{datatype: @xsd_string} = text,
                    %RDF.Literal{datatype: @xsd_string} = pattern,
