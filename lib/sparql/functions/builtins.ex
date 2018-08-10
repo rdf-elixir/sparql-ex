@@ -858,6 +858,23 @@ defmodule SPARQL.Functions.Builtins do
   def call(:SECONDS, _), do: :error
 
   @doc """
+  Returns the timezone part of a given datetime as a simple literal.
+
+  Returns the empty string if there is no timezone.
+
+  see <https://www.w3.org/TR/sparql11-query/#func-tz>
+  """
+  def call(:TZ, [%RDF.Literal{datatype: @xsd_datetime} = literal]) do
+    if tz = RDF.DateTime.tz(literal) do
+      RDF.string(tz)
+    else
+      :error
+    end
+  end
+
+  def call(:TZ, _), do: :error
+
+  @doc """
   Returns the MD5 checksum, as a hex digit string.
 
   see <https://www.w3.org/TR/sparql11-query/#func-md5>

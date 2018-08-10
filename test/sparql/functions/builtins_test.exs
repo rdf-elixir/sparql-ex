@@ -1430,13 +1430,13 @@ defmodule SPARQL.Functions.BuiltinsTest do
   test "year function" do
     [
       {RDF.date_time("2011-01-10T14:45:13.815-05:00"), RDF.integer(2011)},
-      {RDF.date_time("1999-12-31T19:20:00"), RDF.integer(1999)},
-      {RDF.date_time("1999-12-31T24:00:00"), RDF.integer(2000)},
-      {RDF.date_time("1999-05-31T13:20:00Z"),      RDF.integer(1999)},
-      {RDF.date_time("1999-05-31T13:20:00-05:00"), RDF.integer(1999)},
-      {RDF.date_time("1999-05-31T13:20:00-05:00"), RDF.integer(1999)},
-      {RDF.date_time("1999-05-31T21:30:00-05:00"), RDF.integer(1999)},
-      {RDF.date_time("1999-12-31T21:30:00-05:00"), RDF.integer(1999)},
+      {RDF.date_time("1999-12-31T19:20:00"),           RDF.integer(1999)},
+      {RDF.date_time("1999-12-31T24:00:00"),           RDF.integer(2000)},
+      {RDF.date_time("1999-05-31T13:20:00Z"),          RDF.integer(1999)},
+      {RDF.date_time("1999-05-31T13:20:00-05:00"),     RDF.integer(1999)},
+      {RDF.date_time("1999-05-31T13:20:00-05:00"),     RDF.integer(1999)},
+      {RDF.date_time("1999-05-31T21:30:00-05:00"),     RDF.integer(1999)},
+      {RDF.date_time("1999-12-31T21:30:00-05:00"),     RDF.integer(1999)},
 # TODO: support for negative years in RDF.DateTime datatype
 #      {RDF.date_time("-0002-06-06T00:00:00"), RDF.integer(-2)},
 
@@ -1452,11 +1452,11 @@ defmodule SPARQL.Functions.BuiltinsTest do
   test "month function" do
     [
       {RDF.date_time("2011-01-10T14:45:13.815-05:00"), RDF.integer(1)},
-      {RDF.date_time("1999-12-31T19:20:00"), RDF.integer(12)},
-      {RDF.date_time("1999-12-31T24:00:00"), RDF.integer(1)},
-      {RDF.date_time("1999-12-31T19:20:00Z"), RDF.integer(12)},
-      {RDF.date_time("1999-05-31T13:20:00-05:00"), RDF.integer(5)},
-      {RDF.date_time("1999-12-31T19:20:00-05:00"), RDF.integer(12)},
+      {RDF.date_time("1999-12-31T19:20:00"),           RDF.integer(12)},
+      {RDF.date_time("1999-12-31T24:00:00"),           RDF.integer(1)},
+      {RDF.date_time("1999-12-31T19:20:00Z"),          RDF.integer(12)},
+      {RDF.date_time("1999-05-31T13:20:00-05:00"),     RDF.integer(5)},
+      {RDF.date_time("1999-12-31T19:20:00-05:00"),     RDF.integer(12)},
 
       {RDF.integer(1), :error},
       {~L"1999-05-31T13:20:00-05:00", :error},
@@ -1470,11 +1470,11 @@ defmodule SPARQL.Functions.BuiltinsTest do
   test "day function" do
     [
       {RDF.date_time("2011-01-10T14:45:13.815-05:00"), RDF.integer(10)},
-      {RDF.date_time("1999-12-31T19:20:00"), RDF.integer(31)},
-      {RDF.date_time("1999-12-31T24:00:00"), RDF.integer(1)},
-      {RDF.date_time("1999-12-31T19:20:00Z"), RDF.integer(31)},
-      {RDF.date_time("1999-05-31T13:20:00-05:00"), RDF.integer(31)},
-      {RDF.date_time("1999-12-31T20:00:00-05:00"), RDF.integer(31)},
+      {RDF.date_time("1999-12-31T19:20:00"),           RDF.integer(31)},
+      {RDF.date_time("1999-12-31T24:00:00"),           RDF.integer(1)},
+      {RDF.date_time("1999-12-31T19:20:00Z"),          RDF.integer(31)},
+      {RDF.date_time("1999-05-31T13:20:00-05:00"),     RDF.integer(31)},
+      {RDF.date_time("1999-12-31T20:00:00-05:00"),     RDF.integer(31)},
 
       {RDF.integer(1), :error},
       {~L"1999-05-31T13:20:00-05:00", :error},
@@ -1488,11 +1488,11 @@ defmodule SPARQL.Functions.BuiltinsTest do
   test "hours function" do
     [
       {RDF.date_time("2011-01-10T14:45:13.815-05:00"), RDF.integer(14)},
-      {RDF.date_time("1999-12-31T12:00:00"), RDF.integer(12)},
-      {RDF.date_time("1999-12-31T24:00:00"), RDF.integer(0)},
-      {RDF.date_time("1999-12-31T19:20:00Z"), RDF.integer(19)},
-      {RDF.date_time("1999-05-31T08:20:00-05:00"), RDF.integer(8)},
-      {RDF.date_time("1999-12-31T21:20:00-05:00"), RDF.integer(21)},
+      {RDF.date_time("1999-12-31T12:00:00"),          RDF.integer(12)},
+      {RDF.date_time("1999-12-31T24:00:00"),          RDF.integer(0)},
+      {RDF.date_time("1999-12-31T19:20:00Z"),         RDF.integer(19)},
+      {RDF.date_time("1999-05-31T08:20:00-05:00"),    RDF.integer(8)},
+      {RDF.date_time("1999-12-31T21:20:00-05:00"),    RDF.integer(21)},
 
       {RDF.integer(1), :error},
       {~L"1999-05-31T13:20:00-05:00", :error},
@@ -1506,10 +1506,10 @@ defmodule SPARQL.Functions.BuiltinsTest do
   test "minutes function" do
     [
       {RDF.date_time("2011-01-10T14:45:13.815-05:00"), RDF.integer(45)},
-      {RDF.date_time("1999-05-31T13:30:00"), RDF.integer(30)},
-      {RDF.date_time("1999-05-31T13:30:00Z"), RDF.integer(30)},
-      {RDF.date_time("1999-05-31T13:20:00-05:00"), RDF.integer(20)},
-      {RDF.date_time("1999-05-31T13:30:00+05:30"), RDF.integer(30)},
+      {RDF.date_time("1999-05-31T13:30:00"),           RDF.integer(30)},
+      {RDF.date_time("1999-05-31T13:30:00Z"),          RDF.integer(30)},
+      {RDF.date_time("1999-05-31T13:20:00-05:00"),     RDF.integer(20)},
+      {RDF.date_time("1999-05-31T13:30:00+05:30"),     RDF.integer(30)},
 
       {RDF.integer(1), :error},
       {~L"1999-05-31T13:20:00-05:00", :error},
@@ -1523,8 +1523,8 @@ defmodule SPARQL.Functions.BuiltinsTest do
   test "seconds function" do
     [
       {RDF.date_time("2011-01-10T14:45:13.815-05:00"), RDF.decimal(13.815)},
-      {RDF.date_time("1999-05-31T13:20:00"), RDF.decimal(0.0)},
-      {RDF.date_time("1999-05-31T13:20:42Z"), RDF.decimal(42.0)},
+      {RDF.date_time("1999-05-31T13:20:00"),           RDF.decimal(0.0)},
+      {RDF.date_time("1999-05-31T13:20:42Z"),          RDF.decimal(42.0)},
       {RDF.date_time("1999-05-31T13:20:12.340-05:00"), RDF.decimal(12.34)},
       {RDF.date_time("1999-05-31T13:20:12.034-05:00"), RDF.decimal(12.034)},
 
@@ -1534,6 +1534,22 @@ defmodule SPARQL.Functions.BuiltinsTest do
     ]
     |> Enum.each(fn {datetime, result} ->
          assert_builtin_result(:SECONDS, [datetime], result)
+       end)
+  end
+
+  test "tz function" do
+    [
+      {RDF.date_time("2011-01-10T14:45:13.815-05:00"), ~L"-05:00"},
+      {RDF.date_time("2011-01-10T14:45:13.815-05:00"), ~L"-05:00"},
+      {RDF.date_time("2011-01-10T14:45:13.815Z"),      ~L"Z"},
+      {RDF.date_time("2011-01-10T14:45:13.815"),       ~L""},
+
+      {RDF.integer(1), :error},
+      {~L"1999-05-31T13:20:00-05:00", :error},
+      {:error, :error},
+    ]
+    |> Enum.each(fn {datetime, result} ->
+         assert_builtin_result(:TZ, [datetime], result)
        end)
   end
 
