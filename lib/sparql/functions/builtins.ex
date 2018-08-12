@@ -226,14 +226,10 @@ defmodule SPARQL.Functions.Builtins do
   @doc """
   Returns the lexical form of a literal or the codepoint representation of an IRI.
 
-  It returns the empty string for all blank nodes, thereby following the behavior
-  mentioned in [DuCharme2013, p. 156].
-
   see <https://www.w3.org/TR/sparql11-query/#func-str>
   """
   def call(:STR, [%RDF.Literal{} = literal]), do: literal |> to_string() |> RDF.string()
-  def call(:STR, [%RDF.IRI{} = iri]),         do: iri |> to_string() |> RDF.string()
-  def call(:STR, [%RDF.BlankNode{}]),         do: RDF.string("")
+  def call(:STR, [%RDF.IRI{} = iri]),         do: iri     |> to_string() |> RDF.string()
   def call(:STR, _),                          do: :error
 
   @doc """

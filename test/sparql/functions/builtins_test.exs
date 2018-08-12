@@ -775,7 +775,7 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
       {RDF.iri("http://example.com/"), RDF.string("http://example.com/")},
 
-      {RDF.bnode("foo"), RDF.string("")},
+      {RDF.bnode("foo"), :error},
 
       {:error, :error}
     ]
