@@ -53,6 +53,13 @@ defmodule SPARQL.Processor.BGPTest do
       ]}
   end
 
+  test "with no solutions" do
+    assert query(Graph.new(), "SELECT * WHERE { ?a ?b ?c }") ==
+             %Query.Result{
+               variables: ~w[a b c],
+               results: []}
+  end
+
   test "two connected triple patterns with a match" do
     assert query(@example_graph, """
       SELECT *

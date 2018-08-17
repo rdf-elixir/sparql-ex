@@ -74,15 +74,20 @@ defmodule SPARQL.Algebra.BGP do
   defp match(%Graph{descriptions: descriptions},
               {subject_variable, _, _} = triple_pattern)
        when is_binary(subject_variable) do
-    Enum.reduce descriptions, [], fn ({subject, description}, acc) ->
-      case match(description, triple_pattern) do
-        nil       -> acc
-        solutions ->
-          Enum.map(solutions, fn solution ->
-            Map.put(solution, subject_variable, subject)
-          end) ++ acc
-      end
-    end
+    descriptions
+    |> Enum.reduce([], fn ({subject, description}, acc) ->
+         case match(description, triple_pattern) do
+           nil       -> acc
+           solutions ->
+             Enum.map(solutions, fn solution ->
+               Map.put(solution, subject_variable, subject)
+             end) ++ acc
+         end
+       end)
+    |> case do
+         []        -> nil
+         solutions -> solutions
+       end
   end
 
   defp match(%Graph{} = graph, {subject, _, _} = triple_pattern) do
