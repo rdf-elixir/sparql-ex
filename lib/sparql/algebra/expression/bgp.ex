@@ -162,6 +162,10 @@ defmodule SPARQL.Algebra.BGP do
     end
   end
 
+  defp triple_priority({v, v, v}), do: triple_priority({v, :p, :o})
+  defp triple_priority({v, v, o}), do: triple_priority({v, :p, o})
+  defp triple_priority({v, p, v}), do: triple_priority({v, p, :o})
+  defp triple_priority({s, v, v}), do: triple_priority({s, v, :o})
   defp triple_priority({s, p, o}) do
     {sp, pp, op} = {value_priority(s), value_priority(p), value_priority(o)}
     <<(sp + pp + op) :: size(2), sp :: size(1), pp :: size(1), op :: size(1)>>
