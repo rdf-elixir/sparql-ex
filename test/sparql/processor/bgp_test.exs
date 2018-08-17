@@ -60,6 +60,74 @@ defmodule SPARQL.Processor.BGPTest do
                results: []}
   end
 
+  test "repeated variable: {?a ?a ?b}" do
+    example_graph = Graph.new([
+        {EX.y, EX.y, EX.x},
+        {EX.x, EX.y, EX.y},
+        {EX.y, EX.x, EX.y}
+      ])
+
+    assert query(example_graph, "SELECT * WHERE { ?a ?a ?b }") ==
+             %Query.Result{
+               variables: ~w[a b],
+               results: [
+                 %{
+                   "a" => ~I<http://example.org/y>,
+                   "b" => ~I<http://example.org/x>,
+                 },
+               ]}
+  end
+
+  test "repeated variable: {?a ?b ?a}" do
+    example_graph = Graph.new([
+      {EX.y, EX.y, EX.x},
+      {EX.x, EX.y, EX.y},
+      {EX.y, EX.x, EX.y}
+    ])
+
+    assert query(example_graph, "SELECT * WHERE { ?a ?b ?a }") ==
+             %Query.Result{
+               variables: ~w[b a],
+               results: [
+                 %{
+                   "a" => ~I<http://example.org/y>,
+                   "b" => ~I<http://example.org/x>,
+                 },
+               ]}
+  end
+
+  test "repeated variable: {?b ?a ?a}" do
+    example_graph = Graph.new([
+      {EX.y, EX.y, EX.x},
+      {EX.x, EX.y, EX.y},
+      {EX.y, EX.x, EX.y}
+    ])
+
+    assert query(example_graph, "SELECT * WHERE { ?b ?a ?a }") ==
+             %Query.Result{
+               variables: ~w[b a],
+               results: [
+                 %{
+                   "a" => ~I<http://example.org/y>,
+                   "b" => ~I<http://example.org/x>,
+                 },
+               ]}
+  end
+
+  test "repeated variable: {?a ?a ?a}" do
+    example_graph = Graph.new([
+      {EX.y, EX.y, EX.x},
+      {EX.x, EX.y, EX.y},
+      {EX.y, EX.x, EX.y},
+      {EX.y, EX.y, EX.y},
+    ])
+
+    assert query(example_graph, "SELECT * WHERE { ?a ?a ?a }") ==
+             %Query.Result{
+               variables: ~w[a],
+               results: [%{"a" => ~I<http://example.org/y>}]}
+  end
+
   test "two connected triple patterns with a match" do
     assert query(@example_graph, """
       SELECT *

@@ -71,12 +71,11 @@ defmodule SPARQL.Algebra.BGP do
        end)
   end
 
-  defp match(%Graph{descriptions: descriptions},
-              {subject_variable, _, _} = triple_pattern)
+  defp match(%Graph{descriptions: descriptions}, {subject_variable, _, _} = triple_pattern)
        when is_binary(subject_variable) do
     descriptions
     |> Enum.reduce([], fn ({subject, description}, acc) ->
-         case match(description, triple_pattern) do
+         case match(description, solve_variables(subject_variable, subject, triple_pattern)) do
            nil       -> acc
            solutions ->
              Enum.map(solutions, fn solution ->
@@ -100,7 +99,15 @@ defmodule SPARQL.Algebra.BGP do
   defp match(%Description{predications: predications},
          {_, predicate_variable, object_variable})
        when is_binary(predicate_variable) and is_binary(object_variable) do
-    unless Enum.empty?(predications) do
+    if predicate_variable == object_variable do # repeated variable
+      Enum.reduce predications, [], fn ({predicate, objects}, solutions) ->
+        if Map.has_key?(objects, predicate) do
+          [%{predicate_variable => predicate} | solutions]
+        else
+          solutions
+        end
+      end
+    else
       Enum.reduce predications, [], fn ({predicate, objects}, solutions) ->
         solutions ++
         Enum.map(objects, fn {object, _} ->
@@ -108,22 +115,26 @@ defmodule SPARQL.Algebra.BGP do
         end)
       end
     end
+    |> case do
+         []        -> nil
+         solutions -> solutions
+       end
   end
 
   defp match(%Description{predications: predications},
          {_, predicate_variable, object}) when is_binary(predicate_variable) do
-    case (
-      Enum.reduce predications, [], fn ({predicate, objects}, solutions) ->
-        if Map.has_key?(objects, object) do
-          [%{predicate_variable => predicate} | solutions]
-        else
-          solutions
-        end
-      end
-    ) do
-      []        -> nil
-      solutions -> solutions
-    end
+    predications
+    |> Enum.reduce([], fn ({predicate, objects}, solutions) ->
+         if Map.has_key?(objects, object) do
+           [%{predicate_variable => predicate} | solutions]
+         else
+           solutions
+         end
+       end)
+    |> case do
+         []        -> nil
+         solutions -> solutions
+       end
   end
 
   defp match(%Description{predications: predications},
@@ -148,6 +159,14 @@ defmodule SPARQL.Algebra.BGP do
     end
   end
 
+  defp solve_variables(var, val, {var, var, var}), do: {val, val, val}
+  defp solve_variables(var, val, {s, var, var}),   do: {s, val, val}
+  defp solve_variables(var, val, {var, p, var}),   do: {val, p, val}
+  defp solve_variables(var, val, {var, var, o}),   do: {val, val, o}
+  defp solve_variables(var, val, {var, p, o}),     do: {val, p, o}
+  defp solve_variables(var, val, {s, var, o}),     do: {s, val, o}
+  defp solve_variables(var, val, {s, p, var}),     do: {s, p, val}
+  defp solve_variables(_, _, pattern),             do: pattern
 
   defp merge_matches({dependent_solution, triple_pattern}, data) do
     case match(data, triple_pattern) do
