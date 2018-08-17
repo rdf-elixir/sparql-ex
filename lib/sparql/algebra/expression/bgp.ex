@@ -39,7 +39,7 @@ defmodule SPARQL.Algebra.BGP do
   defp do_matching([triple_pattern | remaining], data, acc) do
     solutions = match(data, triple_pattern, acc)
 
-    if solutions do
+    if solutions not in [nil, []] do
       remaining
       |> mark_solved_variables(solutions)
       |> Enum.sort_by(&triple_priority/1)
@@ -55,10 +55,6 @@ defmodule SPARQL.Algebra.BGP do
     triple_pattern
     |> apply_solutions(existing_solutions)
     |> Enum.flat_map(&(merge_matches(&1, data)))
-    |> case do
-         []        -> nil
-         solutions -> solutions
-       end
   end
 
   defp match(data, triple_pattern, []), do: match(data, triple_pattern)
@@ -83,10 +79,6 @@ defmodule SPARQL.Algebra.BGP do
              end) ++ acc
          end
        end)
-    |> case do
-         []        -> nil
-         solutions -> solutions
-       end
   end
 
   defp match(%Graph{} = graph, {subject, _, _} = triple_pattern) do
@@ -115,10 +107,6 @@ defmodule SPARQL.Algebra.BGP do
         end)
       end
     end
-    |> case do
-         []        -> nil
-         solutions -> solutions
-       end
   end
 
   defp match(%Description{predications: predications},
@@ -131,10 +119,6 @@ defmodule SPARQL.Algebra.BGP do
            solutions
          end
        end)
-    |> case do
-         []        -> nil
-         solutions -> solutions
-       end
   end
 
   defp match(%Description{predications: predications},
