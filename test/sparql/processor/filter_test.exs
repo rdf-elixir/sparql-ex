@@ -27,6 +27,41 @@ defmodule SPARQL.Processor.FilterTest do
         results: [%{"s" => ~I<http://example.org/s1>}]}
   end
 
+  test "!" do
+    assert query(@example_graph_with_literals, """
+      SELECT ?s
+      WHERE {
+        ?s ?p ?o
+        FILTER(!?o)
+      }
+      """) ==
+      %Query.Result{
+        variables: ~w[s],
+        results: [
+          %{"s" => ~I<http://example.org/s6>},
+          %{"s" => ~I<http://example.org/s5>},
+        ]
+      }
+
+    assert query(@example_graph_with_literals, """
+      SELECT ?s
+      WHERE {
+        ?s ?p ?o
+        FILTER(!(!?o))
+      }
+      """) ==
+      %Query.Result{
+        variables: ~w[s],
+        results: [
+          %{"s" => ~I<http://example.org/s6>},
+          %{"s" => ~I<http://example.org/s4>},
+          %{"s" => ~I<http://example.org/s3>},
+          %{"s" => ~I<http://example.org/s1>},
+          %{"s" => ~I<http://example.org/s1>},
+        ]
+      }
+  end
+
   test "multiple filters" do
     assert query(@example_graph_with_literals, """
       SELECT ?p
