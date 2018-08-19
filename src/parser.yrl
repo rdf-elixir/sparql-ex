@@ -100,7 +100,7 @@ varDecls -> '*'                         : ['$1'] .
 varDecls -> varDecl                     : ['$1'] .
 varDecls -> varDecl varDecls            : ['$1' | '$2'] .
 varDecl  -> var                         : {'$1', nil} .
-varDecl  -> '(' expression 'AS' var ')' : {'$2', '$1'} .
+varDecl  -> '(' expression 'AS' var ')' : {'$4', '$2'} .
 
 constructQuery	-> 'CONSTRUCT' constructTemplate datasetClauses whereClause solutionModifier   : {construct, '$2', '$3', '$4', '$5' } .
 constructQuery	-> 'CONSTRUCT' constructTemplate whereClause solutionModifier                  : {construct, '$2', nil , '$3', '$4' } .

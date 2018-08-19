@@ -542,11 +542,21 @@ defmodule SPARQL.Algebra.Translation do
   # https://www.w3.org/TR/sparql11-query/#sparqlSelectExpressions
   defp convert_select(%{expr:
         {:select, {var_decls, modifier}, _dataset_clause, where_clause, _solution_modifier}} = state) do
-    with {pv, e} = select_items(var_decls, where_clause) do
-      # TODO: process e (with AS expressions)
+    with vs            = visible_variables(where_clause),
+         {:ok, pv, e} <- select_items(var_decls, vs)
+    do
+      x =
+        Enum.reduce e, where_clause, fn {var, expr}, x ->
+          %SPARQL.Algebra.Extend{
+            p: x,
+            var: var,
+            expr: expr
+          }
+        end
+
       {:ok,
         state
-        |> Map.put(:expr, {where_clause, modifier})
+        |> Map.put(:expr, {x, modifier})
         |> Map.put(:pv, pv)
       }
     end
@@ -580,19 +590,30 @@ defmodule SPARQL.Algebra.Translation do
   end
 
 
-  defp select_items(["*"], where_clause) do
-    {visible_variables(where_clause), []}
+  defp select_items(["*"], vs) do
+#    {:ok, vs, []} # TODO: The spec says PV := VS; but this would produce project() expression when they aren't needed (and not generated in other implementations)
+    {:ok, [], []}
   end
 
-  defp select_items(sel_items, _) do
-    {pv, e} =
-      Enum.reduce sel_items, {[], []}, fn
-        {variable, nil},  {pv, e} -> {[variable | pv], e}
-        {variable, expr}, {pv, e} -> {[variable | pv], [{variable, expr} | e]}
-      end
-    {Enum.reverse(pv), Enum.reverse(e)}
-  end
+  defp select_items(sel_items, vs) do
+    sel_items
+    |> Enum.reduce_while({[], []}, fn
+         {variable, nil},  {pv, e} ->
+           {:cont, {[variable | pv], e}}
 
+         {variable, expr}, {pv, e} ->
+           cond do
+             variable in vs -> {:halt, "variable ?#{variable} already used"}
+             variable in pv -> {:halt, "variable ?#{variable} used for multiple expressions"}
+             true           -> {:cont, {[variable | pv], [{variable, expr} | e]}}
+           end
+       end)
+    |> case do
+         {pv, e} -> {:ok, Enum.reverse(pv), Enum.reverse(e)}
+         error   -> {:error, error}
+       end
+
+  end
 
   ############################################################################
   # 18.2.5 Converting Solution Modifiers
@@ -656,9 +677,13 @@ defmodule SPARQL.Algebra.Translation do
     pattern # TODO
   end
 
-  # TODO: This should be implemented on SPARQL.Algebra.Expression recursively
   defp visible_variables(pattern) do
-    # TODO:
+# TODO: remove this conditional which is currently needed to work with the unfinished algebra expression
+    if is_map(pattern) do
+      SPARQL.Algebra.Expression.variables(pattern)
+    else
+      []
+    end
   end
 
   @doc """

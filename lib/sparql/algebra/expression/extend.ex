@@ -1,3 +1,3 @@
 defmodule SPARQL.Algebra.Extend do
-  defstruct [:var, :expr]
+  defstruct [:p, :var, :expr]
 end
