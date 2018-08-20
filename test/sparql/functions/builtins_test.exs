@@ -1340,8 +1340,25 @@ defmodule SPARQL.Functions.BuiltinsTest do
          end)
     end
 
+    test "unicode characters" do
+      [
+        {~L"日本語"ja, ~L"[^a-z0-9]", ~L"-",	~L"---"ja},
+      ]
+      |> Enum.each(fn {text, pattern, replacement, result} ->
+           assert_builtin_result(:REPLACE, [text, pattern, replacement], result)
+         end)
+
+      [
+        {~L"日本語"ja, ~L"[^a-z0-9]", ~L"-",	~L"i", ~L"---"ja},
+        {~L"日本語"ja, ~L"[^a-z0-9]", ~L"-",	~L"iu", ~L"---"ja},
+      ]
+      |> Enum.each(fn {text, pattern, replacement, flags, result} ->
+           assert_builtin_result(:REPLACE, [text, pattern, replacement, flags], result)
+         end)
+    end
+
     @tag skip: "TODO"
-    test "error Conditions" do
+    test "error conditions" do
       [
         {~L"abracadabra", ~L".*?", ~L"$1", :error}, # because the pattern matches the zero-length string
         {~L"abracadabra", ~L"a(.)", ~L"$foo", :error}, # because replacement contains a $ that is not immediately followed by a digit and not immediately preceded by a backslash

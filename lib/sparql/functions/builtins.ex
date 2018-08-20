@@ -994,9 +994,13 @@ defmodule SPARQL.Functions.Builtins do
   end
 
   defp xpath_regex_pattern(pattern, flags) do
-    with {:ok, regex} <- Regex.compile(pattern, String.replace(flags, "q", "")) do
+    with {:ok, regex} <- Regex.compile(pattern, xpath_regex_flags(flags)) do
       {:regex, regex}
     end
+  end
+
+  defp xpath_regex_flags(flags) do
+    String.replace(flags, "q", "") <> "u"
   end
 
   defp xpath_to_erlang_regex_variables(text) do
