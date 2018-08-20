@@ -41,4 +41,15 @@ defmodule SPARQL.Processor.ProjectionTest do
           %{"o" => ~I<http://example.org/o2>, "ps" => ~L"http://example.org/p2", "psu" => ~L"HTTP://EXAMPLE.ORG/P2"}
         ]}
   end
+
+  test "projected expression with errors" do
+    assert query(@example_graph, "SELECT ?o (ucase(?p) AS ?ps) WHERE { <#{EX.s1}> ?p ?o }") ==
+      %Query.Result{
+        variables: ~w[o ps],
+        results: [
+          %{"o" => ~I<http://example.org/o1>},
+          %{"o" => ~I<http://example.org/o2>}
+        ]}
+  end
+
 end

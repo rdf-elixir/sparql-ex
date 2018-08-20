@@ -7,8 +7,12 @@ defmodule SPARQL.Algebra.Extend do
     %SPARQL.Query.Result{
       variables: result.variables,
       results: Enum.map(result.results, fn bindings ->
-                 Map.put(bindings, var,
-                   Expression.evaluate(expr, %{solution: bindings, data: data}))
+                 with eval_result when eval_result != :error <-
+                        Expression.evaluate(expr, %{solution: bindings, data: data}) do
+                   Map.put(bindings, var, eval_result)
+                 else
+                   _ -> bindings
+                 end
                end)
     }
   end
