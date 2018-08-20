@@ -584,8 +584,10 @@ defmodule SPARQL.Functions.Builtins do
   """
   def call(:ENCODE_FOR_URI, [%RDF.Literal{datatype: datatype} = str])
       when datatype in [@xsd_string, @lang_string] do
-    %RDF.Literal{str |
-      value: str |> to_string() |> URI.encode(&URI.char_unreserved?/1)}
+    str
+    |> to_string()
+    |> URI.encode(&URI.char_unreserved?/1)
+    |> RDF.Literal.new()
   end
 
   def call(:ENCODE_FOR_URI, _), do: :error

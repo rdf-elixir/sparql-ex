@@ -1141,8 +1141,8 @@ defmodule SPARQL.Functions.BuiltinsTest do
   test "ENCODE_FOR_URI function" do
     [
       {~L"Los Angeles",           ~L"Los%20Angeles"},
-      {~L"Los Angeles"en,         ~L"Los%20Angeles"en},
-      {RDF.string("Los Angeles"), RDF.string("Los%20Angeles")},
+      {~L"Los Angeles"en,         ~L"Los%20Angeles"},
+      {RDF.string("Los Angeles"), ~L"Los%20Angeles"},
 
       {~L"http://www.example.com/00/Weather/CA/Los%20Angeles#ocean",
        ~L"http%3A%2F%2Fwww.example.com%2F00%2FWeather%2FCA%2FLos%2520Angeles%23ocean"},
