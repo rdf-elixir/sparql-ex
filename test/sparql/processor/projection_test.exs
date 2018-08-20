@@ -19,4 +19,26 @@ defmodule SPARQL.Processor.ProjectionTest do
         ]}
   end
 
+  test "projected expression" do
+    assert query(@example_graph, "SELECT ?o (str(?p) AS ?ps) WHERE { <#{EX.s1}> ?p ?o }") ==
+      %Query.Result{
+        variables: ~w[o ps],
+        results: [
+          %{"o" => ~I<http://example.org/o1>, "ps" => ~L"http://example.org/p1"},
+          %{"o" => ~I<http://example.org/o2>, "ps" => ~L"http://example.org/p2"}
+        ]}
+  end
+
+  test "projected expressions over earlier projected expressions" do
+    assert query(@example_graph, """
+      SELECT ?o (str(?p) AS ?ps) (ucase(?ps) AS ?psu)
+      WHERE { <#{EX.s1}> ?p ?o }
+      """) ==
+      %Query.Result{
+        variables: ~w[o ps psu],
+        results: [
+          %{"o" => ~I<http://example.org/o1>, "ps" => ~L"http://example.org/p1", "psu" => ~L"HTTP://EXAMPLE.ORG/P1"},
+          %{"o" => ~I<http://example.org/o2>, "ps" => ~L"http://example.org/p2", "psu" => ~L"HTTP://EXAMPLE.ORG/P2"}
+        ]}
+  end
 end
