@@ -934,9 +934,10 @@ defmodule SPARQL.Functions.Builtins do
     |> RDF.string()
   end
 
-  defp match_regex(%RDF.Literal{datatype: @xsd_string} = text,
+  defp match_regex(%RDF.Literal{datatype: datatype} = text,
                    %RDF.Literal{datatype: @xsd_string} = pattern,
-                   %RDF.Literal{datatype: @xsd_string} = flags) do
+                   %RDF.Literal{datatype: @xsd_string} = flags)
+       when datatype in [@xsd_string, @lang_string] do
     case xpath_pattern(pattern.value, flags.value) do
       {:regex, regex} ->
         Regex.match?(regex, text.value) |> ebv()
@@ -957,20 +958,21 @@ defmodule SPARQL.Functions.Builtins do
 
   defp match_regex(_, _, _), do: :error
 
-  defp replace_regex(%RDF.Literal{datatype: @xsd_string} = text,
+  defp replace_regex(%RDF.Literal{datatype: datatype} = text,
                      %RDF.Literal{datatype: @xsd_string} = pattern,
                      %RDF.Literal{datatype: @xsd_string} = replacement,
-                     %RDF.Literal{datatype: @xsd_string} = flags) do
+                     %RDF.Literal{datatype: @xsd_string} = flags)
+       when datatype in [@xsd_string, @lang_string] do
     case xpath_pattern(pattern.value, flags.value) do
       {:regex, regex} ->
-        String.replace(text.value, regex, xpath_to_erlang_regex_variables(replacement.value))
-        |> RDF.string()
+        %RDF.Literal{text | value:
+          String.replace(text.value, regex, xpath_to_erlang_regex_variables(replacement.value))}
 
       {:q, pattern} ->
-        String.replace(text.value, pattern, replacement.value)
-        |> RDF.string()
+        %RDF.Literal{text | value:
+          String.replace(text.value, pattern, replacement.value)}
 
-      {:qi, pattern} ->
+      {:qi, _pattern} ->
         Logger.error "The combination of the q and the i flag is currently not supported in REPLACE"
         :error
 

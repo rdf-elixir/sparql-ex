@@ -1230,7 +1230,8 @@ defmodule SPARQL.Functions.BuiltinsTest do
         {@poem, ~L"Kaum.*krähen",     RDF.false},
         {@poem, ~L"^Kaum.*gesehen,$", RDF.false},
 
-        {~L"en"en,          ~L"en",            :error},
+        {~L"abracadabra"en, ~L"bra",    RDF.true},
+
         {~L"en",            ~L"en"en,          :error},
         {~L"en",            RDF.integer("42"), :error},
         {RDF.integer("42"), ~L"en",            :error},
@@ -1285,7 +1286,8 @@ defmodule SPARQL.Functions.BuiltinsTest do
         {~L"AAAA",        ~L"A+",    ~L"b",     ~L"b"},
         {~L"AAAA",        ~L"A+?",   ~L"b",     ~L"bbbb"},
 
-        {~L"en"en, ~L"en",   ~L"de",   :error},
+        {~L"abracadabra"en, ~L"bra",   ~L"*",     ~L"a*cada*"en},
+
         {~L"en",   ~L"en"en, ~L"de",   :error},
         {~L"en",   ~L"en",   ~L"de"en, :error},
         {:error,   ~L"en",   ~L"de",   :error},
