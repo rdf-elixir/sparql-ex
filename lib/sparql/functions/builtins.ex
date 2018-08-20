@@ -257,7 +257,7 @@ defmodule SPARQL.Functions.Builtins do
 
   see <https://www.w3.org/TR/sparql11-query/#func-strdt>
   """
-  def call(:STRDT, [%RDF.Literal{} = literal, %RDF.IRI{} = datatype]) do
+  def call(:STRDT, [%RDF.Literal{datatype: @xsd_string} = literal, %RDF.IRI{} = datatype]) do
     RDF.Literal.new(to_string(literal), datatype: datatype)
   end
   def call(:STRDT, _), do: :error

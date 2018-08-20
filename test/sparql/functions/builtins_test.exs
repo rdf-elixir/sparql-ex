@@ -823,11 +823,12 @@ defmodule SPARQL.Functions.BuiltinsTest do
       {RDF.string("iiii"), RDF.iri("http://example/romanNumeral"),
         RDF.literal("iiii", datatype: RDF.iri("http://example/romanNumeral"))},
 
-      {RDF.integer(123), XSD.string, RDF.string("123")},
-      {RDF.integer(123), XSD.double, RDF.double("123")},
-
       # TODO: Should this be an error? An rdf:langString with an empty language is invalid.
       {RDF.string("foo"), RDF.langString, RDF.lang_string("foo")},
+
+      {RDF.lang_string("123", language: "en"), XSD.integer, :error},
+      {RDF.integer(123), XSD.string, :error},
+      {RDF.integer(123), XSD.double, :error},
 
       {RDF.string("123"), :error, :error},
       {:error, XSD.integer, :error},
