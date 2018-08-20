@@ -1543,8 +1543,8 @@ defmodule SPARQL.Functions.BuiltinsTest do
   test "seconds function" do
     [
       {RDF.date_time("2011-01-10T14:45:13.815-05:00"), RDF.decimal(13.815)},
-      {RDF.date_time("1999-05-31T13:20:00"),           RDF.decimal(0.0)},
-      {RDF.date_time("1999-05-31T13:20:42Z"),          RDF.decimal(42.0)},
+      {RDF.date_time("1999-05-31T13:20:00"),           RDF.decimal("0")},
+      {RDF.date_time("1999-05-31T13:20:42Z"),          RDF.decimal("42")},
       {RDF.date_time("1999-05-31T13:20:12.340-05:00"), RDF.decimal(12.34)},
       {RDF.date_time("1999-05-31T13:20:12.034-05:00"), RDF.decimal(12.034)},
 

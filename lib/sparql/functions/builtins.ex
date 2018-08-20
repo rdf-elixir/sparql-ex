@@ -838,6 +838,7 @@ defmodule SPARQL.Functions.Builtins do
       case literal.value.microsecond do
         {_, 0} ->
           literal.value.second
+          |> to_string() # This is needed to get the lexical integer form; required for the SPARQL 1.1 test suite
           |> RDF.decimal()
 
         {microsecond, _} ->
