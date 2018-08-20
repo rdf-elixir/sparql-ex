@@ -26,9 +26,9 @@ defmodule SPARQL.W3C.TestSuite.Case do
     assert %SPARQL.Query.Result{} = actual_result =
              SPARQL.Processor.query(data, query)
 
-    assert Multiset.new(actual_result.variables) ==
+    assert Multiset.equal? Multiset.new(actual_result.variables),
              Multiset.new(expected_result.variables)
-    assert Multiset.new(actual_result.results) ==
+    assert Multiset.equal? Multiset.new(actual_result.results),
              Multiset.new(expected_result.results)
   end
 
