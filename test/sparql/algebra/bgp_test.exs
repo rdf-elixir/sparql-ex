@@ -3,6 +3,13 @@ defmodule SPARQL.Algebra.BGPTest do
 
   import SPARQL.Language.Decoder, only: [decode: 1]
 
+  test "empty bgp" do
+    query = "SELECT * WHERE {}"
+
+    assert {:ok, %SPARQL.Query{expr:
+           %SPARQL.Algebra.BGP{triples: []}}} = decode(query)
+  end
+
   test "a single bgp with a single triple" do
     query = """
       PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -94,6 +101,5 @@ defmodule SPARQL.Algebra.BGPTest do
         }
       }} = decode(query)
   end
-
 
 end

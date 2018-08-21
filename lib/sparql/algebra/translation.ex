@@ -299,6 +299,10 @@ defmodule SPARQL.Algebra.Translation do
     {:ok, map(ast, &do_translate_basic_graph_patterns/2)}
   end
 
+  defp do_translate_basic_graph_patterns({:group_graph_pattern, [fs]}, _) do
+    {:group_graph_pattern, [fs, %SPARQL.Algebra.BGP{triples: []}]}
+  end
+
   defp do_translate_basic_graph_patterns({:group_graph_pattern, [fs | graph_patterns]}, _) do
     {:group_graph_pattern,
       [fs |

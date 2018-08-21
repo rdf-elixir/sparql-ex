@@ -7,6 +7,8 @@ defmodule SPARQL.Algebra.BGP do
   @blank_node_prefix "_:"
 
 
+  def solutions([], _), do: [%{}]  # https://www.w3.org/TR/sparql11-query/#emptyGroupPattern
+
   def solutions(triple_patterns, data) do
     triple_patterns
     |> Stream.map(&convert_blank_nodes/1)

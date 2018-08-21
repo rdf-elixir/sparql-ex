@@ -9,6 +9,14 @@ defmodule SPARQL.Processor.BGPTest do
       {EX.s3, EX.p3, EX.o2}
     ])
 
+  test "empty bgp" do
+    assert query(@example_graph, "SELECT * WHERE {}") ==
+      %Query.Result{
+        variables: [],
+        results: [%{}]
+      }
+  end
+
   test "single {s ?p ?o}" do
     assert query(@example_graph, "SELECT * WHERE { <#{EX.s1}> ?p ?o }") ==
       %Query.Result{
