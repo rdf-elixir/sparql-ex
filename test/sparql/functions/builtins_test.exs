@@ -62,10 +62,11 @@ defmodule SPARQL.Functions.BuiltinsTest do
     {RDF.true,       RDF.boolean("TRUE")},
 
     # Numeric literals
-
     {RDF.integer("42"), RDF.integer("042")},
     {RDF.integer("42"), RDF.double("42")},
     {RDF.integer(42),   RDF.double(42.0)},
+    {RDF.integer(42),   RDF.decimal(42.0)},
+    {RDF.double(42.0),  RDF.decimal(42.0)},
     {RDF.double("+0"),  RDF.double("-0")},
 
     # DateTime literals
@@ -129,7 +130,10 @@ defmodule SPARQL.Functions.BuiltinsTest do
     {RDF.integer(0),   RDF.integer(1)},
     {RDF.integer("3"), RDF.integer("007")},
     {RDF.double(1.1),  RDF.double(2.2)},
+    {RDF.decimal(1.1), RDF.decimal(2.2)},
+    {RDF.decimal(1.1), RDF.double(2.2)},
     {RDF.double(3.14), RDF.integer(42)},
+    {RDF.decimal(3.14), RDF.integer(42)},
 # TODO: How to handle invalid number literals?
 #    {RDF.integer("3.14"), RDF.integer("007")},
 # TODO: We need a RDF.Decimal datatype for this

@@ -9,6 +9,7 @@ defmodule SPARQL.Functions.Builtins do
   @lang_string RDF.langString
   @xsd_integer XSD.integer
   @xsd_datetime XSD.dateTime
+  @xsd_decimal XSD.decimal
 
   @doc """
   Value equality
@@ -47,6 +48,29 @@ defmodule SPARQL.Functions.Builtins do
   see
   - <https://www.w3.org/TR/sparql11-query/#OperatorMapping>
   """
+  def call(:<, [%Literal{datatype: @xsd_decimal} = left,
+                %Literal{datatype: @xsd_decimal} = right]) do
+    ebv(Decimal.cmp(left.value, right.value) == :lt)
+  end
+
+  def call(:<, [%Literal{datatype: @xsd_decimal} = left,
+                %Literal{datatype: datatype} = right]) do
+    if RDF.Numeric.type?(datatype) do
+      call(:<, [left, RDF.decimal(right.value)])
+    else
+      :error
+    end
+  end
+
+  def call(:<, [%Literal{datatype: datatype} = left,
+                %Literal{datatype: @xsd_decimal} = right]) do
+    if RDF.Numeric.type?(datatype) do
+      call(:<, [RDF.decimal(left.value), right])
+    else
+      :error
+    end
+  end
+
   def call(:<, [%Literal{} = left, %Literal{} = right]) do
     cond do
       RDF.Numeric.type?(left.datatype) and RDF.Numeric.type?(right.datatype) ->
