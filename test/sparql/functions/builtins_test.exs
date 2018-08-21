@@ -1392,9 +1392,9 @@ defmodule SPARQL.Functions.BuiltinsTest do
   test "round function" do
     [
       {RDF.integer(1),      RDF.integer(1)},
-      {RDF.decimal(2.4999), RDF.decimal(2.0)},
-      {RDF.decimal(2.5),    RDF.decimal(3.0)},
-      {RDF.decimal(-2.5),   RDF.decimal(-2.0)},
+      {RDF.decimal(2.4999), RDF.decimal("2")},
+      {RDF.decimal(2.5),    RDF.decimal("3")},
+      {RDF.decimal(-2.5),   RDF.decimal("-2")},
       {RDF.double(2.4999),  RDF.double(2.0)},
       {RDF.double(2.5),     RDF.double(3.0)},
       {RDF.double(-2.5),    RDF.double(-2.0)},
@@ -1410,10 +1410,10 @@ defmodule SPARQL.Functions.BuiltinsTest do
   test "ceil function" do
     [
       {RDF.integer(1),      RDF.integer(1)},
-      {RDF.decimal(10.5),   RDF.integer(11)},
-      {RDF.decimal(-10.5),  RDF.integer(-10)},
-      {RDF.double(10.5),    RDF.integer(11)},
-      {RDF.double(-10.5),   RDF.integer(-10)},
+      {RDF.decimal(10.5),   RDF.decimal("11")},
+      {RDF.decimal(-10.5),  RDF.decimal("-10")},
+      {RDF.double(10.5),    RDF.double("11")},
+      {RDF.double(-10.5),   RDF.double("-10")},
 
       {~L"42", :error},
       {:error, :error},
@@ -1426,10 +1426,10 @@ defmodule SPARQL.Functions.BuiltinsTest do
   test "floor function" do
     [
       {RDF.integer(1),      RDF.integer(1)},
-      {RDF.decimal(10.5),   RDF.integer(10)},
-      {RDF.decimal(-10.5),  RDF.integer(-11)},
-      {RDF.double(10.5),    RDF.integer(10)},
-      {RDF.double(-10.5),   RDF.integer(-11)},
+      {RDF.decimal(10.5),   RDF.decimal("10")},
+      {RDF.decimal(-10.5),  RDF.decimal("-11")},
+      {RDF.double(10.5),    RDF.double("10")},
+      {RDF.double(-10.5),   RDF.double("-11")},
 
       {~L"42", :error},
       {:error, :error},
