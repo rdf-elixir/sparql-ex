@@ -1451,6 +1451,13 @@ defmodule SPARQL.Functions.BuiltinsTest do
     assert value >= 0 and value < 1
   end
 
+  test "now function" do
+    now = DateTime.utc_now()
+    assert RDF.date_time(now) == Builtins.call(:NOW, [], %{time: now})
+    assert RDF.date_time(now) ==
+             Expression.evaluate(%FunctionCall.Builtin{name: :NOW, arguments: []}, nil, %{time: now})
+  end
+
   test "year function" do
     [
       {RDF.date_time("2011-01-10T14:45:13.815-05:00"), RDF.integer(2011)},

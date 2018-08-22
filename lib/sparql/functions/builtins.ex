@@ -786,6 +786,19 @@ defmodule SPARQL.Functions.Builtins do
   def call(:RAND, _, _), do: :error
 
   @doc """
+  Returns an XSD dateTime value for the current query execution.
+
+  All calls to this function in any one query execution return the same value.
+
+  see <https://www.w3.org/TR/sparql11-query/#func-now>
+  """
+  def call(:NOW, [], %{time: time}) do
+    RDF.date_time(time)
+  end
+
+  def call(:NOW, _, _), do: :error
+
+  @doc """
   Returns the year part of the given datetime as an integer.
 
   see

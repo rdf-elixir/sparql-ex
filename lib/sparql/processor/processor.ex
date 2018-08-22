@@ -13,7 +13,9 @@ defmodule SPARQL.Processor do
   end
 
   defp execution_context() do
-    %{}
+    %{
+      time: DateTime.utc_now()
+    }
   end
 
 end
