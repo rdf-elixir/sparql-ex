@@ -229,7 +229,7 @@ defmodule SPARQL.Algebra.BGP do
 
 
   defimpl SPARQL.Algebra.Expression do
-    def evaluate(expr, data) do
+    def evaluate(expr, data, _) do
       expr.triples
       |> SPARQL.Algebra.BGP.solutions(data)
       |> Result.new(variables(expr))

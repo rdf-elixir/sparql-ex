@@ -9,7 +9,11 @@ defmodule SPARQL.Processor do
   end
 
   def query(data, %Query{expr: expr} = query) do
-    SPARQL.Algebra.Expression.evaluate(expr, data)
+    SPARQL.Algebra.Expression.evaluate(expr, data, execution_context())
+  end
+
+  defp execution_context() do
+    %{}
   end
 
 end

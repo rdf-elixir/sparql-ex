@@ -893,38 +893,38 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   describe "BNODE function" do
     test "without args" do
-      assert %RDF.BlankNode{} = bnode1 = Builtins.call(:BNODE, [])
-      assert %RDF.BlankNode{} = bnode2 = Builtins.call(:BNODE, [])
+      assert %RDF.BlankNode{} = bnode1 = Builtins.call(:BNODE, [], nil)
+      assert %RDF.BlankNode{} = bnode2 = Builtins.call(:BNODE, [], nil)
       assert bnode1 != bnode2
       assert %RDF.BlankNode{} =
-               Expression.evaluate(%FunctionCall.Builtin{name: :BNODE, arguments: []}, nil)
+               Expression.evaluate(%FunctionCall.Builtin{name: :BNODE, arguments: []}, nil, nil)
     end
 
     @tag skip: "TODO: We need some form of global state for this"
     test "with a string" do
-      assert %RDF.BlankNode{} = bnode1 = Builtins.call(:BNODE, [~L"foo"])
+      assert %RDF.BlankNode{} = bnode1 = Builtins.call(:BNODE, [~L"foo"], nil)
       assert Builtins.call(:BNODE, [~L"foo"]) == bnode1
-      assert %RDF.BlankNode{} = bnode2 = Builtins.call(:BNODE, [~L"bar"])
+      assert %RDF.BlankNode{} = bnode2 = Builtins.call(:BNODE, [~L"bar"], nil)
       assert bnode1 != bnode2
-      assert Expression.evaluate(%FunctionCall.Builtin{name: :BNODE, arguments: [~L"foo"]}, nil)
+      assert Expression.evaluate(%FunctionCall.Builtin{name: :BNODE, arguments: [~L"foo"]}, nil, nil)
              == bnode1
     end
   end
 
   test "UUID function" do
-    assert %RDF.IRI{value: "urn:uuid:" <> _} = uuid1 = Builtins.call(:UUID, [])
-    assert %RDF.IRI{value: "urn:uuid:" <> _} = uuid2 = Builtins.call(:UUID, [])
+    assert %RDF.IRI{value: "urn:uuid:" <> _} = uuid1 = Builtins.call(:UUID, [], nil)
+    assert %RDF.IRI{value: "urn:uuid:" <> _} = uuid2 = Builtins.call(:UUID, [], nil)
     assert uuid1 != uuid2
     assert %RDF.IRI{value: "urn:uuid:" <> _} =
-             Expression.evaluate(%FunctionCall.Builtin{name: :UUID, arguments: []}, nil)
+             Expression.evaluate(%FunctionCall.Builtin{name: :UUID, arguments: []}, nil, nil)
   end
 
   test "STRUUID function" do
-    assert %Literal{datatype: @xsd_string} = uuid1 = Builtins.call(:STRUUID, [])
-    assert %Literal{datatype: @xsd_string} = uuid2 = Builtins.call(:STRUUID, [])
+    assert %Literal{datatype: @xsd_string} = uuid1 = Builtins.call(:STRUUID, [], nil)
+    assert %Literal{datatype: @xsd_string} = uuid2 = Builtins.call(:STRUUID, [], nil)
     assert uuid1 != uuid2
     assert %Literal{datatype: @xsd_string} =
-             Expression.evaluate(%FunctionCall.Builtin{name: :STRUUID, arguments: []}, nil)
+             Expression.evaluate(%FunctionCall.Builtin{name: :STRUUID, arguments: []}, nil, nil)
   end
 
   test "STRLEN function" do
@@ -1441,13 +1441,13 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "RAND function" do
     xsd_double = XSD.double
-    assert %Literal{datatype: ^xsd_double, value: value} = Builtins.call(:RAND, [])
+    assert %Literal{datatype: ^xsd_double, value: value} = Builtins.call(:RAND, [], nil)
     assert value >= 0 and value < 1
-    assert %Literal{datatype: ^xsd_double, value: another_value} = Builtins.call(:RAND, [])
+    assert %Literal{datatype: ^xsd_double, value: another_value} = Builtins.call(:RAND, [], nil)
     assert value != another_value
 
     assert %Literal{datatype: ^xsd_double, value: value} =
-             Expression.evaluate(%FunctionCall.Builtin{name: :RAND, arguments: []}, nil)
+             Expression.evaluate(%FunctionCall.Builtin{name: :RAND, arguments: []}, nil, nil)
     assert value >= 0 and value < 1
   end
 
@@ -1672,7 +1672,7 @@ defmodule SPARQL.Functions.BuiltinsTest do
   end
 
   defp assert_builtin_call_result(builtin, args, expected) do
-    result = Builtins.call(builtin, args)
+    result = Builtins.call(builtin, args, %{})
     assert result == expected, """
       expected SPARQL builtin call #{builtin}(\n\t#{args |> Stream.map(&inspect/1) |> Enum.join(",\n\t")})
       to be:   #{inspect expected}
@@ -1681,7 +1681,7 @@ defmodule SPARQL.Functions.BuiltinsTest do
   end
 
   defp assert_builtin_expression_evaluation_result(builtin, args, expected) do
-    result = Expression.evaluate(%FunctionCall.Builtin{name: builtin, arguments: args}, nil)
+    result = Expression.evaluate(%FunctionCall.Builtin{name: builtin, arguments: args}, nil, %{})
     assert result == expected, """
       expected SPARQL builtin expression evaluation #{builtin}(\n\t#{args |> Stream.map(&inspect/1) |> Enum.join(",\n\t")})
       to be:   #{inspect expected}

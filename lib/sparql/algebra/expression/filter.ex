@@ -1,17 +1,18 @@
 defmodule SPARQL.Algebra.Filter do
   defstruct [:filters, :expr]
 
+  alias SPARQL.Algebra.Expression
 
-  def result_set(%SPARQL.Query.Result{results: results} = result, filters, data) do
+  def result_set(%SPARQL.Query.Result{results: results} = result, filters, data, execution) do
     %SPARQL.Query.Result{result |
-      results: Enum.filter(results, &(apply?(&1, filters, data)))
+      results: Enum.filter(results, &(apply?(&1, filters, data, execution)))
     }
   end
 
-  defp apply?(solution, filters, data) do
+  defp apply?(solution, filters, data, execution) do
     filters
     |> Stream.map(fn filter ->
-         SPARQL.Algebra.Expression.evaluate(filter, %{solution: solution, data: data})
+         Expression.evaluate(filter, %{solution: solution, data: data}, execution)
        end)
     |> Stream.map(&(RDF.Boolean.ebv/1))
     |> conjunction()
@@ -25,16 +26,16 @@ defmodule SPARQL.Algebra.Filter do
   end
 
 
-  defimpl SPARQL.Algebra.Expression do
-    def evaluate(filter, data) do
-      SPARQL.Algebra.Expression.evaluate(filter.expr, data)
-      |> SPARQL.Algebra.Filter.result_set(filter.filters, data)
+  defimpl Expression do
+    def evaluate(filter, data, execution) do
+      Expression.evaluate(filter.expr, data, execution)
+      |> SPARQL.Algebra.Filter.result_set(filter.filters, data, execution)
     end
 
     # TODO: Are variables of filters taken into consideration?
     # TODO: What happens if variables are used, which are not part of the expression?
     def variables(filter) do
-      SPARQL.Algebra.Expression.variables(filter.expr)
+      Expression.variables(filter.expr)
     end
   end
 end

@@ -1,6 +1,8 @@
 defmodule SPARQL.Algebra.Project do
   defstruct [:vars, :expr]
 
+  alias SPARQL.Algebra.Expression
+
   def result_set(%SPARQL.Query.Result{results: results}, variables) do
     %SPARQL.Query.Result{
       variables: variables,
@@ -14,14 +16,14 @@ defmodule SPARQL.Algebra.Project do
     |> Map.new
   end
 
-  defimpl SPARQL.Algebra.Expression do
-    def evaluate(project, data) do
-      SPARQL.Algebra.Expression.evaluate(project.expr, data)
+  defimpl Expression do
+    def evaluate(project, data, execution) do
+      Expression.evaluate(project.expr, data, execution)
       |> SPARQL.Algebra.Project.result_set(project.vars)
     end
 
     def variables(project) do
-      SPARQL.Algebra.Expression.variables(project.expression)
+      Expression.variables(project.expression)
     end
   end
 end
