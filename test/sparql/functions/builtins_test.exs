@@ -883,8 +883,26 @@ defmodule SPARQL.Functions.BuiltinsTest do
          end)
     end
 
-    @tag skip: "TODO: How do we get the base IRI here?"
-    test "relative IRIs"
+    test "relative IRIs" do
+      base = "http://example.com/"
+      [
+        {~L"foo", RDF.iri("http://example.com/foo")},
+
+        {RDF.lang_string("foo", language: "en"), :error},
+      ]
+      |> Enum.each(fn {arg, result} ->
+           assert Builtins.call(:IRI, [arg], %{base: base}) == result
+           assert Builtins.call(:URI, [arg], %{base: base}) == result
+           assert Expression.evaluate(%FunctionCall.Builtin{name: :IRI, arguments: [arg]},
+                    nil, %{base: base}) == result
+           assert Expression.evaluate(%FunctionCall.Builtin{name: :URI, arguments: [arg]},
+                    nil, %{base: base}) == result
+         end)
+    end
+
+    test "relative IRIs without base" do
+      assert Builtins.call(:IRI, [~L"foo"], %{}) == :error
+    end
 
     @tag skip: "TODO: implement and use RDF.IRI.normalize/1"
     test "normalization"

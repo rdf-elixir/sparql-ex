@@ -306,13 +306,13 @@ defmodule SPARQL.Functions.Builtins do
   Constructs an IRI from the given string argument.
 
   It constructs an IRI by resolving the string argument (see RFC 3986 and RFC 3987
-  or any later RFC that superceeds RFC 3986 or RFC 3987). The IRI is resolved
+  or any later RFC that supersedes RFC 3986 or RFC 3987). The IRI is resolved
   against the base IRI of the query and must result in an absolute IRI.
 
   see <https://www.w3.org/TR/sparql11-query/#func-iri>
   """
-  def call(:IRI, [%RDF.Literal{datatype: @xsd_string} = literal], _) do
-    literal |> to_string() |> RDF.IRI.new()
+  def call(:IRI, [%RDF.Literal{datatype: @xsd_string} = literal], execution) do
+    literal |> to_string() |> RDF.IRI.absolute(Map.get(execution, :base)) || :error
   end
   def call(:IRI, [%RDF.IRI{} = iri], _), do: iri
   def call(:IRI, _, _),                  do: :error

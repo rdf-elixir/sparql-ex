@@ -8,13 +8,14 @@ defmodule SPARQL.Processor do
     end
   end
 
-  def query(data, %Query{expr: expr} = query) do
-    SPARQL.Algebra.Expression.evaluate(expr, data, execution_context())
+  def query(data, %Query{expr: expr, base: base}) do
+    Algebra.Expression.evaluate(expr, data, execution_context(base))
   end
 
-  defp execution_context() do
+  defp execution_context(base) do
     %{
-      time: DateTime.utc_now()
+      base: base,
+      time: DateTime.utc_now(),
     }
   end
 
