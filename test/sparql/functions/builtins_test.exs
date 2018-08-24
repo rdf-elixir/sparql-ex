@@ -1486,8 +1486,10 @@ defmodule SPARQL.Functions.BuiltinsTest do
       {RDF.date_time("1999-05-31T13:20:00-05:00"),     RDF.integer(1999)},
       {RDF.date_time("1999-05-31T21:30:00-05:00"),     RDF.integer(1999)},
       {RDF.date_time("1999-12-31T21:30:00-05:00"),     RDF.integer(1999)},
-# TODO: support for negative years in RDF.DateTime datatype
-#      {RDF.date_time("-0002-06-06T00:00:00"), RDF.integer(-2)},
+
+      unless Version.compare(System.version(), "1.7.2") == :lt do
+        {RDF.date_time("-0002-06-06T00:00:00"), RDF.integer(-2)}
+      end,
 
       {RDF.integer(1999), :error},
       {~L"1999-05-31T13:20:00-05:00", :error},
