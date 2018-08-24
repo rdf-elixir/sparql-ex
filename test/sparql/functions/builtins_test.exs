@@ -1495,8 +1495,10 @@ defmodule SPARQL.Functions.BuiltinsTest do
       {~L"1999-05-31T13:20:00-05:00", :error},
       {:error, :error},
     ]
-    |> Enum.each(fn {datetime, result} ->
-         assert_builtin_result(:YEAR, [datetime], result)
+    |> Enum.each(fn
+          nil -> :ignored
+          {datetime, result} ->
+            assert_builtin_result(:YEAR, [datetime], result)
        end)
   end
 
