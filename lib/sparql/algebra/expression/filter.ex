@@ -11,8 +11,8 @@ defmodule SPARQL.Algebra.Filter do
 
   defp apply?(solution, filters, data, execution) do
     filters
-    |> Stream.map(fn filter ->
-         Expression.evaluate(filter, %{solution: solution, data: data}, execution)
+    |> Stream.map(fn function_call ->
+         Expression.evaluate(function_call, %{solution: solution, data: data}, execution)
        end)
     |> Stream.map(&(RDF.Boolean.ebv/1))
     |> conjunction()
