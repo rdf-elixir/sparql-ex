@@ -233,6 +233,7 @@ defmodule SPARQL.Algebra.BGP do
       expr.triples
       |> SPARQL.Algebra.BGP.solutions(data)
       |> Result.new(variables(expr))
+      |> Result.add_identity()
     end
 
     def variables(expr), do: SPARQL.Algebra.BGP.variables(expr.triples)

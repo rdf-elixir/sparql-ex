@@ -12,6 +12,22 @@ defmodule SPARQL.Query.Result do
     }
   end
 
+  def add_identity(result) do
+    %SPARQL.Query.Result{result | results:
+      Enum.map(result.results, fn solution ->
+        Map.put(solution, :__id__, make_ref())
+      end)
+    }
+  end
+
+  def remove_identity(result) do
+    %SPARQL.Query.Result{result | results:
+      Enum.map(result.results, fn solution ->
+        Map.delete(solution, :__id__)
+      end)
+    }
+  end
+
   defimpl Enumerable do
     def member?(result, solution),  do: Enumerable.member?(result.results, solution)
     def count(result),              do: Enumerable.count(result.results)

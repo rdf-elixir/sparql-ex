@@ -340,7 +340,15 @@ defmodule SPARQL.Functions.Builtins do
 
   see <https://www.w3.org/TR/sparql11-query/#func-bnode>
   """
-  def call(:BNODE, [], _), do: RDF.bnode()
+  def call(:BNODE, [], %{bnode_generator: generator}) do
+    RDF.BlankNode.Generator.generate(generator)
+  end
+
+  def call(:BNODE, [%RDF.Literal{datatype: @xsd_string} = literal],
+        %{bnode_generator: generator, solution_id: solution_id}) do
+    RDF.BlankNode.Generator.generate_for(generator, {solution_id, to_string(literal)})
+  end
+
   def call(:BNODE, _, _), do: :error
 
   @doc """

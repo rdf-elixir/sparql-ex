@@ -111,11 +111,12 @@ defmodule SPARQL.Algebra.FunctionCall.Builtin do
     end
   end
 
-  def invoke(name, arguments, data, execution) do
+  def invoke(name, arguments, %{solution: solution} = data, execution) do
     with {:ok, evaluated_arguments} <-
             FunctionCall.evaluate_arguments(arguments, data, execution)
     do
-      Builtins.call(name, evaluated_arguments, execution)
+      Builtins.call(name, evaluated_arguments,
+        Map.put(execution, :solution_id, solution.__id__))
     end
   end
 
