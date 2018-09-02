@@ -145,6 +145,20 @@ defmodule SPARQL.Algebra.Translation do
     }
   end
 
+  defp expand_syntax_form({:function_call, function_name, args} = expr, prologue) do
+    {distinct, args} =
+      case args do
+        [{:distinct, _}, rest] -> {true, rest}
+        _                      -> {false, args}
+      end
+
+    %SPARQL.Algebra.FunctionCall.Extension{
+      name: function_name |> map(prologue, &expand_syntax_form/2),
+      arguments: args |> map(prologue, &expand_syntax_form/2),
+      distinct: distinct
+    }
+  end
+
   # TODO: optimize performance by providing function clauses for AST patterns which don't need further traversal
 
   defp expand_syntax_form(_, _), do: @no_mapping

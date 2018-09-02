@@ -17,6 +17,9 @@ defmodule SPARQL.Algebra.FunctionCall do
   def evaluate_argument(%FunctionCall.Builtin{} = function_call, data, execution),
     do: Expression.evaluate(function_call, data, execution)
 
+  def evaluate_argument(%FunctionCall.Extension{} = function_call, data, execution),
+    do: Expression.evaluate(function_call, data, execution)
+
   def evaluate_argument(value, _, _), do: value
 
 end
