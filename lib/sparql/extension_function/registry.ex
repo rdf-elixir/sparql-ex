@@ -62,22 +62,16 @@ defmodule SPARQL.ExtensionFunction.Registry do
   end
   
   defp setup() do
-    determine_available_extension_functions()
+    find_available_extension_functions!()
     |> Enum.each(fn extension ->
          :ets.insert(@ets_table, {extension.name, extension})
        end)
   end
 
-  defp determine_available_extension_functions() do
-    (for {module, _} <- :code.all_loaded(), do: module)
-    |> Enum.filter(&is_extension_function?/1)
+  defp find_available_extension_functions!() do
+    SPARQL.ExtensionFunction
+    |> SPARQL.Utils.find_behaviour_implementations()
     |> check_homonyms!()
-  end
-
-  defp is_extension_function?(module) do
-    module.module_info[:attributes]
-    |> Keyword.get(:behaviour, [])
-    |> Enum.member?(SPARQL.ExtensionFunction)
   end
 
   defp check_homonyms!(extensions) do
