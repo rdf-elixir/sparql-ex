@@ -140,7 +140,7 @@ defmodule SPARQL.Algebra.Translation do
 
   defp expand_syntax_form({:builtin_function_call, function_name, args}, prologue) do
     %SPARQL.Algebra.FunctionCall.Builtin{
-      name: function_name |> map(prologue, &expand_syntax_form/2),
+      name: function_name,
       arguments: args |> map(prologue, &expand_syntax_form/2)
     }
   end
@@ -153,7 +153,7 @@ defmodule SPARQL.Algebra.Translation do
       end
 
     %SPARQL.Algebra.FunctionCall.Extension{
-      name: function_name |> map(prologue, &expand_syntax_form/2),
+      name: function_name |> expand_syntax_form(prologue),
       arguments: args |> map(prologue, &expand_syntax_form/2),
       distinct: distinct
     }
