@@ -57,6 +57,33 @@ defmodule SPARQL.Algebra.FilterTest do
       }} = decode(query)
   end
 
+  test "single filter with extension function" do
+    query = """
+    PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+    PREFIX ex: <http://example.com/>
+    SELECT ?person ?name WHERE {
+      ?person foaf:name ?name
+      FILTER(ex:fun(?name, "foo", "i"))
+    }
+    """
+    assert {:ok, %SPARQL.Query{
+             expr: %SPARQL.Algebra.Project{
+               vars: ~w[person name],
+               expr: %SPARQL.Algebra.Filter{
+                 filters: [
+                   %SPARQL.Algebra.FunctionCall.Extension{
+                     name: ~I<http://example.com/fun>,
+                     arguments: ["name", ~L"foo", ~L"i"]
+                   }
+                 ],
+                 expr: %SPARQL.Algebra.BGP{
+                   triples: [{"person", ~I<http://xmlns.com/foaf/0.1/name>, "name"}]
+                 }
+               }
+             }
+           }} = decode(query)
+  end
+
   test "nested function call" do
     query = """
       PREFIX foaf: <http://xmlns.com/foaf/0.1/>

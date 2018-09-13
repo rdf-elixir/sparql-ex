@@ -171,8 +171,8 @@ solutionModifier -> limitOffsetClauses .
 groupClause	    -> 'GROUP' 'BY' groupConditions .
 groupConditions -> groupCondition                 : ['$1'] .
 groupConditions -> groupCondition groupConditions : ['$1' | '$2'] .
-groupCondition  -> builtInCall .
-groupCondition  -> functionCall .
+groupCondition  -> builtInCall  : '$1' .
+groupCondition  -> functionCall : '$1' .
 groupCondition  -> '(' expression 'AS' var ')' .
 groupCondition  -> '(' expression ')' .
 groupCondition  -> var .
@@ -560,7 +560,7 @@ aggregate -> 'GROUP_CONCAT' '(' 'DISTINCT' expression ')' .
 aggregate -> 'GROUP_CONCAT' '(' expression ';' 'SEPARATOR' '=' string_literal_quote ')' .
 aggregate -> 'GROUP_CONCAT' '(' expression ')' .
 
-iriOrFunction -> iri argList .
+iriOrFunction -> iri argList : {function_call, '$1', '$2'}.
 iriOrFunction -> iri : '$1' .
 
 rdfLiteral -> string_literal_quote '^^' iri    : to_literal('$1', {datatype, '$3'}) .
