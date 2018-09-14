@@ -89,4 +89,32 @@ defmodule SPARQL.Processor.FilterTest do
         results: [%{"s" => ~I<http://example.org/s6>}]}
   end
 
+  test "extension function calls" do
+    assert query(@example_graph_with_literals, """
+      PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+      SELECT ?s
+      WHERE {
+        ?s ?p ?o
+        FILTER(xsd:integer(?o) = 3)
+      }
+      """) ==
+        %Query.Result{
+          variables: ~w[s],
+          results: [%{"s" => ~I<http://example.org/s3>}]}
+  end
+
+  test "non-existing extension function calls" do
+    assert query(@example_graph_with_literals, """
+      PREFIX ex: <http://example.com/>
+      SELECT ?s
+      WHERE {
+        ?s ?p ?o
+        FILTER(ex:foo(?o) = 3)
+      }
+      """) ==
+        %Query.Result{
+          variables: ~w[s],
+          results: []}
+  end
+
 end

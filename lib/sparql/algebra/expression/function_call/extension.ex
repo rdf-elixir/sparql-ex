@@ -3,6 +3,8 @@ defmodule SPARQL.Algebra.FunctionCall.Extension do
             arguments: [],
             distinct: false
 
+  alias SPARQL.Algebra.FunctionCall
+
   defimpl SPARQL.Algebra.Expression do
     def evaluate(%SPARQL.Algebra.FunctionCall.Extension{
                     name: name, arguments: arguments, distinct: distinct},
@@ -13,7 +15,10 @@ defmodule SPARQL.Algebra.FunctionCall.Extension do
           :error
 
         extension_function ->
-          extension_function.call(distinct, arguments, data, execution)
+          with {:ok, evaluated_arguments} <-
+                 FunctionCall.evaluate_arguments(arguments, data, execution) do
+            extension_function.call(distinct, evaluated_arguments, data, execution)
+          end
       end
     end
 
