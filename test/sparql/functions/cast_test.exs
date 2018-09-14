@@ -61,6 +61,34 @@ defmodule SPARQL.Functions.CastTest do
        end)
   end
 
+  test "xsd:float" do
+    # TODO: Use RDF.Float datatype when available
+    float_literal = fn (value) -> RDF.Literal.new(value, datatype: XSD.float) end
+    [
+      {RDF.true,  float_literal.("1.0")},
+      {RDF.false, float_literal.("0.0")},
+
+      {RDF.integer(1),  float_literal.("1.0")},
+      {RDF.integer(42), float_literal.("42.0")},
+      {RDF.integer(0),  float_literal.("0.0")},
+
+      {RDF.decimal(3.14), float_literal.("3.14")},
+      {RDF.decimal(0.0),  float_literal.("0.0")},
+
+      {RDF.double(3.14), float_literal.("3.14")},
+      {RDF.double(0.0),  float_literal.("0.0")},
+
+      {RDF.string("3.14"), float_literal.("3.14E0")},
+
+      {RDF.boolean("42"), :error},
+      {RDF.DateTime.now(), :error},
+      {:error, :error},
+    ]
+    |> Enum.each(fn {value, result} ->
+         assert_result(XSD.float, [value], result)
+       end)
+  end
+
   test "xsd:double" do
     [
       {RDF.true,  RDF.double(1.0)},

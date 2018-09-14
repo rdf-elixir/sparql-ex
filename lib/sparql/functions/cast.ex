@@ -17,7 +17,6 @@ defmodule SPARQL.Functions.Cast do
 
     def call(_, [%Literal{} = literal], _, _) do
       RDF.Integer.cast(literal) || :error
-      |> IO.inspect()
     end
 
     def call(_, _, _, _), do: :error
@@ -43,26 +42,32 @@ defmodule SPARQL.Functions.Cast do
     def call(_, _, _, _), do: :error
   end
 
-# TODO: RDF.Float
-#  defmodule Float do
-#    @moduledoc """
-#    An `SPARQL.ExtensionFunction` for the `xsd:float` XPath constructor function.
-#
-#    See:
-#
-#    - <https://www.w3.org/TR/sparql11-query/#FunctionMapping>
-#    - <https://www.w3.org/TR/xpath-functions/#casting-to-numerics>
-#    """
-#
-#    use SPARQL.ExtensionFunction,
-#        name: "http://www.w3.org/2001/XMLSchema#float"
-#
-#    def call(_, [%Literal{} = literal], _, _) do
-#      RDF.Float.cast(literal) || :error
-#    end
-#
-#    def call(_, _, _, _), do: :error
-#  end
+  defmodule Float do
+    @moduledoc """
+    An `SPARQL.ExtensionFunction` for the `xsd:float` XPath constructor function.
+
+    See:
+
+    - <https://www.w3.org/TR/sparql11-query/#FunctionMapping>
+    - <https://www.w3.org/TR/xpath-functions/#casting-to-numerics>
+    """
+
+    use SPARQL.ExtensionFunction,
+        name: "http://www.w3.org/2001/XMLSchema#float"
+
+    def call(_, [%Literal{} = literal], _, _) do
+      # TODO: Remove this hack of reusing the RDF.Double.cast function until we have a proper RDF.Float datatype
+      with %Literal{} = double_literal <- RDF.Double.cast(literal) do
+        double_literal
+        |> Literal.lexical()
+        |> Literal.new(datatype: name())
+      else
+        _ -> :error
+      end
+    end
+
+    def call(_, _, _, _), do: :error
+  end
 
   defmodule Double do
     @moduledoc """
