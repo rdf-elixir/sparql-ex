@@ -902,6 +902,24 @@ defmodule SPARQL.Functions.Builtins do
   def call(:SECONDS, _, _), do: :error
 
   @doc """
+  Returns the timezone part of the given datetime as an `xsd:dayTimeDuration` literal.
+
+  Returns `:error` if there is no timezone.
+
+  see
+  - <https://www.w3.org/TR/sparql11-query/#func-timezone>
+  - <http://www.w3.org/TR/xpath-functions/#func-timezone-from-dateTime>
+  """
+  def call(:TIMEZONE, [%RDF.Literal{datatype: @xsd_datetime} = literal], _) do
+    literal
+    |> RDF.DateTime.tz()
+    |> tz_duration()
+    || :error
+  end
+
+  def call(:TIMEZONE, _, _), do: :error
+
+  @doc """
   Returns the timezone part of a given datetime as a simple literal.
 
   Returns the empty string if there is no timezone.
@@ -1081,6 +1099,21 @@ defmodule SPARQL.Functions.Builtins do
     end
   end
 
+  defp tz_duration(""),  do: nil
+  defp tz_duration("Z"), do: day_time_duration("PT0S")
+  defp tz_duration(tz) do
+    [_, sign, hours, minutes] = Regex.run(~r/\A(?:([\+\-])(\d{2}):(\d{2}))\Z/, tz)
+    sign = if sign == "-", do: "-", else: ""
+    hours = String.trim_leading(hours, "0") <> "H"
+    minutes = if minutes != "00", do: (minutes <> "M"), else: ""
+
+    day_time_duration(sign <> "PT" <> hours <> minutes)
+  end
+
+  # TODO: This is just a preliminary implementation until we have a proper RDF.Duration datatype
+  defp day_time_duration(value) do
+    RDF.Literal.new(value, datatype: XSD.dayTimeDuration)
+  end
 
   @doc """
   Argument Compatibility Rules

@@ -1606,15 +1606,31 @@ defmodule SPARQL.Functions.BuiltinsTest do
        end)
   end
 
+  # TODO: Use a to be written RDF.day_time_duration datatype
+  test "timezone function" do
+    [
+      {RDF.date_time("2011-01-10T14:45:13.815-05:00"), RDF.Literal.new("-PT5H", datatype: XSD.dayTimeDuration)},
+      {RDF.date_time("2011-01-10T14:45:13.815Z"),      RDF.Literal.new("PT0S", datatype: XSD.dayTimeDuration)},
+      {RDF.date_time("2011-01-10T14:45:13.815-05:30"), RDF.Literal.new("-PT5H30M", datatype: XSD.dayTimeDuration)},
+
+      {RDF.date_time("2011-01-10T14:45:13.815"), :error},
+      {~L"1999-05-31T13:20:00-05:00", :error},
+      {RDF.integer(1), :error},
+      {:error, :error},
+    ]
+    |> Enum.each(fn {datetime, result} ->
+         assert_builtin_result(:TIMEZONE, [datetime], result)
+       end)
+  end
+
   test "tz function" do
     [
-      {RDF.date_time("2011-01-10T14:45:13.815-05:00"), ~L"-05:00"},
       {RDF.date_time("2011-01-10T14:45:13.815-05:00"), ~L"-05:00"},
       {RDF.date_time("2011-01-10T14:45:13.815Z"),      ~L"Z"},
       {RDF.date_time("2011-01-10T14:45:13.815"),       ~L""},
 
-      {RDF.integer(1), :error},
       {~L"1999-05-31T13:20:00-05:00", :error},
+      {RDF.integer(1), :error},
       {:error, :error},
     ]
     |> Enum.each(fn {datetime, result} ->
