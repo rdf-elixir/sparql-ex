@@ -102,8 +102,8 @@ defmodule SPARQL.Functions.Cast do
     use SPARQL.ExtensionFunction,
         name: "http://www.w3.org/2001/XMLSchema#string"
 
-    def call(_, [%Literal{} = literal], _, _) do
-      RDF.String.cast(literal) || :error
+    def call(_, [value], _, _) do
+      RDF.String.cast(value) || :error
     end
 
     def call(_, _, _, _), do: :error

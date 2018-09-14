@@ -22,7 +22,6 @@ defmodule SPARQL.Functions.CastTest do
       {RDF.double(3.14), RDF.integer(3)},
       {RDF.double(0.0),  RDF.integer(0)},
 
-      {RDF.string("3.14"), RDF.integer(3)},
       {RDF.string("42"),   RDF.integer(42)},
 
       {RDF.boolean("42"), :error},
@@ -136,6 +135,8 @@ defmodule SPARQL.Functions.CastTest do
       {RDF.date_time("2010-01-01T00:00:00+00:00"), RDF.string("2010-01-01T00:00:00Z")},
       {RDF.date_time("2010-01-01T01:00:00+01:00"), RDF.string("2010-01-01T01:00:00+01:00")},
       {RDF.date_time("2010-01-01 01:00:00+01:00"), RDF.string("2010-01-01T01:00:00+01:00")},
+
+      {RDF.iri("http://example.com/"), RDF.string("http://example.com/")},
 
       {RDF.boolean("42"), :error},
       {:error, :error},
