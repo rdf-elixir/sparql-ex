@@ -14,6 +14,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 ### Changed
 
+- Elixir versions < 1.6 are no longer supported
 - renamed the `SPARQL.Query.ResultSet` struct to `SPARQL.Query.Result`
 - removed the previous `SPARQL.Query.Result` struct for single solutions; these 
   are now represented as simple maps
