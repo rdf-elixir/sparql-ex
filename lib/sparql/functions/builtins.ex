@@ -156,7 +156,7 @@ defmodule SPARQL.Functions.Builtins do
   """
   def call(:-, [number], _) do
     if RDF.Numeric.literal?(number) do
-      RDF.Numeric.multiply(number, RDF.integer(-1))
+      RDF.Numeric.multiply(number, -1)
     else
       :error
     end
