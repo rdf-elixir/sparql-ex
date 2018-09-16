@@ -3,8 +3,6 @@ defmodule SPARQL do
   An implementation of the [SPARQL](http://www.w3.org/TR/sparql11-overview/) standard for Elixir.
   """
 
-  alias SPARQL.Query
-
   @result_formats [
     SPARQL.Query.Result.JSON,
     SPARQL.Query.Result.XML,
@@ -23,6 +21,8 @@ defmodule SPARQL do
   def result_format_by_extension(extension),   do: @result_format_by_extension[extension]
 
 
-  defdelegate query(query),    to: Query,  as: :new
+  defdelegate query(query), to: SPARQL.Query, as: :new
+
+  defdelegate execute_query(data, query), to: SPARQL.Processor, as: :query
 
 end
