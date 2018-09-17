@@ -62,7 +62,7 @@ defmodule SPARQL.Mixfile do
 
   defp deps do
     [
-      {:rdf, git: "https://github.com/marcelotto/rdf-ex"},
+      {:rdf, "~> 0.5"},
       {:jason, "~> 1.0"},
       {:nimble_csv, "~> 0.4"},
       {:sweet_xml, "~> 0.6"},
