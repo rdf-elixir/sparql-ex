@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## 0.2.0 - 2018-09-17
+## 0.2.1 - 2018-09-17
 
 ### Fixed
 
