@@ -8,9 +8,9 @@ defmodule SPARQL.Query.Result.Format do
         use SPARQL.Query.Result.Format
         import RDF.Sigils
 
-        @id           ~I<http://example.com/some_format>
-        @name         :some_format
-        @extension    "ext"
+        @id         ~I<http://example.com/some_format>
+        @name       :some_format
+        @extension  "ext"
         @media_type "application/some-format"
       end
 

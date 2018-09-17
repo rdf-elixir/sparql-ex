@@ -1,6 +1,14 @@
 defmodule SPARQL.Processor do
+  @moduledoc """
+  Context module for the SPARQL processor executing SPARQL queries and updates.
+  """
 
   alias SPARQL.{Query, Algebra}
+
+  @doc """
+  Executes a `SPARQL.Query` or string with a SPARQL string against a `RDF.Data` structure.
+  """
+  def query(data, query)
 
   def query(data, query_string) when is_binary(query_string) do
     with %Query{} = query <- Query.new(query_string) do
