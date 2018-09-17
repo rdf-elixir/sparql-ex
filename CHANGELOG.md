@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
+## Unreleased
+
+### Fixed
+
+- generated Erlang output files of Leex and Yecc are excluded from Hex package, 
+  which caused issues using the SPARQL.ex Hex package on OTP < 21
+  (because the package was released with OTP 21)
+
+[Compare v0.2.0...HEAD](https://github.com/marcelotto/rdf-ex/compare/v0.2.0...HEAD)
+
+
+
 ## 0.2.0 - 2018-09-17
 
 ### Added
