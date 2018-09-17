@@ -12,6 +12,8 @@ It allows to execute SPARQL queries against [RDF.ex] data structures. With the s
 
 ## Current state
 
+Note: **The [SPARQL.Client] supports the full SPARQL 1.1 query language**. The missing query language features in the following list are just not yet supported **by the query engine** executing queries against RDF.ex data structures.
+
 - [ ] SPARQL 1.1 Query Language
     - [x] Basic Graph Pattern matching
     - [ ] Group Graph Pattern matching
