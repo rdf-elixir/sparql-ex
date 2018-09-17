@@ -8,9 +8,9 @@ defmodule SPARQL.Query.Result.Format do
         use SPARQL.Query.Result.Format
         import RDF.Sigils
 
-        @id           ~I<http://example.com/some_format>
-        @name         :some_format
-        @extension    "ext"
+        @id         ~I<http://example.com/some_format>
+        @name       :some_format
+        @extension  "ext"
         @media_type "application/some-format"
       end
 
@@ -77,8 +77,8 @@ defmodule SPARQL.Query.Result.Format do
       defdelegate decode(results, opts \\ []),  to: @decoder
       defdelegate decode!(results, opts \\ []), to: @decoder
 
-      defdelegate encode(content, opts \\ []),  to: @encoder
-      defdelegate encode!(content, opts \\ []), to: @encoder
+#      defdelegate encode(content, opts \\ []),  to: @encoder
+#      defdelegate encode!(content, opts \\ []), to: @encoder
 
       # This is just to be API-compatible to RDF.Serialization.format.
       # TODO: Should we introduce a similar Reader-/Writer-functionality here or introduce RDF.Serialization.decode?

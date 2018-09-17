@@ -1,5 +1,5 @@
-defmodule SPARQL.Query.ResultSetTest do
+defmodule SPARQL.Query.ResultTest do
   use ExUnit.Case
-  doctest SPARQL.Query.ResultSet
+  doctest SPARQL.Query.Result
 
 end

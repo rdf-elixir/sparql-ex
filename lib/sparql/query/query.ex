@@ -4,10 +4,13 @@ defmodule SPARQL.Query do
   """
 
   defstruct [
-    :query_string, # This is only temporary until we have a functionally complete SPARQL language decoder and encoder
     :base,
     :prefixes,
-    :form
+    :form,
+
+    :expr,
+
+    :query_string, # This might be only temporary until we have a functionally complete SPARQL language decoder and encoder
   ]
 
   alias __MODULE__
@@ -20,20 +23,17 @@ defmodule SPARQL.Query do
   @doc """
   Creates a `SPARQL.Query` struct.
   """
-  def new(query)
+  def new(query, options \\ %{})
 
-  def new(%Query{} = query), do: query
-  def new(query) when is_binary(query), do: translate(query)
+  def new(%Query{} = query, _options), do: query
+  def new(query, options) when is_binary(query), do: translate(query, options)
 
 
   @doc """
   Creates a `SPARQL.Query` struct from a SPARQL language string.
-
-  In the first version we just use the decoder for validation and determination
-  of the query form.
   """
-  def translate(string) do
-    with {:ok, query} <- SPARQL.Language.Decoder.decode(string) do
+  def translate(string, options \\ %{}) do
+    with {:ok, query} <- SPARQL.Language.Decoder.decode(string, options) do
       query
     end
   end

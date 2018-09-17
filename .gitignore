@@ -21,3 +21,5 @@ erl_crash.dump
 
 /src/lexer.erl
 /src/parser.erl
+
+.tool-versions*

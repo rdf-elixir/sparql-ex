@@ -11,9 +11,9 @@ defmodule SPARQL.Query.Result.TSV.Decoder do
       with [header | rows] <- TSV.parse_string(content, headers: false),
            {:ok, header}   <- decode_header(header)
       do
-        {:ok, %ResultSet{variables: header, results: decode_results(rows, header)}}
+        {:ok, %Result{variables: header, results: decode_results(rows, header)}}
       else
-        []    -> {:ok, %ResultSet{}}
+        []    -> {:ok, %Result{}}
         error -> error
       end
     rescue
@@ -49,12 +49,10 @@ defmodule SPARQL.Query.Result.TSV.Decoder do
   end
 
   defp decode_result(result, header) do
-    %Result{bindings:
-       header
-       |> Enum.zip(result)
-       |> Enum.map(&decode_value/1)
-       |> Map.new
-    }
+     header
+     |> Enum.zip(result)
+     |> Enum.map(&decode_value/1)
+     |> Map.new
   end
 
   defp decode_value({variable, value}) do

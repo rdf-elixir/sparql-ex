@@ -100,7 +100,7 @@ varDecls -> '*'                         : ['$1'] .
 varDecls -> varDecl                     : ['$1'] .
 varDecls -> varDecl varDecls            : ['$1' | '$2'] .
 varDecl  -> var                         : {'$1', nil} .
-varDecl  -> '(' expression 'AS' var ')' : {'$2', '$1'} .
+varDecl  -> '(' expression 'AS' var ')' : {'$4', '$2'} .
 
 constructQuery	-> 'CONSTRUCT' constructTemplate datasetClauses whereClause solutionModifier   : {construct, '$2', '$3', '$4', '$5' } .
 constructQuery	-> 'CONSTRUCT' constructTemplate whereClause solutionModifier                  : {construct, '$2', nil , '$3', '$4' } .
@@ -148,8 +148,8 @@ namedGraphClause	 -> 'NAMED' sourceSelector .
 
 sourceSelector -> iri : '$1' .
 
-whereClause	-> 'WHERE' groupGraphPattern : {where, '$2'} .
-whereClause	-> groupGraphPattern         : {where, '$1'} .
+whereClause	-> 'WHERE' groupGraphPattern : '$2' .
+whereClause	-> groupGraphPattern         : '$1' .
 
 %% SolutionModifier ::= groupClause? havingClause? orderClause? limitOffsetClauses?
 solutionModifier -> groupClause  havingClause orderClause limitOffsetClauses .
@@ -171,8 +171,8 @@ solutionModifier -> limitOffsetClauses .
 groupClause	    -> 'GROUP' 'BY' groupConditions .
 groupConditions -> groupCondition                 : ['$1'] .
 groupConditions -> groupCondition groupConditions : ['$1' | '$2'] .
-groupCondition  -> builtInCall .
-groupCondition  -> functionCall .
+groupCondition  -> builtInCall  : '$1' .
+groupCondition  -> functionCall : '$1' .
 groupCondition  -> '(' expression 'AS' var ')' .
 groupCondition  -> '(' expression ')' .
 groupCondition  -> var .
@@ -229,32 +229,32 @@ triplesTemplate -> triplesSameSubject .
 
 groupGraphPattern -> '{' subSelect '}'            : {group_graph_pattern, '$2'} .
 groupGraphPattern -> '{' groupGraphPatternSub '}' : {group_graph_pattern, '$2'} .
-groupGraphPattern -> '{' '}'                      : {group_graph_pattern, nil } .
+groupGraphPattern -> '{' '}'                      : {group_graph_pattern, [] } .
 
 %% GroupGraphPatternSub -> TriplesBlock? ( GraphPatternNotTriples '.'? TriplesBlock? )*
 %% TODO: Note: This can be empty!
-groupGraphPatternSub -> triplesBlock graphPatternNotTriplesBlockSeq .
-groupGraphPatternSub -> triplesBlock .
+groupGraphPatternSub -> triplesBlock graphPatternNotTriplesBlockSeq : [{triples_block, '$1'} | '$2'].
+groupGraphPatternSub -> triplesBlock : [{triples_block, '$1'}] .
 groupGraphPatternSub -> graphPatternNotTriplesBlockSeq .
-graphPatternNotTriplesBlockSeq -> graphPatternNotTriplesBlock graphPatternNotTriplesBlockSeq .
-graphPatternNotTriplesBlockSeq -> graphPatternNotTriplesBlock  .
-graphPatternNotTriplesBlock -> graphPatternNotTriples '.' triplesBlock .
-graphPatternNotTriplesBlock -> graphPatternNotTriples '.' .
-graphPatternNotTriplesBlock -> graphPatternNotTriples triplesBlock .
-graphPatternNotTriplesBlock -> graphPatternNotTriples .
+graphPatternNotTriplesBlockSeq -> graphPatternNotTriplesBlock graphPatternNotTriplesBlockSeq : '$1' ++ '$2' .
+graphPatternNotTriplesBlockSeq -> graphPatternNotTriplesBlock                                : '$1' .
+graphPatternNotTriplesBlock -> graphPatternNotTriples '.' triplesBlock : ['$1', {triples_block, '$3'}] .
+graphPatternNotTriplesBlock -> graphPatternNotTriples '.'              : ['$1'] .
+graphPatternNotTriplesBlock -> graphPatternNotTriples triplesBlock     : ['$1', {triples_block, '$2'}] .
+graphPatternNotTriplesBlock -> graphPatternNotTriples                  : ['$1'] .
 
-triplesBlock -> triplesSameSubjectPath '.' triplesBlock .
-triplesBlock -> triplesSameSubjectPath '.' .
-triplesBlock -> triplesSameSubjectPath .
+triplesBlock -> triplesSameSubjectPath '.' triplesBlock : ['$1' | '$3'] .
+triplesBlock -> triplesSameSubjectPath '.'              : ['$1'] .
+triplesBlock -> triplesSameSubjectPath                  : ['$1'] .
 
-graphPatternNotTriples -> groupOrUnionGraphPattern .
-graphPatternNotTriples -> optionalGraphPattern .
-graphPatternNotTriples -> minusGraphPattern .
-graphPatternNotTriples -> graphGraphPattern .
-graphPatternNotTriples -> serviceGraphPattern .
-graphPatternNotTriples -> filter .
-graphPatternNotTriples -> bind .
-graphPatternNotTriples -> inlineData .
+graphPatternNotTriples -> groupOrUnionGraphPattern : '$1' .
+graphPatternNotTriples -> optionalGraphPattern     : '$1' .
+graphPatternNotTriples -> minusGraphPattern        : '$1' .
+graphPatternNotTriples -> graphGraphPattern        : '$1' .
+graphPatternNotTriples -> serviceGraphPattern      : '$1' .
+graphPatternNotTriples -> filter                   : '$1' .
+graphPatternNotTriples -> bind                     : '$1' .
+graphPatternNotTriples -> inlineData               : '$1' .
 
 optionalGraphPattern -> 'OPTIONAL' groupGraphPattern .
 graphGraphPattern    -> 'GRAPH' varOrIri groupGraphPattern .
@@ -264,17 +264,22 @@ serviceGraphPattern  -> 'SERVICE' varOrIri groupGraphPattern .
 bind -> 'BIND' '(' expression 'AS' var ')' .
 
 inlineData -> 'VALUES' dataBlock .
+
 dataBlock  -> inlineDataOneVar .
 dataBlock  -> inlineDataFull .
+
 inlineDataOneVar -> var '{' dataBlockValues '}' .
 inlineDataOneVar -> var '{' '}' .
+
 %% InlineDataFull -> ( NIL | '(' Var* ')' ) '{' ( '(' DataBlockValue* ')' | NIL )* '}'
 inlineDataFull -> '(' vars ')' '{' dataBlockValuesOrNil '}' .
 inlineDataFull -> '(' vars ')' '{' '}' .
 inlineDataFull -> nil '{' dataBlockValuesOrNil '}' .
 inlineDataFull -> nil '{' '}' .
+
 vars -> var vars : ['$1' | '$2'] .
 vars -> var      : ['$1'] .
+
 dataBlockValuesOrNil -> '(' dataBlockValues ')' dataBlockValuesOrNil .
 dataBlockValuesOrNil -> nil dataBlockValuesOrNil .
 dataBlockValuesOrNil -> '(' dataBlockValues ')' .
@@ -291,28 +296,34 @@ minusGraphPattern -> 'MINUS' groupGraphPattern .
 groupOrUnionGraphPattern -> groupGraphPattern 'UNION' groupOrUnionGraphPattern .
 groupOrUnionGraphPattern -> groupGraphPattern .
 
-filter -> 'FILTER' constraint .
-constraint -> brackettedExpression .
-constraint -> builtInCall .
-constraint -> functionCall .
-functionCall -> iri argList .
+filter -> 'FILTER' constraint : {filter, '$2' }.
+
+constraint -> brackettedExpression : '$1' .
+constraint -> builtInCall          : '$1' .
+constraint -> functionCall         : '$1' .
+
+functionCall -> iri argList : {function_call, '$1', '$2'} .
+
 %% ArgList -> NIL | '(' 'DISTINCT'? Expression ( ',' Expression )* ')'
-argList -> nil .
-argList -> '(' 'DISTINCT' expression expressionSeq ')' .
-argList -> '(' 'DISTINCT' expression  ')' .
-argList -> '(' expression expressionSeq ')' .
-argList -> '(' expression  ')' .
+argList -> nil                                         : [] .
+argList -> '(' 'DISTINCT' expression expressionSeq ')' : ['$2', '$3' | '$4'] .
+argList -> '(' 'DISTINCT' expression  ')'              : ['$2', '$3'] .
+argList -> '(' expression expressionSeq ')'            : ['$2' | '$3'] .
+argList -> '(' expression  ')'                         : ['$2'] .
+
 %% ExpressionList -> NIL | '(' Expression ( ',' Expression )* ')'
-expressionList -> nil .
-expressionList -> '(' expression ')' .
-expressionList -> '(' expression expressionSeq ')' .
-expressionSeq -> ',' expression expressionSeq .
-expressionSeq -> ',' expression .
+expressionList -> nil                              : [] .
+expressionList -> '(' expression ')'               : ['$2'] .
+expressionList -> '(' expression expressionSeq ')' : ['$2' | '$3'] .
+expressionSeq -> ',' expression expressionSeq : ['$2' | '$3'] .
+expressionSeq -> ',' expression               : ['$2'] .
+
 constructTemplate -> '{' constructTriples '}' .
 constructTemplate -> '{' '}' .
 constructTriples -> triplesSameSubject '.' constructTriples .
 constructTriples -> triplesSameSubject '.' .
 constructTriples -> triplesSameSubject  .
+
 triplesSameSubject -> varOrTerm propertyListNotEmpty .
 triplesSameSubject -> triplesNode propertyList .
 triplesSameSubject -> triplesNode .
@@ -324,44 +335,47 @@ propertyListNotEmptyVerbObjectList -> ';' verb objectList propertyListNotEmptyVe
 propertyListNotEmptyVerbObjectList -> ';' propertyListNotEmptyVerbObjectList .
 propertyListNotEmptyVerbObjectList -> ';' verb objectList .
 propertyListNotEmptyVerbObjectList -> ';' .
-verb -> varOrIri .
-verb -> 'a' .
-objectList -> object ',' objectList .
-objectList -> object .
-object -> graphNode .
-triplesSameSubjectPath -> varOrTerm propertyListPathNotEmpty .
-triplesSameSubjectPath -> triplesNodePath propertyListPathNotEmpty .
-triplesSameSubjectPath -> triplesNodePath .
+
+verb -> varOrIri : '$1' .
+verb -> 'a'      : rdf_type() .
+
+objectList -> object ',' objectList : ['$1' | '$3'] .
+objectList -> object                : ['$1'] .
+object     -> graphNode             : '$1' .
+
+triplesSameSubjectPath -> varOrTerm propertyListPathNotEmpty       : [{subject, '$1'} | '$2'].
+triplesSameSubjectPath -> triplesNodePath propertyListPathNotEmpty : [{subject, '$1'} | '$2'].
+triplesSameSubjectPath -> triplesNodePath                          : [{subject, '$1'}].
 
 %% PropertyListPathNotEmpty -> ( VerbPath | VerbSimple ) ObjectListPath ( ';' ( ( VerbPath | VerbSimple ) ObjectListPath )? )*
-propertyListPathNotEmpty -> verbObjectList semicolonSeq propertyListPathNotEmpty .
-propertyListPathNotEmpty -> verbObjectList semicolonSeq .
-propertyListPathNotEmpty -> verbObjectList .
-verbObjectList -> verbPath objectListPath .
-verbObjectList -> verbSimple objectListPath .
+propertyListPathNotEmpty -> verbObjectList semicolonSeq propertyListPathNotEmpty : '$1' ++ '$3' .
+propertyListPathNotEmpty -> verbObjectList semicolonSeq                          : '$1' .
+propertyListPathNotEmpty -> verbObjectList                                       : '$1' .
+verbObjectList -> verbPath objectListPath   : [{predicate, '$1'} | '$2'] .
+verbObjectList -> verbSimple objectListPath : [{predicate, '$1'} | '$2'] .
 semicolonSeq -> ';' semicolonSeq .
 semicolonSeq -> ';' .
 
-verbPath -> path .
-verbSimple -> var .
-objectListPath -> objectPath ',' objectListPath .
-objectListPath -> objectPath .
-objectPath -> graphNodePath .
+verbPath -> path  : '$1' .
+verbSimple -> var : '$1' .
+objectListPath -> objectPath ',' objectListPath : [{object, '$1'} | '$3'] .
+objectListPath -> objectPath : [{object, '$1'}] .
+objectPath -> graphNodePath  : '$1' .
 
-path -> pathAlternative .
+path -> pathAlternative : '$1' .
 pathAlternative -> pathSequence '|' pathAlternative .
-pathAlternative -> pathSequence .
+pathAlternative -> pathSequence : '$1' .
 pathSequence -> pathEltOrInverse '/' pathSequence .
-pathSequence -> pathEltOrInverse .
+pathSequence -> pathEltOrInverse : '$1' .
 pathElt -> pathPrimary pathMod .
-pathElt -> pathPrimary .
-pathEltOrInverse -> pathElt .
+pathElt -> pathPrimary : '$1' .
+pathEltOrInverse -> pathElt : '$1' .
 pathEltOrInverse -> '^' pathElt .
 pathMod -> '?' .
 pathMod -> '*' .
 pathMod -> '+' .
-pathPrimary -> iri .
-pathPrimary -> 'a' .
+pathPrimary -> iri : '$1' .
+pathPrimary -> 'a' : rdf_type() .
 pathPrimary -> '!' pathNegatedPropertySet .
 pathPrimary -> '(' path ')' .
 pathNegatedPropertySet -> pathOneInPropertySet .
@@ -374,149 +388,155 @@ pathOneInPropertySet -> 'a' .
 pathOneInPropertySet -> '^' iri .
 pathOneInPropertySet -> '^' 'a' .
 
-triplesNode -> collection .
-triplesNode -> blankNodePropertyList .
-blankNodePropertyList -> '[' propertyListNotEmpty ']' .
-triplesNodePath -> collectionPath .
-triplesNodePath -> blankNodePropertyListPath .
-blankNodePropertyListPath -> '[' propertyListPathNotEmpty ']' .
-collection -> '(' graphNodes ')' .
-graphNodes -> graphNode graphNodes .
-graphNodes -> graphNode .
-collectionPath -> '(' graphNodePaths ')' .
-graphNodePaths -> graphNodePath graphNodePaths .
-graphNodePaths -> graphNodePath .
-graphNode -> varOrTerm .
-graphNode -> triplesNode .
-graphNodePath -> varOrTerm .
-graphNodePath -> triplesNodePath .
-varOrTerm	-> var .
-varOrTerm	-> graphTerm .
-varOrIri -> var .
-varOrIri -> iri .
-graphTerm -> iri .
-graphTerm -> rdfLiteral .
-graphTerm -> numericLiteral .
-graphTerm -> booleanLiteral .
-graphTerm -> blankNode .
-graphTerm -> nil .
-expression -> conditionalOrExpression .
-conditionalOrExpression -> conditionalAndExpression '||' conditionalOrExpression .
-conditionalOrExpression -> conditionalAndExpression .
-conditionalAndExpression -> valueLogical '&&' conditionalAndExpression .
-conditionalAndExpression -> valueLogical .
-valueLogical -> relationalExpression .
-relationalExpression -> numericExpression .
-relationalExpression -> numericExpression '=' numericExpression .
-relationalExpression -> numericExpression '!=' numericExpression .
-relationalExpression -> numericExpression '<' numericExpression .
-relationalExpression -> numericExpression '>' numericExpression .
-relationalExpression -> numericExpression '<=' numericExpression .
-relationalExpression -> numericExpression '>=' numericExpression .
-relationalExpression -> numericExpression 'IN' expressionList .
-relationalExpression -> numericExpression 'NOT' 'IN' expressionList .
-numericExpression -> additiveExpression .
+triplesNode -> collection            : '$1' .
+triplesNode -> blankNodePropertyList : '$1' .
+blankNodePropertyList -> '[' propertyListNotEmpty ']' : {blank_node_property_list, '$2'} .
+
+triplesNodePath -> collectionPath            : '$1' .
+triplesNodePath -> blankNodePropertyListPath : '$1' .
+blankNodePropertyListPath -> '[' propertyListPathNotEmpty ']' : {blank_node_property_list, '$2'} .
+
+collection -> '(' graphNodes ')'   : {collection, '$2'} .
+graphNodes -> graphNode graphNodes : ['$1' | '$2'] .
+graphNodes -> graphNode            : ['$1'] .
+
+collectionPath -> '(' graphNodePaths ')'       : {collection, '$2'} .
+graphNodePaths -> graphNodePath graphNodePaths : ['$1' | '$2'] .
+graphNodePaths -> graphNodePath                : ['$1'] .
+
+graphNode -> varOrTerm   : '$1' .
+graphNode -> triplesNode : '$1' .
+graphNodePath -> varOrTerm       : '$1' .
+graphNodePath -> triplesNodePath : '$1' .
+
+varOrTerm	-> var            : '$1' .
+varOrTerm	-> graphTerm      : '$1' .
+varOrIri  -> var            : '$1' .
+varOrIri  -> iri            : '$1' .
+graphTerm -> iri            : '$1' .
+graphTerm -> rdfLiteral     : '$1' .
+graphTerm -> numericLiteral : '$1' .
+graphTerm -> booleanLiteral : '$1' .
+graphTerm -> blankNode      : '$1' .
+graphTerm -> nil            : '$1' .
+
+expression -> conditionalOrExpression : '$1' .
+conditionalOrExpression -> conditionalAndExpression '||' conditionalOrExpression : {builtin_function_call, '||' , ['$1', '$3']} .
+conditionalOrExpression -> conditionalAndExpression : '$1' .
+conditionalAndExpression -> valueLogical '&&' conditionalAndExpression : {builtin_function_call, '&&' , ['$1', '$3']} .
+conditionalAndExpression -> valueLogical : '$1' .
+valueLogical -> relationalExpression : '$1' .
+relationalExpression -> numericExpression : '$1' .
+relationalExpression -> numericExpression '=' numericExpression     : {builtin_function_call, '=' , ['$1', '$3']} .
+relationalExpression -> numericExpression '!=' numericExpression    : {builtin_function_call, '!=', ['$1', '$3']} .
+relationalExpression -> numericExpression '<' numericExpression     : {builtin_function_call, '<' , ['$1', '$3']} .
+relationalExpression -> numericExpression '>' numericExpression     : {builtin_function_call, '>' , ['$1', '$3']} .
+relationalExpression -> numericExpression '<=' numericExpression    : {builtin_function_call, '<=', ['$1', '$3']} .
+relationalExpression -> numericExpression '>=' numericExpression    : {builtin_function_call, '>=', ['$1', '$3']} .
+relationalExpression -> numericExpression 'IN' expressionList       : {builtin_function_call, 'IN', ['$1', '$3']} .
+relationalExpression -> numericExpression 'NOT' 'IN' expressionList : {builtin_function_call, 'NOT_IN', ['$1', '$4']} .
+numericExpression -> additiveExpression : '$1' .
 
 %% AdditiveExpression -> MultiplicativeExpression ( '+' MultiplicativeExpression | '-' MultiplicativeExpression | ( NumericLiteralPositive | NumericLiteralNegative ) ( ( '*' UnaryExpression ) | ( '/' UnaryExpression ) )* )*
-additiveExpression -> multiplicativeExpression multiplicativeExpressionSeq .
-additiveExpression -> multiplicativeExpression .
-multiplicativeExpressionSeq -> '+' multiplicativeExpression multiplicativeExpressionSeq .
-multiplicativeExpressionSeq -> '-' multiplicativeExpression multiplicativeExpressionSeq .
-multiplicativeExpressionSeq -> '+' multiplicativeExpression .
-multiplicativeExpressionSeq -> '-' multiplicativeExpression .
-multiplicativeExpressionSeq -> numericLiteralPositive multiplicativeUnaryExpressionSeq multiplicativeExpressionSeq .
-multiplicativeExpressionSeq -> numericLiteralNegative multiplicativeUnaryExpressionSeq multiplicativeExpressionSeq .
-multiplicativeExpressionSeq -> numericLiteralPositive multiplicativeExpressionSeq .
-multiplicativeExpressionSeq -> numericLiteralNegative multiplicativeExpressionSeq .
-multiplicativeExpressionSeq -> numericLiteralPositive multiplicativeUnaryExpressionSeq .
-multiplicativeExpressionSeq -> numericLiteralNegative multiplicativeUnaryExpressionSeq .
-multiplicativeExpressionSeq -> numericLiteralPositive .
-multiplicativeExpressionSeq -> numericLiteralNegative .
-multiplicativeUnaryExpressionSeq -> multiplicativeUnaryExpression multiplicativeUnaryExpressionSeq .
-multiplicativeUnaryExpressionSeq -> multiplicativeUnaryExpression .
-multiplicativeUnaryExpression -> '*' unaryExpression .
-multiplicativeUnaryExpression -> '/' unaryExpression .
+additiveExpression -> multiplicativeExpression multiplicativeExpressionSeq : arithmetic_expr('$1', '$2') .
+additiveExpression -> multiplicativeExpression : arithmetic_expr('$1') .
+multiplicativeExpressionSeq -> '+' multiplicativeExpression multiplicativeExpressionSeq : arithmetic_expr('$1', '$2', '$3') .
+multiplicativeExpressionSeq -> '-' multiplicativeExpression multiplicativeExpressionSeq : arithmetic_expr('$1', '$2', '$3') .
+multiplicativeExpressionSeq -> '+' multiplicativeExpression : ['$1', '$2'] .
+multiplicativeExpressionSeq -> '-' multiplicativeExpression : ['$1', '$2'] .
+multiplicativeExpressionSeq -> numericLiteralPositive multiplicativeUnaryExpressionSeq multiplicativeExpressionSeq : arithmetic_quirk_expr('+', strip_sign('$1'), '$2', '$3') .
+multiplicativeExpressionSeq -> numericLiteralNegative multiplicativeUnaryExpressionSeq multiplicativeExpressionSeq : arithmetic_quirk_expr('-', strip_sign('$1'), '$2', '$3') .
+multiplicativeExpressionSeq -> numericLiteralPositive multiplicativeExpressionSeq      : arithmetic_expr('+', strip_sign('$1'), '$2') .
+multiplicativeExpressionSeq -> numericLiteralNegative multiplicativeExpressionSeq      : arithmetic_expr('-', strip_sign('$1'), '$2') .
+multiplicativeExpressionSeq -> numericLiteralPositive multiplicativeUnaryExpressionSeq : multiplicative_quirk_expr('+', strip_sign('$1'), '$2') .
+multiplicativeExpressionSeq -> numericLiteralNegative multiplicativeUnaryExpressionSeq : multiplicative_quirk_expr('-', strip_sign('$1'), '$2') .
+multiplicativeExpressionSeq -> numericLiteralPositive : ['+', strip_sign('$1')] .
+multiplicativeExpressionSeq -> numericLiteralNegative : ['-', strip_sign('$1')] .
+multiplicativeUnaryExpressionSeq -> multiplicativeUnaryExpression multiplicativeUnaryExpressionSeq : arithmetic_expr('$1', '$2') .
+multiplicativeUnaryExpressionSeq -> multiplicativeUnaryExpression : '$1' .
+multiplicativeUnaryExpression -> '*' unaryExpression : ['$1', '$2'] .
+multiplicativeUnaryExpression -> '/' unaryExpression : ['$1', '$2'] .
 
-multiplicativeExpression -> unaryExpression '*' multiplicativeExpression .
-multiplicativeExpression -> unaryExpression '/' multiplicativeExpression .
-multiplicativeExpression -> unaryExpression .
-unaryExpression -> '!' primaryExpression .
-unaryExpression -> '+' primaryExpression .
-unaryExpression -> '-' primaryExpression .
-unaryExpression -> primaryExpression .
-primaryExpression -> brackettedExpression .
-primaryExpression -> builtInCall .
-primaryExpression -> iriOrFunction .
-primaryExpression -> rdfLiteral .
-primaryExpression -> numericLiteral .
-primaryExpression -> booleanLiteral .
-primaryExpression -> var .
+multiplicativeExpression -> unaryExpression '*' multiplicativeExpression : multiplicative_expr('$2', '$1', '$3') .
+multiplicativeExpression -> unaryExpression '/' multiplicativeExpression : multiplicative_expr('$2', '$1', '$3') .
+multiplicativeExpression -> unaryExpression                              : '$1' .
+unaryExpression -> '!' primaryExpression  : {builtin_function_call, '!', ['$2']} .
+unaryExpression -> '+' primaryExpression  : {builtin_function_call, '+', ['$2']} .
+unaryExpression -> '-' primaryExpression  : {builtin_function_call, '-', ['$2']} .
+unaryExpression -> primaryExpression      : '$1' .
+primaryExpression -> brackettedExpression : '$1' .
+primaryExpression -> builtInCall          : '$1' .
+primaryExpression -> iriOrFunction        : '$1' .
+primaryExpression -> rdfLiteral           : '$1' .
+primaryExpression -> numericLiteral       : '$1' .
+primaryExpression -> booleanLiteral       : '$1' .
+primaryExpression -> var                  : '$1' .
 
-brackettedExpression -> '(' expression ')' .
+brackettedExpression -> '(' expression ')' : '$2' .
 
-builtInCall -> aggregate .
-builtInCall -> 'STR' '(' expression ')' .
-builtInCall -> 'LANG' '(' expression ')' .
-builtInCall -> 'LANGMATCHES' '(' expression ',' expression ')' .
-builtInCall -> 'DATATYPE' '(' expression ')' .
-builtInCall -> 'BOUND' '(' var ')' .
-builtInCall -> 'IRI' '(' expression ')' .
-builtInCall -> 'URI' '(' expression ')' .
-builtInCall -> 'BNODE' '(' expression ')' .
-builtInCall -> 'BNODE' nil .
-builtInCall -> 'RAND' nil .
-builtInCall -> 'ABS' '(' expression ')' .
-builtInCall -> 'CEIL' '(' expression ')' .
-builtInCall -> 'FLOOR' '(' expression ')' .
-builtInCall -> 'ROUND' '(' expression ')' .
-builtInCall -> 'CONCAT' expressionList .
-builtInCall -> substringExpression .
-builtInCall -> 'STRLEN' '(' expression ')' .
-builtInCall -> strReplaceExpression .
-builtInCall -> 'UCASE' '(' expression ')' .
-builtInCall -> 'LCASE' '(' expression ')' .
-builtInCall -> 'ENCODE_FOR_URI' '(' expression ')' .
-builtInCall -> 'CONTAINS' '(' expression ',' expression ')' .
-builtInCall -> 'STRSTARTS' '(' expression ',' expression ')' .
-builtInCall -> 'STRENDS' '(' expression ',' expression ')' .
-builtInCall -> 'STRBEFORE' '(' expression ',' expression ')' .
-builtInCall -> 'STRAFTER' '(' expression ',' expression ')' .
-builtInCall -> 'YEAR' '(' expression ')' .
-builtInCall -> 'MONTH' '(' expression ')' .
-builtInCall -> 'DAY' '(' expression ')' .
-builtInCall -> 'HOURS' '(' expression ')' .
-builtInCall -> 'MINUTES' '(' expression ')' .
-builtInCall -> 'SECONDS' '(' expression ')' .
-builtInCall -> 'TIMEZONE' '(' expression ')' .
-builtInCall -> 'TZ' '(' expression ')' .
-builtInCall -> 'NOW' nil .
-builtInCall -> 'UUID' nil .
-builtInCall -> 'STRUUID' nil .
-builtInCall -> 'MD5' '(' expression ')' .
-builtInCall -> 'SHA1' '(' expression ')' .
-builtInCall -> 'SHA256' '(' expression ')' .
-builtInCall -> 'SHA384' '(' expression ')' .
-builtInCall -> 'SHA512' '(' expression ')' .
-builtInCall -> 'COALESCE' expressionList .
-builtInCall -> 'IF' '(' expression ',' expression ',' expression ')' .
-builtInCall -> 'STRLANG' '(' expression ',' expression ')' .
-builtInCall -> 'STRDT' '(' expression ',' expression ')' .
-builtInCall -> 'sameTerm' '(' expression ',' expression ')' .
-builtInCall -> 'isIRI' '(' expression ')' .
-builtInCall -> 'isURI' '(' expression ')' .
-builtInCall -> 'isBLANK' '(' expression ')' .
-builtInCall -> 'isLITERAL' '(' expression ')' .
-builtInCall -> 'isNUMERIC' '(' expression ')' .
-builtInCall -> regexExpression .
-builtInCall -> existsFunc .
-builtInCall -> notExistsFunc .
+builtInCall -> aggregate : '$1' .
+builtInCall -> 'STR' '(' expression ')'                              : {builtin_function_call, 'STR', ['$3']} .
+builtInCall -> 'LANG' '(' expression ')'                             : {builtin_function_call, 'LANG', ['$3']} .
+builtInCall -> 'LANGMATCHES' '(' expression ',' expression ')'       : {builtin_function_call, 'LANGMATCHES', ['$3', '$5']} .
+builtInCall -> 'DATATYPE' '(' expression ')'                         : {builtin_function_call, 'DATATYPE', ['$3']} .
+builtInCall -> 'BOUND' '(' var ')'                                   : {builtin_function_call, 'BOUND', ['$3']} .
+builtInCall -> 'IRI' '(' expression ')'                              : {builtin_function_call, 'IRI', ['$3']} .
+builtInCall -> 'URI' '(' expression ')'                              : {builtin_function_call, 'URI', ['$3']} .
+builtInCall -> 'BNODE' '(' expression ')'                            : {builtin_function_call, 'BNODE', ['$3']} .
+builtInCall -> 'BNODE' nil                                           : {builtin_function_call, 'BNODE', []} .
+builtInCall -> 'RAND' nil                                            : {builtin_function_call, 'RAND', []} .
+builtInCall -> 'ABS' '(' expression ')'                              : {builtin_function_call, 'ABS', ['$3']} .
+builtInCall -> 'CEIL' '(' expression ')'                             : {builtin_function_call, 'CEIL', ['$3']} .
+builtInCall -> 'FLOOR' '(' expression ')'                            : {builtin_function_call, 'FLOOR', ['$3']} .
+builtInCall -> 'ROUND' '(' expression ')'                            : {builtin_function_call, 'ROUND', ['$3']} .
+builtInCall -> 'CONCAT' expressionList                               : {builtin_function_call, 'CONCAT', '$2'} .
+builtInCall -> substringExpression                                   : '$1' .
+builtInCall -> 'STRLEN' '(' expression ')'                           : {builtin_function_call, 'STRLEN', ['$3']} .
+builtInCall -> strReplaceExpression                                  : '$1' .
+builtInCall -> 'UCASE' '(' expression ')'                            : {builtin_function_call, 'UCASE', ['$3']} .
+builtInCall -> 'LCASE' '(' expression ')'                            : {builtin_function_call, 'LCASE', ['$3']} .
+builtInCall -> 'ENCODE_FOR_URI' '(' expression ')'                   : {builtin_function_call, 'ENCODE_FOR_URI', ['$3']} .
+builtInCall -> 'CONTAINS' '(' expression ',' expression ')'          : {builtin_function_call, 'CONTAINS', ['$3', '$5']} .
+builtInCall -> 'STRSTARTS' '(' expression ',' expression ')'         : {builtin_function_call, 'STRSTARTS', ['$3', '$5']} .
+builtInCall -> 'STRENDS' '(' expression ',' expression ')'           : {builtin_function_call, 'STRENDS', ['$3', '$5']} .
+builtInCall -> 'STRBEFORE' '(' expression ',' expression ')'         : {builtin_function_call, 'STRBEFORE', ['$3', '$5']} .
+builtInCall -> 'STRAFTER' '(' expression ',' expression ')'          : {builtin_function_call, 'STRAFTER', ['$3', '$5']} .
+builtInCall -> 'YEAR' '(' expression ')'                             : {builtin_function_call, 'YEAR', ['$3']} .
+builtInCall -> 'MONTH' '(' expression ')'                            : {builtin_function_call, 'MONTH', ['$3']} .
+builtInCall -> 'DAY' '(' expression ')'                              : {builtin_function_call, 'DAY', ['$3']} .
+builtInCall -> 'HOURS' '(' expression ')'                            : {builtin_function_call, 'HOURS', ['$3']} .
+builtInCall -> 'MINUTES' '(' expression ')'                          : {builtin_function_call, 'MINUTES', ['$3']} .
+builtInCall -> 'SECONDS' '(' expression ')'                          : {builtin_function_call, 'SECONDS', ['$3']} .
+builtInCall -> 'TIMEZONE' '(' expression ')'                         : {builtin_function_call, 'TIMEZONE', ['$3']} .
+builtInCall -> 'TZ' '(' expression ')'                               : {builtin_function_call, 'TZ', ['$3']} .
+builtInCall -> 'NOW' nil                                             : {builtin_function_call, 'NOW', []} .
+builtInCall -> 'UUID' nil                                            : {builtin_function_call, 'UUID', []} .
+builtInCall -> 'STRUUID' nil                                         : {builtin_function_call, 'STRUUID', []} .
+builtInCall -> 'MD5' '(' expression ')'                              : {builtin_function_call, 'MD5', ['$3']} .
+builtInCall -> 'SHA1' '(' expression ')'                             : {builtin_function_call, 'SHA1', ['$3']} .
+builtInCall -> 'SHA256' '(' expression ')'                           : {builtin_function_call, 'SHA256', ['$3']} .
+builtInCall -> 'SHA384' '(' expression ')'                           : {builtin_function_call, 'SHA384', ['$3']} .
+builtInCall -> 'SHA512' '(' expression ')'                           : {builtin_function_call, 'SHA512', ['$3']} .
+builtInCall -> 'COALESCE' expressionList                             : {builtin_function_call, 'COALESCE', '$2'} .
+builtInCall -> 'IF' '(' expression ',' expression ',' expression ')' : {builtin_function_call, 'IF', ['$3', '$5', '$7']} .
+builtInCall -> 'STRLANG' '(' expression ',' expression ')'           : {builtin_function_call, 'STRLANG', ['$3', '$5']} .
+builtInCall -> 'STRDT' '(' expression ',' expression ')'             : {builtin_function_call, 'STRDT', ['$3', '$5']} .
+builtInCall -> 'sameTerm' '(' expression ',' expression ')'          : {builtin_function_call, 'sameTerm', ['$3', '$5']} .
+builtInCall -> 'isIRI' '(' expression ')'                            : {builtin_function_call, 'isIRI', ['$3']} .
+builtInCall -> 'isURI' '(' expression ')'                            : {builtin_function_call, 'isURI', ['$3']} .
+builtInCall -> 'isBLANK' '(' expression ')'                          : {builtin_function_call, 'isBLANK', ['$3']} .
+builtInCall -> 'isLITERAL' '(' expression ')'                        : {builtin_function_call, 'isLITERAL', ['$3']} .
+builtInCall -> 'isNUMERIC' '(' expression ')'                        : {builtin_function_call, 'isNUMERIC', ['$3']} .
+builtInCall -> regexExpression : '$1' .
+builtInCall -> existsFunc      : '$1' .
+builtInCall -> notExistsFunc   : '$1' .
 
-regexExpression -> 'REGEX' '(' expression ',' expression ',' expression ')' .
-regexExpression -> 'REGEX' '(' expression ',' expression ')' .
-substringExpression -> 'SUBSTR' '(' expression ',' expression ',' expression ')' .
-substringExpression -> 'SUBSTR' '(' expression ',' expression ')' .
-strReplaceExpression -> 'REPLACE' '(' expression ',' expression ',' expression ',' expression ')' .
-strReplaceExpression -> 'REPLACE' '(' expression ',' expression ',' expression ')' .
+regexExpression -> 'REGEX' '(' expression ',' expression ',' expression ')' : {builtin_function_call, 'REGEX', ['$3', '$5', '$7']} .
+regexExpression -> 'REGEX' '(' expression ',' expression ')'                : {builtin_function_call, 'REGEX', ['$3', '$5']} .
+substringExpression -> 'SUBSTR' '(' expression ',' expression ',' expression ')' : {builtin_function_call, 'SUBSTR', ['$3', '$5', '$7']} .
+substringExpression -> 'SUBSTR' '(' expression ',' expression ')'                : {builtin_function_call, 'SUBSTR', ['$3', '$5']} .
+strReplaceExpression -> 'REPLACE' '(' expression ',' expression ',' expression ',' expression ')' : {builtin_function_call, 'REPLACE', ['$3', '$5', '$7', '$9']} .
+strReplaceExpression -> 'REPLACE' '(' expression ',' expression ',' expression ')'                : {builtin_function_call, 'REPLACE', ['$3', '$5', '$7']} .
 
 existsFunc -> 'EXISTS' groupGraphPattern .
 notExistsFunc -> 'NOT' 'EXISTS' groupGraphPattern .
@@ -540,25 +560,25 @@ aggregate -> 'GROUP_CONCAT' '(' 'DISTINCT' expression ')' .
 aggregate -> 'GROUP_CONCAT' '(' expression ';' 'SEPARATOR' '=' string_literal_quote ')' .
 aggregate -> 'GROUP_CONCAT' '(' expression ')' .
 
-iriOrFunction -> iri argList .
-iriOrFunction -> iri .
+iriOrFunction -> iri argList : {function_call, '$1', '$2'}.
+iriOrFunction -> iri : '$1' .
 
 rdfLiteral -> string_literal_quote '^^' iri    : to_literal('$1', {datatype, '$3'}) .
 rdfLiteral -> string_literal_quote langtag     : to_literal('$1', {language, to_langtag('$2')}) .
 rdfLiteral -> string_literal_quote             : to_literal('$1') .
 
-numericLiteral -> numericLiteralUnsigned .
-numericLiteral -> numericLiteralPositive .
-numericLiteral -> numericLiteralNegative .
-numericLiteralUnsigned -> integer .
-numericLiteralUnsigned -> decimal .
-numericLiteralUnsigned -> double .
-numericLiteralPositive -> integer_positive .
-numericLiteralPositive -> decimal_positive .
-numericLiteralPositive -> double_positive .
-numericLiteralNegative -> integer_negative .
-numericLiteralNegative -> decimal_negative .
-numericLiteralNegative -> double_negative .
+numericLiteral -> numericLiteralUnsigned   : '$1' .
+numericLiteral -> numericLiteralPositive   : '$1' .
+numericLiteral -> numericLiteralNegative   : '$1' .
+numericLiteralUnsigned -> integer          : extract_literal('$1') .
+numericLiteralUnsigned -> decimal          : extract_literal('$1') .
+numericLiteralUnsigned -> double           : extract_literal('$1') .
+numericLiteralPositive -> integer_positive : extract_literal('$1') .
+numericLiteralPositive -> decimal_positive : extract_literal('$1') .
+numericLiteralPositive -> double_positive  : extract_literal('$1') .
+numericLiteralNegative -> integer_negative : extract_literal('$1') .
+numericLiteralNegative -> decimal_negative : extract_literal('$1') .
+numericLiteralNegative -> double_negative  : extract_literal('$1') .
 
 booleanLiteral -> boolean : to_literal('$1') .
 
@@ -569,7 +589,7 @@ prefixedName -> prefix_ln : '$1' .
 prefixedName -> prefix_ns : '$1' .
 
 blankNode -> blank_node_label : to_bnode('$1') .
-blankNode -> anon             : {anon} .
+blankNode -> anon             : to_bnode('$1') .
 
 
 Erlang code.
@@ -581,3 +601,11 @@ to_literal(STRING) -> 'Elixir.RDF.Serialization.ParseHelper':to_literal(STRING).
 to_literal(STRING, Type) -> 'Elixir.RDF.Serialization.ParseHelper':to_literal(STRING, Type).
 to_langtag(LANGTAG) -> 'Elixir.RDF.Serialization.ParseHelper':to_langtag(LANGTAG).
 rdf_type() -> 'Elixir.RDF.Serialization.ParseHelper':rdf_type().
+extract_literal(LITERAL) -> 'Elixir.SPARQL.Language.ParseHelper':extract_literal(LITERAL).
+arithmetic_expr(EXPR) -> 'Elixir.SPARQL.Language.ParseHelper':arithmetic_expr(EXPR).
+arithmetic_expr(LEFT, RIGHT) -> 'Elixir.SPARQL.Language.ParseHelper':arithmetic_expr(LEFT, RIGHT).
+arithmetic_expr(OP, LEFT, RIGHT) -> 'Elixir.SPARQL.Language.ParseHelper':arithmetic_expr(OP, LEFT, RIGHT).
+arithmetic_quirk_expr(SIGN, LEFT, MIDDLE, RIGHT) -> 'Elixir.SPARQL.Language.ParseHelper':arithmetic_quirk_expr(SIGN, LEFT, MIDDLE, RIGHT).
+multiplicative_expr(OP, LEFT, RIGHT) -> 'Elixir.SPARQL.Language.ParseHelper':multiplicative_expr(OP, LEFT, RIGHT).
+multiplicative_quirk_expr(SIGN, LEFT, RIGHT) -> 'Elixir.SPARQL.Language.ParseHelper':multiplicative_quirk_expr(SIGN, LEFT, RIGHT).
+strip_sign(LITERAL) -> 'Elixir.SPARQL.Language.ParseHelper':strip_sign(LITERAL).

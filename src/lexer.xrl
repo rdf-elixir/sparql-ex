@@ -131,7 +131,7 @@ IsBLANK         = [Ii][Ss][Bb][Ll][Aa][Nn][Kk]
 IsLITERAL       = [Ii][Ss][Ll][Ii][Tt][Ee][Rr][Aa][Ll]
 IsNUMERIC       = [Ii][Ss][Nn][Uu][Mm][Ee][Rr][Ii][Cc]
 REGEX           = [Rr][Ee][Gg][Ee][Xx]
-SUBSTR          = [Ss][Tt][Rr]
+SUBSTR          = [Ss][Uu][Bb][Ss][Tt][Rr]
 REPLACE         = [Rr][Ee][Pp][Ll][Aa][Cc][Ee]
 EXISTS          = [Ee][Xx][Ii][Ss][Tt][Ss]
 NOT             = [Nn][Oo][Tt]
@@ -288,9 +288,9 @@ a                                  : {token, {'a', TokenLine}}.
 \-	                               : {token, {'-', TokenLine}}.
 \<	                               : {token, {'<', TokenLine}}.
 \>	                               : {token, {'>', TokenLine}}.
-\<=	                               : {token, {'<', TokenLine}}.
-\>=	                               : {token, {'>', TokenLine}}.
-\!=	                               : {token, {'<', TokenLine}}.
+\<=	                               : {token, {'<=', TokenLine}}.
+\>=	                               : {token, {'>=', TokenLine}}.
+\!=	                               : {token, {'!=', TokenLine}}.
 \|\|	                             : {token, {'||', TokenLine}}.
 \&\&	                             : {token, {'&&', TokenLine}}.
 

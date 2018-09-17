@@ -12,14 +12,14 @@ defmodule SPARQL.Query.Result.XML.DecoderTest do
         <sparql xmlns="http://www.w3.org/2005/sparql-results#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/sw/DataAccess/rf1/result2.xsd">
           <head></head>
         </sparql>
-        """) == {:ok, %Query.ResultSet{variables: nil, results: []}}
+        """) == {:ok, %Query.Result{variables: nil, results: []}}
   end
 
   test "with no variables and no results" do
     assert Query.Result.XML.decode("""
         <sparql xmlns="http://www.w3.org/2005/sparql-results#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/sw/DataAccess/rf1/result2.xsd">
         </sparql>
-        """) == {:ok, %Query.ResultSet{variables: nil, results: []}}
+        """) == {:ok, %Query.Result{variables: nil, results: []}}
   end
 
   test "with head and variables, but no results" do
@@ -31,7 +31,7 @@ defmodule SPARQL.Query.Result.XML.DecoderTest do
             <variable name="o"/>
           </head>
         </sparql>
-        """) == {:ok, %Query.ResultSet{variables: ~w[s p o], results: []}}
+        """) == {:ok, %Query.Result{variables: ~w[s p o], results: []}}
   end
 
   test "with head and variables, but no results.bindings" do
@@ -45,7 +45,7 @@ defmodule SPARQL.Query.Result.XML.DecoderTest do
           <results>
           </results>
         </sparql>
-        """) == {:ok, %Query.ResultSet{variables: ~w[s p o], results: []}}
+        """) == {:ok, %Query.Result{variables: ~w[s p o], results: []}}
   end
 
   test "with no head, but results" do
@@ -65,12 +65,12 @@ defmodule SPARQL.Query.Result.XML.DecoderTest do
             </result>
           </results>
         </sparql>
-        """) == {:ok, %Query.ResultSet{variables: nil, results: [
-                        %Query.Result{bindings: %{
+        """) == {:ok, %Query.Result{variables: nil, results: [
+                        %{
                           "s" => ~I<http://example.org/s1>,
                           "p" => ~I<http://example.org/p1>,
                           "o" => ~I<http://example.org/o1>,
-                        }}
+                        }
                       ]}}
   end
 
@@ -92,12 +92,12 @@ defmodule SPARQL.Query.Result.XML.DecoderTest do
             </result>
           </results>
         </sparql>
-        """) == {:ok, %Query.ResultSet{variables: nil, results: [
-                        %Query.Result{bindings: %{
+        """) == {:ok, %Query.Result{variables: nil, results: [
+                        %{
                           "s" => ~I<http://example.org/s1>,
                           "p" => ~I<http://example.org/p1>,
                           "o" => ~I<http://example.org/o1>,
-                        }}
+                        }
                       ]}}
   end
 
@@ -154,24 +154,24 @@ defmodule SPARQL.Query.Result.XML.DecoderTest do
             </result>
           </results>
         </sparql>
-        """) == {:ok, %Query.ResultSet{
+        """) == {:ok, %Query.Result{
                   variables: ~w[x hpage name mbox age blurb friend],
                   results: [
-                    %Query.Result{bindings: %{
+                    %{
                       "x"      => ~B<r1>,
                       "hpage"  => ~I<http://work.example.org/alice/>,
                       "name"   => ~L"Alice",
                       "mbox"   => ~L"",
                       "friend" => ~B<r2>,
-                    }},
-                    %Query.Result{bindings: %{
+                    },
+                    %{
                       "x"      => ~B<r2>,
                       "hpage"  => ~I<http://work.example.org/bob/>,
                       "name"   => ~L"Bob"en,
                       "mbox"   => ~I<mailto:bob@work.example.org>,
                       "age"    => RDF.Integer.new(30),
                       "friend" => ~B<r1>,
-                    }}
+                    }
                   ]}}
   end
 
@@ -191,14 +191,14 @@ defmodule SPARQL.Query.Result.XML.DecoderTest do
             </result>
           </results>
         </sparql>
-        """) == {:ok, %Query.ResultSet{
+        """) == {:ok, %Query.Result{
                   variables: ~w[blurb],
                   results: [
-                    %Query.Result{bindings: %{
+                    %{
                       "blurb"  => RDF.Literal.new(
                         ~S'<p xmlns="http://www.w3.org/1999/xhtml">My name is <b>alice</b></p>',
                         datatype: RDF.XMLLiteral),
-                    }},
+                    },
                   ]}}
   end
 
@@ -210,7 +210,7 @@ defmodule SPARQL.Query.Result.XML.DecoderTest do
         </head>
         <boolean>true</boolean>
       </sparql>
-      """) == {:ok, %Query.ResultSet{variables: nil, results: true}}
+      """) == {:ok, %Query.Result{variables: nil, results: true}}
   end
 
   test "ASK result with non-boolean value" do
