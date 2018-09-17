@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## Unreleased
+## 0.2.0 - 2018-09-17
 
 ### Fixed
 
@@ -13,7 +13,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
   which caused issues using the SPARQL.ex Hex package on OTP < 21
   (because the package was released with OTP 21)
 
-[Compare v0.2.0...HEAD](https://github.com/marcelotto/rdf-ex/compare/v0.2.0...HEAD)
+[Compare v0.2.0...v0.2.1](https://github.com/marcelotto/rdf-ex/compare/v0.2.0...v0.2.1)
 
 
 
