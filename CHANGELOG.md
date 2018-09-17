@@ -5,12 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## Unreleased
+## 0.2.0 - 2018-09-17
 
 ### Added
 
-- SPARQL algebra representation and evaluation of queries against RDF data structures
-
+- SPARQL Query engine for executing queries against RDF.ex graphs 
+  (not complete yet; see Current state section in README)
 
 ### Changed
 
@@ -20,7 +20,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
   are now represented as simple maps
 
 
-[Compare v0.1.0...HEAD](https://github.com/marcelotto/sparql-ex/compare/v0.1.0...HEAD)
+[Compare v0.1.0...v0.2.0](https://github.com/marcelotto/sparql-ex/compare/v0.1.0...v0.2.0)
 
 
 
