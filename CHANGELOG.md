@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
+## Unreleased
+
+### Fixed
+
+- bug in the lexer grammar which caused a scanner error on lowercase `distinct`
+
+
 ## 0.2.1 - 2018-09-17
 
 ### Fixed
