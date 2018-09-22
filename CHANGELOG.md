@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## Unreleased
+## 0.2.2 - 2018-09-22
 
 ### Added
 
@@ -15,7 +15,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 - bug in the lexer grammar which caused a scanner error on lowercase `distinct`
 
-[Compare v0.2.1...HEAD](https://github.com/marcelotto/sparql-ex/compare/v0.2.1...HEAD)
+[Compare v0.2.1...v0.2.2](https://github.com/marcelotto/sparql-ex/compare/v0.2.1...v0.2.2)
 
 
 
