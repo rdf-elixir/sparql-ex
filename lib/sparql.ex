@@ -50,6 +50,11 @@ defmodule SPARQL do
   defdelegate query(query), to: SPARQL.Query, as: :new
 
   @doc """
+  Alias for `SPARQL.Query.new/2`.
+  """
+  defdelegate query(query, opts), to: SPARQL.Query, as: :new
+
+  @doc """
   Alias for `SPARQL.Processor.query/2`.
   """
   defdelegate execute_query(data, query), to: SPARQL.Processor, as: :query
