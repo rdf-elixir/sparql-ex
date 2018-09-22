@@ -124,7 +124,7 @@ The `SPARQL.execute_query/2` function converts a given query string implicitely 
 
 ```elixir
 query = SPARQL.query """
-  PREFIX foaf:   <http://xmlns.com/foaf/0.1/>
+  PREFIX foaf: <http://xmlns.com/foaf/0.1/>
   SELECT ?name ?mbox
   WHERE
     { ?x foaf:name ?name .
@@ -134,6 +134,24 @@ query = SPARQL.query """
 SPARQL.execute_query(graph, query)
 ```
 
+By default the following prefixes are defined before every query:
+
+```sparql
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+```
+
+You can define further application-wide default prefixes via the `default_prefixes` configuration parameter and providing a map of prefixes to IRIs:
+
+```elixir
+config :sparql,
+  default_prefixes: %{
+    ex: "http://example.com/ns/"
+  }
+```
+
+Further query-specific prefixes can be defined with the `prefixes` option on the `SPARQL.query/1` function which also expects a prefixes map.
 
 
 ### Defining extension functions
