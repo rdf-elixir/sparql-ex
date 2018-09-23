@@ -12,6 +12,21 @@ defmodule SPARQL.Query.Result do
     }
   end
 
+
+  @doc """
+  Returns the solutions for the given variable.
+  """
+  def get(result, variable)
+
+  def get(result, variable) when is_atom(variable),
+    do: get(result, to_string(variable))
+
+  def get(%SPARQL.Query.Result{results: results}, variable) do
+    Enum.map(results, fn %{^variable => value} -> value end)
+  end
+
+
+  @doc false
   def add_identity(result) do
     %SPARQL.Query.Result{result | results:
       Enum.map(result.results, fn solution ->
@@ -20,6 +35,7 @@ defmodule SPARQL.Query.Result do
     }
   end
 
+  @doc false
   def remove_identity(result) do
     %SPARQL.Query.Result{result | results:
       Enum.map(result.results, fn solution ->

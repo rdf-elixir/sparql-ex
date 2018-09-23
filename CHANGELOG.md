@@ -5,6 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
+## Unreleased
+
+### Added
+
+- `SPARQL.Query.Result.get/2` as a short way for getting the solutions of a 
+  single variable
+
+[Compare v0.2.3...HEAD](https://github.com/marcelotto/sparql-ex/compare/v0.2.3...HEAD)
+
+
+
 ## 0.2.3 - 2018-09-23
 
 ### Added
