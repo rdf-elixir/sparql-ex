@@ -11,6 +11,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 - evaluation of `DISTINCT` and `REDUCED` (the later having the semantics as 
   `DISTINCT`, i.e. no optimizations right now)
+- implementation of `String.Chars` protocol on `SPARQL.Query`
 
 ### Changed
 

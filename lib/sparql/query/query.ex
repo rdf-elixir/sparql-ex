@@ -141,4 +141,9 @@ defmodule SPARQL.Query do
     |> Map.new()
   end
 
+  defimpl String.Chars do
+    def to_string(query) do
+      query.query_string
+    end
+  end
 end
