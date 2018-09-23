@@ -59,4 +59,9 @@ defmodule SPARQL do
   """
   defdelegate execute_query(data, query), to: SPARQL.Processor, as: :query
 
+  @doc """
+  Alias for `SPARQL.Processor.query/3`.
+  """
+  defdelegate execute_query(data, query, options), to: SPARQL.Processor, as: :query
+
 end
