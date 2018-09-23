@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## Unreleased
+## 0.2.3 - 2018-09-23
 
 ### Added
 
@@ -22,7 +22,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 	- `SPARQL.Processor.query` (and the `SPARQL.execute_query` alias) pass options
 	  down `SPARQL.Query.new/2`, so it can also used with `default_prefixes`
 
-[Compare v0.2.2...HEAD](https://github.com/marcelotto/sparql-ex/compare/v0.2.2...HEAD)
+[Compare v0.2.2...v0.2.3](https://github.com/marcelotto/sparql-ex/compare/v0.2.2...v0.2.3)
 
 
 
