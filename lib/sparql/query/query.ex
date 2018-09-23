@@ -22,6 +22,11 @@ defmodule SPARQL.Query do
 
   @doc """
   Creates a `SPARQL.Query` struct.
+
+  The `default_prefixes` option, allows to set additional default prefixes above
+  the `SPARQL.Query.standard_prefixes/0` and the configured
+  `SPARQL.Query.default_prefixes/0`. The special value `:none` will disable all
+  default prefixes.
   """
   def new(query, options \\ [])
 
@@ -31,11 +36,16 @@ defmodule SPARQL.Query do
 
   @doc """
   Creates a `SPARQL.Query` struct from a SPARQL language string.
+
+  The `default_prefixes` option, allows to set additional default prefixes above
+  the `SPARQL.Query.standard_prefixes/0` and the configured
+  `SPARQL.Query.default_prefixes/0`. The special value `:none` will disable all
+  default prefixes.
   """
   def translate(string, options \\ []) do
     with prefixes = (
            options
-           |> Keyword.get(:prefixes)
+           |> Keyword.get(:default_prefixes)
            |> default_prefixes()
            |> encode_prefixes()
          ),
