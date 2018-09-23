@@ -151,7 +151,7 @@ config :sparql,
   }
 ```
 
-Further query-specific prefixes can be defined with the `prefixes` option on the `SPARQL.query/1` function which also expects a prefixes map.
+Further query-specific prefixes can be defined with the `default_prefixes` option on the `SPARQL.query/1` function which also expects a prefixes map. By using the `default_prefixes` option with the value `none`, the standard application-configured will not be used for a query.
 
 
 ### Defining extension functions
