@@ -100,6 +100,8 @@ defmodule SPARQL.Query do
 
   def default_prefixes(nil), do: default_prefixes()
 
+  def default_prefixes(:none), do: nil
+
   def default_prefixes(prefixes) when is_map(prefixes) do
     default_prefixes()
     |> Map.merge(prefixes)
@@ -122,6 +124,8 @@ defmodule SPARQL.Query do
     |> String.downcase()
     |> String.to_atom()
   end
+
+  defp encode_prefixes(nil), do: ""
 
   defp encode_prefixes(prefixes) do
     prefixes

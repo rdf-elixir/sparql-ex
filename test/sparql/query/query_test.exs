@@ -25,6 +25,10 @@ defmodule SPARQL.QueryTest do
              SPARQL.Query.standard_prefixes() |> Map.delete(:rdf)
     end
 
+    test "default prefixes can be ignored" do
+      assert SPARQL.Query.default_prefixes(:none) == nil
+    end
+
     test "can be passed a list of RDF.Vocabulary.Namespaces" do
       assert SPARQL.Query.default_prefixes([RDF.NS.OWL, Test.NS.EX]) ==
              SPARQL.Query.standard_prefixes()
