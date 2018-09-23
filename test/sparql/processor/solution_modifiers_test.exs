@@ -22,6 +22,20 @@ defmodule SPARQL.Processor.SolutionModifiersTest do
           ]
         }
     end
-
   end
+
+  describe "REDUCED" do
+    test "single {s ?p ?o}" do
+      assert query(@example_graph, "SELECT REDUCED ?o WHERE { ?s <#{EX.p3}> ?o }") ==
+               %Query.Result{
+                 variables: ~w[o],
+                 results: [
+                   %{
+                     "o" => ~I<http://example.org/o2>,
+                   }
+                 ]
+               }
+    end
+  end
+
 end

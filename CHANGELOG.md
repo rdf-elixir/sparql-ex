@@ -9,7 +9,8 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 ### Added
 
-- evaluation of `DISTINCT`
+- evaluation of `DISTINCT` and `REDUCED` (the later having the semantics as 
+  `DISTINCT`, i.e. no optimizations right now)
 
 ### Changed
 
