@@ -7,6 +7,10 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 ## Unreleased
 
+### Added
+
+- evaluation of `DISTINCT`
+
 ### Changed
 
 - various refinements of default prefixes
