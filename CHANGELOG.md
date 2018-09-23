@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
+## Unreleased
+
+### Changed
+
+- various refinements of default prefixes
+	- renamed the query-specific default prefixes option from `prefixes` to `default_prefixes`
+	- setting `none` on the `default_prefixes` option, removes the standard application-wide
+	  configured default prefixes
+	- `SPARQL.Processor.query` (and the `SPARQL.execute_query` alias) pass options
+	  down `SPARQL.Query.new/2`, so it can also used with `default_prefixes`
+
+[Compare v0.2.2...HEAD](https://github.com/marcelotto/sparql-ex/compare/v0.2.2...HEAD)
+
+
+
 ## 0.2.2 - 2018-09-22
 
 ### Added
