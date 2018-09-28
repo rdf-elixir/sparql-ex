@@ -235,7 +235,7 @@ groupGraphPattern -> '{' '}'                      : {group_graph_pattern, [] } .
 %% TODO: Note: This can be empty!
 groupGraphPatternSub -> triplesBlock graphPatternNotTriplesBlockSeq : [{triples_block, '$1'} | '$2'].
 groupGraphPatternSub -> triplesBlock : [{triples_block, '$1'}] .
-groupGraphPatternSub -> graphPatternNotTriplesBlockSeq .
+groupGraphPatternSub -> graphPatternNotTriplesBlockSeq : '$1' .
 graphPatternNotTriplesBlockSeq -> graphPatternNotTriplesBlock graphPatternNotTriplesBlockSeq : '$1' ++ '$2' .
 graphPatternNotTriplesBlockSeq -> graphPatternNotTriplesBlock                                : '$1' .
 graphPatternNotTriplesBlock -> graphPatternNotTriples '.' triplesBlock : ['$1', {triples_block, '$3'}] .

@@ -4,7 +4,7 @@ defmodule SPARQL.Algebra.FilterTest do
   import SPARQL.Language.Decoder, only: [decode: 1]
 
 
-  test "single filter" do
+  test "single filter at the end of a graph pattern" do
     query = """
       PREFIX ex: <http://example.org/>
       SELECT ?s ?cost WHERE {
@@ -29,6 +29,33 @@ defmodule SPARQL.Algebra.FilterTest do
             }
           }
       }} = decode(query)
+  end
+
+  test "single filter at the beginning of a graph pattern" do
+    query = """
+    PREFIX ex: <http://example.org/>
+    SELECT ?s ?cost WHERE {
+      FILTER (?cost < 10)
+      ?s ex:cost ?cost .
+    }
+    """
+    n10 = RDF.integer(10)
+    assert {:ok, %SPARQL.Query{
+             expr: %SPARQL.Algebra.Project{
+               vars: ~w[s cost],
+               expr: %SPARQL.Algebra.Filter{
+                 filters: [
+                   %SPARQL.Algebra.FunctionCall.Builtin{
+                     name: :<,
+                     arguments: ["cost", ^n10]
+                   }
+                 ],
+                 expr: %SPARQL.Algebra.BGP{
+                   triples: [{"s", ~I<http://example.org/cost>, "cost"}]
+                 }
+               }
+             }
+           }} = decode(query)
   end
 
   test "single filter with function" do
