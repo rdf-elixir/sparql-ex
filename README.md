@@ -2,7 +2,6 @@
 
 [![Travis](https://img.shields.io/travis/marcelotto/sparql-ex.svg?style=flat-square)](https://travis-ci.org/marcelotto/sparql-ex)
 [![Hex.pm](https://img.shields.io/hexpm/v/sparql.svg?style=flat-square)](https://hex.pm/packages/sparql)
-[![Inline docs](http://inch-ci.org/github/marcelotto/sparql-ex.svg)](http://inch-ci.org/github/marcelotto/sparql-ex)
 
 
 An implementation of the [SPARQL] standards for Elixir.
