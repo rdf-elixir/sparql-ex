@@ -294,7 +294,7 @@ dataBlockValue -> 'UNDEF' .
 
 minusGraphPattern -> 'MINUS' groupGraphPattern .
 groupOrUnionGraphPattern -> groupGraphPattern 'UNION' groupOrUnionGraphPattern .
-groupOrUnionGraphPattern -> groupGraphPattern .
+groupOrUnionGraphPattern -> groupGraphPattern : '$1'.
 
 filter -> 'FILTER' constraint : {filter, '$2' }.
 

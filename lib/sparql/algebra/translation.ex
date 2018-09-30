@@ -7,7 +7,13 @@ defmodule SPARQL.Algebra.Translation do
 
   alias RDF.IRI
 
+  defmodule GroupGraphPattern do
+    @enforce_keys [:expr]
+    defstruct fs: [], expr: nil
+  end
+
   @no_mapping nil
+  @zero_bgp SPARQL.Algebra.BGP.zero()
 
 
   def translate(ast, prefixes, base, options \\ %{}) do
@@ -61,36 +67,36 @@ defmodule SPARQL.Algebra.Translation do
   """
   defp convert_graph_patterns(state, prefixes, base, _options) do
     with {:ok, ast} <-
-            # 18.2.2.1 Expand Syntax Forms
-            expand_syntax_forms(state.expr, prefixes, base),
+           # 18.2.2.1 Expand Syntax Forms
+           expand_syntax_forms(state.expr, prefixes, base),
 
          {:ok, ast} <-
-            # 18.2.2.2 Collect FILTER Elements
-            collect_filter_elements(ast),
+           # 18.2.2.2 Collect FILTER Elements
+           collect_filter_elements(ast),
 
          {:ok, ast} <-
-            # 18.2.2.3 Translate Property Path Expressions
-            translate_property_path_expressions(ast),
+           # 18.2.2.3 Translate Property Path Expressions
+           translate_property_path_expressions(ast),
 
          {:ok, ast} <-
-            # 18.2.2.4 Translate Property Path Patterns
-            translate_property_path_patterns(ast),
+           # 18.2.2.4 Translate Property Path Patterns
+           translate_property_path_patterns(ast),
 
          {:ok, ast} <-
-            # 18.2.2.5 Translate Basic Graph Patterns
-            translate_basic_graph_patterns(ast),
+           # 18.2.2.5 Translate Basic Graph Patterns
+           translate_basic_graph_patterns(ast),
 
          {:ok, ast} <-
-            # 18.2.2.6 Translate Graph Patterns
-            translate_graph_patterns(ast),
+           # 18.2.2.6 Translate Graph Patterns
+           translate_graph_patterns(ast),
 
          {:ok, ast} <-
-            # 18.2.2.7 Filters of Group
-            add_filters_of_group(ast),
+           # 18.2.2.7 Filters of Group
+           add_filters_of_group(ast),
 
          {:ok, ast} <-
-            # 18.2.2.8 Simplification step
-            simplification(ast)
+           # 18.2.2.8 Simplification step
+           simplification(ast)
     do
       {:ok, %{state | expr: ast}}
     end
@@ -201,7 +207,7 @@ defmodule SPARQL.Algebra.Translation do
     # TODO: Do we have to call do_collect_filter_elements recursively on the group? Can it recursively contain other group_graph_patterns, eg. in subqueries
     fs = Enum.map(filters, fn {_, expr} -> translate_exists_patterns(expr) end)
 
-    {:group_graph_pattern, [{:fs, fs} | group]}
+    %GroupGraphPattern{fs: fs, expr: map(group, &do_collect_filter_elements/2)}
   end
 
   # TODO: optimize performance by providing function clauses for AST patterns which don't need further traversal
@@ -308,24 +314,15 @@ defmodule SPARQL.Algebra.Translation do
     {:ok, map(ast, &do_translate_basic_graph_patterns/2)}
   end
 
-  defp do_translate_basic_graph_patterns({:group_graph_pattern, [fs]}, _) do
-    {:group_graph_pattern, [fs, %SPARQL.Algebra.BGP{triples: []}]}
+  defp do_translate_basic_graph_patterns(%GroupGraphPattern{expr: []} = group_pattern, _) do
+    %GroupGraphPattern{group_pattern | expr: [@zero_bgp]}
   end
 
-  defp do_translate_basic_graph_patterns({:group_graph_pattern, [fs | graph_patterns]}, _) do
-    {:group_graph_pattern,
-      [fs |
-        Enum.map(graph_patterns, fn
-          {:triples_block, triples_block} ->
-           %SPARQL.Algebra.BGP{triples: translate_triples_block(triples_block)}
-          other ->
-            map(other, &do_translate_basic_graph_patterns/2)
-        end)
-      ]
-    }
+  defp do_translate_basic_graph_patterns({:triples_block, triples_block}, _) do
+    %SPARQL.Algebra.BGP{triples: translate_triples_block(triples_block)}
   end
 
-  # TODO: optimize performance by providing function clauses for AST patterns which don't need further traversal
+   # TODO: optimize performance by providing function clauses for AST patterns which don't need further traversal
 
   defp do_translate_basic_graph_patterns(_, _), do: @no_mapping
 
@@ -399,7 +396,8 @@ defmodule SPARQL.Algebra.Translation do
   @doc """
   Translate Graph Patterns
 
-  Next, we translate each remaining graph pattern form, recursively applying the translation process.
+  Next, we translate each remaining graph pattern form, recursively applying the
+  translation process.
 
   If the form is GroupOrUnionGraphPattern
 
@@ -472,9 +470,22 @@ defmodule SPARQL.Algebra.Translation do
     {:ok, map(ast, &translate_graph_pattern/2)}
   end
 
-  # TODO: This is just a temporary hack; currently we just support a single BGP
-  defp translate_graph_pattern({:group_graph_pattern, [fs | pattern]}, _state) do
-    {:group_graph_pattern, [fs | pattern]}
+  # TODO: Handle subSelect
+
+  defp translate_graph_pattern(%SPARQL.Algebra.BGP{} = bgp, _), do: bgp
+
+  defp translate_graph_pattern(%GroupGraphPattern{expr: [e]} = group_pattern, _) do
+    %GroupGraphPattern{group_pattern | expr: e}
+  end
+
+  defp translate_graph_pattern(%GroupGraphPattern{expr: patterns} = group_pattern, state) do
+    g =
+      Enum.reduce patterns, @zero_bgp, fn
+        # TODO: add more clauses for OPTIONAL, MINUS and BIND
+        e, g ->
+          %SPARQL.Algebra.Join{expr1: g, expr2: translate_graph_pattern(e, state)}
+      end
+    %GroupGraphPattern{group_pattern | expr: g}
   end
 
   # TODO: optimize performance by providing function clauses for AST patterns which don't need further traversal
@@ -500,10 +511,12 @@ defmodule SPARQL.Algebra.Translation do
     {:ok, map(ast, &do_add_filters_of_group/2)}
   end
 
-  defp do_add_filters_of_group({:group_graph_pattern, [{:fs, []}, g]}, _), do: g
+  defp do_add_filters_of_group(%GroupGraphPattern{fs: [], expr: g}, _) do
+    map(g, &do_add_filters_of_group/2)
+  end
 
-  defp do_add_filters_of_group({:group_graph_pattern, [{:fs, fs}, g]}, _) do
-    %SPARQL.Algebra.Filter{filters: fs, expr: g}
+  defp do_add_filters_of_group(%GroupGraphPattern{fs: fs, expr: g}, _) do
+    %SPARQL.Algebra.Filter{filters: fs, expr: map(g, &do_add_filters_of_group/2)}
   end
 
   # TODO: optimize performance by providing function clauses for AST patterns which don't need further traversal
@@ -524,9 +537,17 @@ defmodule SPARQL.Algebra.Translation do
   <https://www.w3.org/TR/sparql11-query/#sparqlSimplification>
   """
   defp simplification(ast) do
-    {:ok, ast}
+    simplified = map(ast, &do_simplification/2)
+    if ast == simplified do
+      {:ok, simplified}
+    else
+      simplification(simplified)
+    end
   end
 
+  defp do_simplification(%SPARQL.Algebra.Join{expr1: @zero_bgp, expr2: a}, _), do: a
+  defp do_simplification(%SPARQL.Algebra.Join{expr1: a, expr2: @zero_bgp}, _), do: a
+  defp do_simplification(_, _), do: @no_mapping
 
   ############################################################################
   # 18.2.4 Converting Groups, Aggregates, HAVING, final VALUES clause and SELECT Expressions
@@ -692,6 +713,7 @@ defmodule SPARQL.Algebra.Translation do
 
   defp visible_variables(pattern) do
 # TODO: remove this conditional which is currently needed to work with the unfinished algebra expression
+#       there are similar conditionals in Join.variables/1 which should be removed together
     if is_map(pattern) do
       SPARQL.Algebra.Expression.variables(pattern)
     else
@@ -709,9 +731,19 @@ defmodule SPARQL.Algebra.Translation do
 
   defp map(ast, state \\ %{}, fun)
 
+  defp map(%{__struct__: struct, expr: e} = s, state, fun) do
+    Map.put(s, :expr, fun.(e, state) || map(e, state, fun))
+  end
+
+  defp map(%{__struct__: struct, expr1: e1, expr2: e2} = s, state, fun) do
+    s
+    |> Map.put(:expr1, fun.(e1, state) || map(e1, state, fun))
+    |> Map.put(:expr2, fun.(e2, state) || map(e2, state, fun))
+  end
+
   defp map(ast, state, fun) when is_list(ast) do
     Enum.map ast, fn element ->
-       fun.(element, state) || map(element, state, fun)
+      fun.(element, state) || map(element, state, fun)
     end
   end
 
