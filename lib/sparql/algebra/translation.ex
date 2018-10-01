@@ -470,22 +470,22 @@ defmodule SPARQL.Algebra.Translation do
     {:ok, map(ast, &translate_graph_pattern/2)}
   end
 
-  # TODO: Handle subSelect
-
-  defp translate_graph_pattern(%SPARQL.Algebra.BGP{} = bgp, _), do: bgp
-
-  defp translate_graph_pattern(%GroupGraphPattern{expr: [e]} = group_pattern, _) do
-    %GroupGraphPattern{group_pattern | expr: e}
-  end
-
   defp translate_graph_pattern(%GroupGraphPattern{expr: patterns} = group_pattern, state) do
-    g =
-      Enum.reduce patterns, @zero_bgp, fn
-        # TODO: add more clauses for OPTIONAL, MINUS and BIND
-        e, g ->
+    %GroupGraphPattern{group_pattern | expr:
+      Enum.reduce(patterns, @zero_bgp, fn
+        %SPARQL.Algebra.BGP{} = e, g ->
+          %SPARQL.Algebra.Join{expr1: g, expr2: e}
+
+        %GroupGraphPattern{} = e, g ->
           %SPARQL.Algebra.Join{expr1: g, expr2: translate_graph_pattern(e, state)}
-      end
-    %GroupGraphPattern{group_pattern | expr: g}
+
+        # TODO: Handle subSelect
+        {:group_graph_pattern, :"$undefined"}, _ -> @zero_bgp
+
+        # TODO: add more clauses for OPTIONAL, MINUS and BIND
+        :"$undefined", _ -> @zero_bgp
+      end)
+    }
   end
 
   # TODO: optimize performance by providing function clauses for AST patterns which don't need further traversal
@@ -731,11 +731,11 @@ defmodule SPARQL.Algebra.Translation do
 
   defp map(ast, state \\ %{}, fun)
 
-  defp map(%{__struct__: struct, expr: e} = s, state, fun) do
+  defp map(%{__struct__: _, expr: e} = s, state, fun) do
     Map.put(s, :expr, fun.(e, state) || map(e, state, fun))
   end
 
-  defp map(%{__struct__: struct, expr1: e1, expr2: e2} = s, state, fun) do
+  defp map(%{__struct__: _, expr1: e1, expr2: e2} = s, state, fun) do
     s
     |> Map.put(:expr1, fun.(e1, state) || map(e1, state, fun))
     |> Map.put(:expr2, fun.(e2, state) || map(e2, state, fun))
