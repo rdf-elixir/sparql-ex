@@ -9,8 +9,15 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 ### Added
 
+- Support for group graph patterns, i.e. nested graph patterns and `FILTER`s in
+  the middle of a graph patterns (which splits up a graph pattern)
 - `SPARQL.Query.Result.get/2` as a short way for getting the solutions of a 
   single variable
+
+### Fixed
+
+- `FILTER` expressions at the beginning of a graph pattern
+
 
 [Compare v0.2.3...HEAD](https://github.com/marcelotto/sparql-ex/compare/v0.2.3...HEAD)
 
