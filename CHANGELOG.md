@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## Unreleased
+## 0.2.4 - 2018-10-06
 
 ### Added
 
@@ -19,7 +19,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 - `FILTER` expressions at the beginning of a graph pattern
 
 
-[Compare v0.2.3...HEAD](https://github.com/marcelotto/sparql-ex/compare/v0.2.3...HEAD)
+[Compare v0.2.3...v0.2.4](https://github.com/marcelotto/sparql-ex/compare/v0.2.3...v0.2.4)
 
 
 
