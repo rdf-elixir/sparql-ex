@@ -16,7 +16,7 @@ Note: **The [SPARQL.Client] supports the full SPARQL 1.1 query language**. The m
 
 - [ ] SPARQL 1.1 Query Language
     - [x] Basic Graph Pattern matching
-    - [ ] Group Graph Pattern matching
+    - [x] Group Graph Pattern matching
     - [ ] Optional Graph Pattern matching via `OPTIONAL`
     - [ ] Alternative Graph Pattern matching via `UNION`
     - [ ] Pattern matching on Named Graphs via `FROM` and `GRAPH`
@@ -178,6 +178,7 @@ The name of the module is arbitrary and has no further meaning. The first argume
 ## Getting help
 
 - [Documentation](http://hexdocs.pm/sparql)
+- [Tutorial about SPARQL.ex and SPARQL.Client by Tony Hammond](https://medium.com/@tonyhammond/querying-rdf-with-elixir-2378b39d65cc)
 - [Google Group](https://groups.google.com/d/forum/rdfex)
 
 
