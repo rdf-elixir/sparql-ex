@@ -22,8 +22,13 @@ defmodule SPARQL.Query.Result do
   def get(result, variable) when is_atom(variable),
     do: get(result, to_string(variable))
 
-  def get(%SPARQL.Query.Result{results: results}, variable) do
-    Enum.map(results, fn %{^variable => value} -> value end)
+  def get(%SPARQL.Query.Result{results: results, variables: variables}, variable) do
+    if variable in variables do
+      Enum.map results, fn
+        %{^variable => value} -> value
+        _                     -> nil
+      end
+    end
   end
 
 

@@ -5,6 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
+## Unreleased
+
+### Fixed
+
+- `SPARQL.Query.Result.get/2` failed when the given variable is not in the results
+
+
+[Compare v0.2.4...HEAD](https://github.com/marcelotto/sparql-ex/compare/v0.2.4...HEAD)
+
+
+
 ## 0.2.4 - 2018-10-06
 
 ### Added
