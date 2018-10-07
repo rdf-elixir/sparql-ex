@@ -34,17 +34,17 @@ defmodule SPARQL.Query.Result.SolutionMappingTest do
     end
 
     test ":__id__ is ignored" do
-      with_id = fn solution -> Map.put(solution, :__id__, make_ref()) end
-
       @compatible_mappings
-      |> Enum.map(fn {m1, m2} -> {with_id.(m1), with_id.(m2)} end)
+      |> Enum.map(fn {m1, m2} ->
+          {SolutionMapping.add_identity(m1), SolutionMapping.add_identity(m2)} end)
       |> Enum.each(fn {m1, m2} ->
           assert SolutionMapping.compatible?(m1, m2)
           assert SolutionMapping.compatible?(m2, m1)
         end)
 
       @incompatible_mappings
-      |> Enum.map(fn {m1, m2} -> {with_id.(m1), with_id.(m2)} end)
+      |> Enum.map(fn {m1, m2} ->
+          {SolutionMapping.add_identity(m1), SolutionMapping.add_identity(m2)} end)
       |> Enum.each(fn {m1, m2} ->
         refute SolutionMapping.compatible?(m1, m2)
         refute SolutionMapping.compatible?(m2, m1)

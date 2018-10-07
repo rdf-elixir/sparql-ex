@@ -26,6 +26,12 @@ defmodule SPARQL.Query.Result.SolutionMapping do
   def merge(m1, m2) do
     m1
     |> Map.merge(m2)
-    |> Map.put(:__id__, make_ref())
+    |> add_identity()
   end
+
+  @doc false
+  def add_identity(m), do: Map.put(m, :__id__, make_ref())
+
+  @doc false
+  def remove_identity(m), do: Map.delete(m, :__id__)
 end

@@ -4,6 +4,7 @@ defmodule SPARQL.Query.Result do
 
   @type t :: module
 
+  alias SPARQL.Query.Result.SolutionMapping
 
   def new(results, variables \\ nil) do
     %__MODULE__{
@@ -29,18 +30,14 @@ defmodule SPARQL.Query.Result do
   @doc false
   def add_identity(result) do
     %SPARQL.Query.Result{result | results:
-      Enum.map(result.results, fn solution ->
-        Map.put(solution, :__id__, make_ref())
-      end)
+      Enum.map(result.results, &SolutionMapping.add_identity/1)
     }
   end
 
   @doc false
   def remove_identity(result) do
     %SPARQL.Query.Result{result | results:
-      Enum.map(result.results, fn solution ->
-        Map.delete(solution, :__id__)
-      end)
+      Enum.map(result.results, &SolutionMapping.remove_identity/1)
     }
   end
 
