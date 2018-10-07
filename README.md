@@ -120,7 +120,14 @@ This will return a `SPARQL.Query.Result` struct which contains the results under
 }
 ```
 
-The `SPARQL.execute_query/2` function converts a given query string implicitely to a `SPARQL.Query` struct. If you intend to execute the query multiple times it's better to do this step on your own with the `SPARQL.query/1` function and pass the interpreted query directly to `SPARQL.execute_query/2`, in order to not parse the query on every execution.
+The list of results for a single variable can be fetched with the `SPARQL.Query.Result.get/2` function.
+
+```elixir
+SPARQL.execute_query(graph, query) 
+|> SPARQL.Query.Result.get(:mbox)
+```
+
+The `SPARQL.execute_query/2` function converts a given query string implicitly to a `SPARQL.Query` struct. If you intend to execute the query multiple times it's better to do this step on your own with the `SPARQL.query/1` function and pass the interpreted query directly to `SPARQL.execute_query/2`, in order to not parse the query on every execution.
 
 ```elixir
 query = SPARQL.query """
