@@ -12,6 +12,11 @@ defmodule SPARQL.Algebra.Translation do
     defstruct fs: [], expr: nil
   end
 
+  defmodule OptionalGraphPattern do
+    @enforce_keys [:expr]
+    defstruct fs: [], expr: nil
+  end
+
   @no_mapping nil
   @zero_bgp SPARQL.Algebra.BGP.zero()
 
@@ -194,6 +199,12 @@ defmodule SPARQL.Algebra.Translation do
   """
   defp collect_filter_elements(ast) do
     {:ok, map(ast, &do_collect_filter_elements/2)}
+  end
+
+  defp do_collect_filter_elements({:optional, group_graph_pattern}, state) do
+    %GroupGraphPattern{fs: fs, expr: expr} =
+      do_collect_filter_elements(group_graph_pattern, state)
+    %OptionalGraphPattern{fs: fs, expr: expr}
   end
 
   defp do_collect_filter_elements({:group_graph_pattern, graph_patterns}, _)
@@ -475,6 +486,15 @@ defmodule SPARQL.Algebra.Translation do
       Enum.reduce(patterns, @zero_bgp, fn
         %SPARQL.Algebra.BGP{} = e, g ->
           %SPARQL.Algebra.Join{expr1: g, expr2: e}
+
+        %OptionalGraphPattern{expr: e, fs: fs}, g ->
+          filters = if fs == [], do: RDF.true, else: fs
+          case map(e, &translate_graph_pattern/2) do
+            [a] ->
+              %SPARQL.Algebra.LeftJoin{expr1: g, expr2: a, filters: filters}
+            [] ->
+              %SPARQL.Algebra.LeftJoin{expr1: g, expr2: @zero_bgp, filters: filters}
+          end
 
         %GroupGraphPattern{} = e, g ->
           %SPARQL.Algebra.Join{expr1: g, expr2: translate_graph_pattern(e, state)}

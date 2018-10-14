@@ -256,7 +256,7 @@ graphPatternNotTriples -> filter                   : '$1' .
 graphPatternNotTriples -> bind                     : '$1' .
 graphPatternNotTriples -> inlineData               : '$1' .
 
-optionalGraphPattern -> 'OPTIONAL' groupGraphPattern .
+optionalGraphPattern -> 'OPTIONAL' groupGraphPattern : {optional, '$2'}.
 graphGraphPattern    -> 'GRAPH' varOrIri groupGraphPattern .
 serviceGraphPattern  -> 'SERVICE' 'SILENT' varOrIri groupGraphPattern .
 serviceGraphPattern  -> 'SERVICE' varOrIri groupGraphPattern .
