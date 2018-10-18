@@ -202,9 +202,7 @@ defmodule SPARQL.Algebra.Translation do
   end
 
   defp do_collect_filter_elements({:optional, group_graph_pattern}, state) do
-    %GroupGraphPattern{fs: fs, expr: expr} =
-      do_collect_filter_elements(group_graph_pattern, state)
-    %OptionalGraphPattern{fs: fs, expr: expr}
+    %OptionalGraphPattern{expr: do_collect_filter_elements(group_graph_pattern, state)}
   end
 
   defp do_collect_filter_elements({:group_graph_pattern, graph_patterns}, _)
@@ -487,14 +485,9 @@ defmodule SPARQL.Algebra.Translation do
         %SPARQL.Algebra.BGP{} = e, g ->
           %SPARQL.Algebra.Join{expr1: g, expr2: e}
 
-        %OptionalGraphPattern{expr: e, fs: fs}, g ->
-          filters = if fs == [], do: RDF.true, else: fs
-          case map(e, &translate_graph_pattern/2) do
-            [a] ->
-              %SPARQL.Algebra.LeftJoin{expr1: g, expr2: a, filters: filters}
-            [] ->
-              %SPARQL.Algebra.LeftJoin{expr1: g, expr2: @zero_bgp, filters: filters}
-          end
+        %OptionalGraphPattern{} = optional_graph_pattern, g ->
+          %SPARQL.Algebra.LeftJoin{
+            translate_graph_pattern(optional_graph_pattern, state) | expr1: g}
 
         %GroupGraphPattern{} = e, g ->
           %SPARQL.Algebra.Join{expr1: g, expr2: translate_graph_pattern(e, state)}
@@ -502,10 +495,23 @@ defmodule SPARQL.Algebra.Translation do
         # TODO: Handle subSelect
         {:group_graph_pattern, :"$undefined"}, _ -> @zero_bgp
 
-        # TODO: add more clauses for OPTIONAL, MINUS and BIND
+        # TODO: handle MINUS
+
+        # TODO: handle BIND
+
         :"$undefined", _ -> @zero_bgp
       end)
     }
+  end
+
+  defp translate_graph_pattern(%OptionalGraphPattern{expr: expr}, state) do
+    case translate_graph_pattern(expr, state) do
+      %GroupGraphPattern{expr: expr, fs: []} ->
+        %SPARQL.Algebra.LeftJoin{expr2: expr, filters: RDF.true}
+
+      %GroupGraphPattern{expr: expr, fs: fs} ->
+        %SPARQL.Algebra.LeftJoin{expr2: expr, filters: fs}
+    end
   end
 
   # TODO: optimize performance by providing function clauses for AST patterns which don't need further traversal

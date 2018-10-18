@@ -26,6 +26,7 @@ defmodule SPARQL.Algebra.OptionalGraphPatternTest do
                   }
                 }} = decode(query)
        end)
+
     query = """
       PREFIX foaf: <http://xmlns.com/foaf/0.1/>
       SELECT ?name ?mbox
@@ -164,6 +165,101 @@ defmodule SPARQL.Algebra.OptionalGraphPatternTest do
              }
            }} = decode(query)
 
+  end
+
+  test "group consisting of a basic graph pattern, a filter and an optional graph pattern:" do
+    query = """
+      PREFIX : <http://example.com/>
+      SELECT *
+      WHERE { ?s :p1 ?v1 FILTER (?v1 < 3 ) OPTIONAL {?s :p2 ?v2} }
+      """
+    n3 = RDF.integer(3)
+    assert {:ok, %SPARQL.Query{
+             expr: %SPARQL.Algebra.Filter{
+                expr: %SPARQL.Algebra.LeftJoin{
+                  expr1: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p1"}, "v1"}]},
+                  expr2: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p2"}, "v2"}]},
+                  filters: %RDF.Literal{value: true}
+                },
+               filters: [
+                 %SPARQL.Algebra.FunctionCall.Builtin{
+                   name: :<,
+                   arguments: ["v1", ^n3]
+                 }
+               ]
+             }
+           }} = decode(query)
+  end
+
+  test "nested OPTIONAL graph patterns without filters" do
+    query = """
+      PREFIX : <http://example.com/>
+      SELECT *
+      WHERE {
+        {?s :p1 ?v1}
+        OPTIONAL {?s :p2 ?v2 . OPTIONAL {?s :p3 ?v3}} }
+      """
+    assert {:ok, %SPARQL.Query{
+             expr: %SPARQL.Algebra.LeftJoin{
+               expr1: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p1"}, "v1"}]},
+               expr2: %SPARQL.Algebra.LeftJoin{
+                 expr1: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p2"}, "v2"}]},
+                 expr2: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p3"}, "v3"}]},
+                 filters: %RDF.Literal{value: true}
+               },
+               filters: %RDF.Literal{value: true}
+             }
+           }} = decode(query)
+
+    query = """
+      PREFIX : <http://example.com/>
+      SELECT *
+      WHERE {
+        {?s :p1 ?v1}
+        OPTIONAL {?s :p2 ?v2 OPTIONAL {?s :p3 ?v3} OPTIONAL {?s :p4 ?v4}} }
+      """
+    assert {:ok, %SPARQL.Query{
+             expr: %SPARQL.Algebra.LeftJoin{
+               expr1: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p1"}, "v1"}]},
+               expr2: %SPARQL.Algebra.LeftJoin{
+                 expr1: %SPARQL.Algebra.LeftJoin{
+                   expr1: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p2"}, "v2"}]},
+                   expr2: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p3"}, "v3"}]},
+                   filters: %RDF.Literal{value: true}
+                 },
+                 expr2: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p4"}, "v4"}]},
+                 filters: %RDF.Literal{value: true}
+               },
+               filters: %RDF.Literal{value: true}
+             }
+           }} = decode(query)
+  end
+
+  test "nested OPTIONAL graph patterns with filters" do
+    query = """
+      PREFIX : <http://example.com/>
+      SELECT *
+      WHERE {
+        {?s :p1 ?v1}
+        OPTIONAL {?s :p2 ?v2 . OPTIONAL {?s :p3 ?v3 FILTER(?v3<3)}} }
+      """
+    n3 = RDF.integer(3)
+    assert {:ok, %SPARQL.Query{
+             expr: %SPARQL.Algebra.LeftJoin{
+               expr1: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p1"}, "v1"}]},
+               expr2: %SPARQL.Algebra.LeftJoin{
+                 expr1: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p2"}, "v2"}]},
+                 expr2: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p3"}, "v3"}]},
+                 filters: [
+                   %SPARQL.Algebra.FunctionCall.Builtin{
+                     name: :<,
+                     arguments: ["v3", ^n3]
+                   }
+                 ]
+               },
+               filters: %RDF.Literal{value: true}
+             }
+           }} = decode(query)
   end
 
 end
