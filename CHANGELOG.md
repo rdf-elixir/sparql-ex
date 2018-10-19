@@ -10,6 +10,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 ### Added
 
 - Support for optional graph patterns via `OPTIONAL`
+- Support for the `bound` function
 
 ### Fixed
 

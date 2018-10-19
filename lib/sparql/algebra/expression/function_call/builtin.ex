@@ -59,6 +59,16 @@ defmodule SPARQL.Algebra.FunctionCall.Builtin do
     end
   end
 
+  def invoke(:BOUND, [variable], %{solution: solution}, _) when is_binary(variable) do
+    if Map.has_key?(solution, variable) do
+      RDF.true
+    else
+      RDF.false
+    end
+  end
+
+  def invoke(:BOUND, _, _, _), do: :error
+
   def invoke(:IF, [cond_expression, then_expression, else_expression], data, execution) do
     case evaluate_to_ebv(cond_expression, data, execution) do
       %RDF.Literal{value: true}  -> FunctionCall.evaluate_argument(then_expression, data, execution)

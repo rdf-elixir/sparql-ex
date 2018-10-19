@@ -14,9 +14,6 @@ defmodule SPARQL.W3C.TestSuite.OptionalFilterTest do
 
   TestSuite.test_cases(@test_suite, MF.QueryEvaluationTest)
   |> Enum.each(fn test_case ->
-       if test_case.subject |> to_string() |> String.ends_with?("dawg-optional-filter-003"),
-         do: @tag skip: "TODO: bound function"
-
        if test_case.subject |> to_string() |> String.ends_with?("dawg-optional-filter-005-simplified"),
          do: @tag skip: "This test contradicts dawg-optional-filter-005-not-simplified which uses the same query on the same data but has a different result - not really sure what is expected here"
 

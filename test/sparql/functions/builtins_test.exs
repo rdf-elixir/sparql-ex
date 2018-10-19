@@ -540,6 +540,43 @@ defmodule SPARQL.Functions.BuiltinsTest do
        end)
   end
 
+  describe "bound function" do
+    test "when the given variable is bound" do
+      [
+        {"foo", %{"foo" => ~L"bar"}},
+        {"foo", %{"foo" => ~L""}},
+        {"foo", %{"foo" => RDF.double("NAN")}},
+        {"foo", %{"foo" => RDF.double("INF")}},
+      ]
+      |> Enum.each(fn {arg, solution} ->
+           assert Expression.evaluate(%FunctionCall.Builtin{name: :BOUND, arguments: [arg]},
+                    %{solution: Map.merge(solution, %{:__id__ => @example_solution_id})}, %{}) == RDF.true
+         end)
+    end
+
+    test "when the given variable is unbound" do
+      [
+        {"foo", %{}},
+      ]
+      |> Enum.each(fn {arg, solution} ->
+           assert Expression.evaluate(%FunctionCall.Builtin{name: :BOUND, arguments: [arg]},
+                    %{solution: Map.merge(solution, %{:__id__ => @example_solution_id})}, %{}) == RDF.false
+         end)
+    end
+
+    test "when given anything other than a variable" do
+      [
+        {~L"foo", %{"foo" => ~L"bar"}},
+        {~L<http://foo>, %{"foo" => ~L"bar"}},
+        {RDF.integer(42), %{"foo" => ~L"bar"}},
+      ]
+      |> Enum.each(fn {arg, solution} ->
+           assert Expression.evaluate(%FunctionCall.Builtin{name: :BOUND, arguments: [arg]},
+                    %{solution: Map.merge(solution, %{:__id__ => @example_solution_id})}, %{}) == :error
+         end)
+    end
+  end
+  
   test "COALESCE function" do
     [
       {[RDF.integer(42)], RDF.integer(42)},
