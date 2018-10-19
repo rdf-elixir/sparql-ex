@@ -9,7 +9,7 @@ defmodule SPARQL.Algebra.Filter do
     }
   end
 
-  defp apply?(solution, filters, data, execution) do
+  def apply?(solution, filters, data, execution) do
     filters
     |> Stream.map(fn function_call ->
          Expression.evaluate(function_call, %{solution: solution, data: data}, execution)

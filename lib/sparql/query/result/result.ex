@@ -22,7 +22,7 @@ defmodule SPARQL.Query.Result do
   def get(result, variable) when is_atom(variable),
     do: get(result, to_string(variable))
 
-  def get(%SPARQL.Query.Result{results: results, variables: variables}, variable) do
+  def get(%__MODULE__{results: results, variables: variables}, variable) do
     if variable in variables do
       Enum.map results, fn
         %{^variable => value} -> value
@@ -31,17 +31,26 @@ defmodule SPARQL.Query.Result do
     end
   end
 
+  @doc false
+  def append(results1, results2)
+
+  def append(%__MODULE__{} = result, %__MODULE__{results: new}),
+    do: append(result, new)
+
+  def append(%__MODULE__{results: r1} = result, r2),
+    do: %__MODULE__{result | results: r1 ++ r2}
+
 
   @doc false
   def add_identity(result) do
-    %SPARQL.Query.Result{result | results:
+    %__MODULE__{result | results:
       Enum.map(result.results, &SolutionMapping.add_identity/1)
     }
   end
 
   @doc false
   def remove_identity(result) do
-    %SPARQL.Query.Result{result | results:
+    %__MODULE__{result | results:
       Enum.map(result.results, &SolutionMapping.remove_identity/1)
     }
   end

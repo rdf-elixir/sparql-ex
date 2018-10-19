@@ -7,6 +7,10 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 ## Unreleased
 
+### Added
+
+- Support for optional graph patterns via `OPTIONAL`
+
 ### Fixed
 
 - `SPARQL.Query.Result.get/2` failed when the given variable is not in the results

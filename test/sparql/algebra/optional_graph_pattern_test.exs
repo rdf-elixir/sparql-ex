@@ -22,7 +22,7 @@ defmodule SPARQL.Algebra.OptionalGraphPatternTest do
                   expr: %SPARQL.Algebra.LeftJoin{
                     expr1: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p1"}, "v1"}]},
                     expr2: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p2"}, "v2"}]},
-                    filters: %RDF.Literal{value: true}
+                    filters: [%RDF.Literal{value: true}]
                   }
                 }} = decode(query)
        end)
@@ -56,10 +56,10 @@ defmodule SPARQL.Algebra.OptionalGraphPatternTest do
                expr1: %SPARQL.Algebra.LeftJoin{
                  expr1: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p1"}, "v1"}]},
                  expr2: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p2"}, "v2"}]},
-                 filters: %RDF.Literal{value: true}
+                 filters: [%RDF.Literal{value: true}]
                },
                expr2: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p3"}, "v3"}]},
-               filters: %RDF.Literal{value: true}
+               filters: [%RDF.Literal{value: true}]
              }
            }} = decode(query)
 
@@ -78,10 +78,10 @@ defmodule SPARQL.Algebra.OptionalGraphPatternTest do
                  expr1: %SPARQL.Algebra.LeftJoin{
                    expr1: %SPARQL.Algebra.BGP{triples: [{"x", %RDF.IRI{value: "http://xmlns.com/foaf/0.1/name"}, "name"}]},
                    expr2: %SPARQL.Algebra.BGP{triples: [{"x", %RDF.IRI{value: "http://xmlns.com/foaf/0.1/mbox"}, "mbox"}]},
-                   filters: %RDF.Literal{value: true}
+                   filters: [%RDF.Literal{value: true}]
                  },
                  expr2: %SPARQL.Algebra.BGP{triples: [{"x", %RDF.IRI{value: "http://xmlns.com/foaf/0.1/homepage"}, "hpage"}]},
-                 filters: %RDF.Literal{value: true}
+                 filters: [%RDF.Literal{value: true}]
                }
              }
            }} = decode(query)
@@ -143,7 +143,7 @@ defmodule SPARQL.Algebra.OptionalGraphPatternTest do
              expr: %SPARQL.Algebra.LeftJoin{
                expr1: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p1"}, "v1"}]},
                expr2: %SPARQL.Algebra.BGP{triples: []},
-               filters: %RDF.Literal{value: true}
+               filters: [%RDF.Literal{value: true}]
              }
            }} = decode(query)
   end
@@ -159,7 +159,7 @@ defmodule SPARQL.Algebra.OptionalGraphPatternTest do
                expr1: %SPARQL.Algebra.LeftJoin{
                  expr1: %SPARQL.Algebra.BGP{triples: []},
                  expr2: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p2"}, "v2"}]},
-                 filters: %RDF.Literal{value: true}
+                 filters: [%RDF.Literal{value: true}]
                },
                expr2: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p1"}, "v1"}]}
              }
@@ -179,7 +179,7 @@ defmodule SPARQL.Algebra.OptionalGraphPatternTest do
                 expr: %SPARQL.Algebra.LeftJoin{
                   expr1: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p1"}, "v1"}]},
                   expr2: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p2"}, "v2"}]},
-                  filters: %RDF.Literal{value: true}
+                  filters: [%RDF.Literal{value: true}]
                 },
                filters: [
                  %SPARQL.Algebra.FunctionCall.Builtin{
@@ -205,9 +205,9 @@ defmodule SPARQL.Algebra.OptionalGraphPatternTest do
                expr2: %SPARQL.Algebra.LeftJoin{
                  expr1: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p2"}, "v2"}]},
                  expr2: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p3"}, "v3"}]},
-                 filters: %RDF.Literal{value: true}
+                 filters: [%RDF.Literal{value: true}]
                },
-               filters: %RDF.Literal{value: true}
+               filters: [%RDF.Literal{value: true}]
              }
            }} = decode(query)
 
@@ -225,12 +225,12 @@ defmodule SPARQL.Algebra.OptionalGraphPatternTest do
                  expr1: %SPARQL.Algebra.LeftJoin{
                    expr1: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p2"}, "v2"}]},
                    expr2: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p3"}, "v3"}]},
-                   filters: %RDF.Literal{value: true}
+                   filters: [%RDF.Literal{value: true}]
                  },
                  expr2: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p4"}, "v4"}]},
-                 filters: %RDF.Literal{value: true}
+                 filters: [%RDF.Literal{value: true}]
                },
-               filters: %RDF.Literal{value: true}
+               filters: [%RDF.Literal{value: true}]
              }
            }} = decode(query)
   end
@@ -257,7 +257,7 @@ defmodule SPARQL.Algebra.OptionalGraphPatternTest do
                    }
                  ]
                },
-               filters: %RDF.Literal{value: true}
+               filters: [%RDF.Literal{value: true}]
              }
            }} = decode(query)
   end
