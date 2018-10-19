@@ -13,6 +13,8 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 ### Fixed
 
+- errors during evaluation of function arguments were handled incorrectly, 
+  which led in particular to wrong behaviour of the `COALESCE` function
 - `SPARQL.Query.Result.get/2` failed when the given variable is not in the results
 
 

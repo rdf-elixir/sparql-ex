@@ -544,6 +544,8 @@ defmodule SPARQL.Functions.BuiltinsTest do
     [
       {[RDF.integer(42)], RDF.integer(42)},
       {[RDF.string(""), RDF.true], RDF.string("")},
+      {["foo", RDF.true], RDF.true},
+      {["foo"], :error},
       {[:error], :error},
       {[], :error},
     ]
@@ -691,7 +693,6 @@ defmodule SPARQL.Functions.BuiltinsTest do
     [
       RDF.bnode("http://example.com/foo"),
       RDF.literal("http://example.com/foo"),
-      "http://example.com/foo",
     ]
     |> Enum.each(fn negative_example ->
          assert_builtin_result(:isIRI, [negative_example], RDF.false)
@@ -715,7 +716,6 @@ defmodule SPARQL.Functions.BuiltinsTest do
     [
       RDF.literal("foo"),
       RDF.iri("foo"),
-      "foo",
     ]
     |> Enum.each(fn negative_example ->
          assert_builtin_result(:isBLANK, [negative_example], RDF.false)
@@ -737,7 +737,6 @@ defmodule SPARQL.Functions.BuiltinsTest do
     [
       RDF.iri("http://example.com/foo"),
       RDF.bnode("foo"),
-      "foo",
       42,
     ]
     |> Enum.each(fn negative_example ->
@@ -764,7 +763,6 @@ defmodule SPARQL.Functions.BuiltinsTest do
       RDF.decimal("foo"),
       RDF.iri("http://example.com/foo"),
       RDF.bnode("foo"),
-      "foo",
       42,
     ]
     |> Enum.each(fn negative_example ->

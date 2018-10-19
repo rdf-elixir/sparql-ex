@@ -52,14 +52,6 @@ defmodule SPARQL.W3C.TestSuite.FunctionsTest do
               do: @tag skip: "TODO: BIND"
           end)
 
-       [
-         "coalesce01",
-       ]
-       |> Enum.each(fn test_subject ->
-            if test_case.subject |> to_string() |> String.ends_with?(test_subject),
-              do: @tag skip: "TODO: OPTIONAL"
-          end)
-
        @tag test_case: test_case
        test TestSuite.test_title(test_case), %{test_case: test_case} do
          assert_query_evaluation_case_result(test_case, @manifest_graph)
