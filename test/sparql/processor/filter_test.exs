@@ -27,6 +27,40 @@ defmodule SPARQL.Processor.FilterTest do
         results: [%{"s" => ~I<http://example.org/s1>}]}
   end
 
+  test "with a boolean constant" do
+    assert query(@example_graph_with_literals, """
+      SELECT ?s
+      WHERE {
+        ?s ?p ?o
+        FILTER(false)
+      }
+      """) ==
+        %Query.Result{
+          variables: ~w[s],
+          results: []}
+
+    assert query(@example_graph_with_literals, """
+      SELECT ?s
+      WHERE {
+        ?s ?p ?o
+        FILTER(true)
+      }
+      """) ==
+        %Query.Result{
+          variables: ~w[s],
+          results: [
+            %{"s" => ~I<http://example.org/s7>},
+            %{"s" => ~I<http://example.org/s6>},
+            %{"s" => ~I<http://example.org/s6>},
+            %{"s" => ~I<http://example.org/s5>},
+            %{"s" => ~I<http://example.org/s4>},
+            %{"s" => ~I<http://example.org/s3>},
+            %{"s" => ~I<http://example.org/s1>},
+            %{"s" => ~I<http://example.org/s1>},
+          ]
+        }
+  end
+
   test "!" do
     assert query(@example_graph_with_literals, """
       SELECT ?s
