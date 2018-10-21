@@ -17,7 +17,7 @@ Note: **The [SPARQL.Client] supports the full SPARQL 1.1 query language**. The m
 - [ ] SPARQL 1.1 Query Language
     - [x] Basic Graph Pattern matching
     - [x] Group Graph Pattern matching
-    - [ ] Optional Graph Pattern matching via `OPTIONAL`
+    - [x] Optional Graph Pattern matching via `OPTIONAL`
     - [ ] Alternative Graph Pattern matching via `UNION`
     - [ ] Pattern matching on Named Graphs via `FROM` and `GRAPH`
     - [ ] Solution sequence modification
@@ -32,9 +32,9 @@ Note: **The [SPARQL.Client] supports the full SPARQL 1.1 query language**. The m
     - [x] All builtin functions specified in SPARQL 1.0 and 1.1
     - [x] Ability to define extension functions
     - [x] All XPath constructor functions as specified in the SPARQL 1.1 spec
+    - [ ] Assignments via `BIND`
     - [ ] Negation via `NOT EXIST`
     - [ ] Negation via `MINUS`
-    - [ ] Assignments via `BIND`
     - [ ] Inline Data via `VALUES`
     - [ ] Aggregates via `GROUP BY` and `HAVING`
     - [ ] Subqueries
