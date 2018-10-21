@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## Unreleased
+## 0.2.5 - 2018-10-21
 
 ### Added
 
@@ -16,10 +16,10 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 - errors during evaluation of function arguments were handled incorrectly, 
   which led in particular to wrong behaviour of the `COALESCE` function
-- `SPARQL.Query.Result.get/2` failed when the given variable is not in the results
+- `SPARQL.Query.Result.get/2` failed when the given variable was not in the results
 
 
-[Compare v0.2.4...HEAD](https://github.com/marcelotto/sparql-ex/compare/v0.2.4...HEAD)
+[Compare v0.2.4...v0.2.5](https://github.com/marcelotto/sparql-ex/compare/v0.2.4...v0.2.5)
 
 
 
