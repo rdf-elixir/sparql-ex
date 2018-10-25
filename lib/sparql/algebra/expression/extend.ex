@@ -1,14 +1,14 @@
 defmodule SPARQL.Algebra.Extend do
-  defstruct [:p, :var, :expr]
+  defstruct [:child_expr, :var, :expr]
 
   alias SPARQL.Algebra.Expression
 
   def result_set(%SPARQL.Query.Result{} = result, var, expr, data, execution) do
     %SPARQL.Query.Result{
-      variables: result.variables,
+      variables: [var | result.variables],
       results:
         Enum.map(result.results, fn bindings ->
-          with eval_result when eval_result != :error <-
+          with eval_result when eval_result not in [:error, nil] <-
                  Expression.evaluate(expr, %{solution: bindings, data: data}, execution)
           do
             Map.put(bindings, var, eval_result)
@@ -21,12 +21,12 @@ defmodule SPARQL.Algebra.Extend do
 
   defimpl Expression do
     def evaluate(extend, data, execution) do
-      Expression.evaluate(extend.p, data, execution)
+      Expression.evaluate(extend.child_expr, data, execution)
       |> SPARQL.Algebra.Extend.result_set(extend.var, extend.expr, data, execution)
     end
 
     def variables(extend) do
-      Expression.variables(extend.p)
+      [extend.var | Expression.variables(extend.child_expr)]
     end
   end
 end

@@ -34,22 +34,12 @@ defmodule SPARQL.W3C.TestSuite.FunctionsTest do
        [
          "in01",
          "in02",
-         "now01"
+         "now01",
+         "rand01",
        ]
        |> Enum.each(fn test_subject ->
             if test_case.subject |> to_string() |> String.ends_with?(test_subject),
               do: @tag skip: "TODO: ASK query form"
-          end)
-
-       [
-         "uuid01",
-         "struuid01",
-         "rand01",
-         "now01"
-       ]
-       |> Enum.each(fn test_subject ->
-            if test_case.subject |> to_string() |> String.ends_with?(test_subject),
-              do: @tag skip: "TODO: BIND"
           end)
 
        @tag test_case: test_case

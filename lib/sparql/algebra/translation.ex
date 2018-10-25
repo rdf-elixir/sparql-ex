@@ -492,13 +492,15 @@ defmodule SPARQL.Algebra.Translation do
         %GroupGraphPattern{} = e, g ->
           %SPARQL.Algebra.Join{expr1: g, expr2: translate_graph_pattern(e, state)}
 
-        # TODO: Handle subSelect
-        {:group_graph_pattern, :"$undefined"}, _ -> @zero_bgp
+        {:bind, expr, var}, g ->
+          %SPARQL.Algebra.Extend{child_expr: g, var: var, expr: expr}
 
         # TODO: handle MINUS
 
-        # TODO: handle BIND
+        # TODO: Handle subSelect
+        {:group_graph_pattern, :"$undefined"}, _ -> @zero_bgp
 
+        # TODO: remove this when the implementation is complete; we currently need this to make the W3C syntax tests pass on non-select queries
         :"$undefined", _ -> @zero_bgp
       end)
     }
@@ -614,7 +616,7 @@ defmodule SPARQL.Algebra.Translation do
       x =
         Enum.reduce e, where_clause, fn {var, expr}, x ->
           %SPARQL.Algebra.Extend{
-            p: x,
+            child_expr: x,
             var: var,
             expr: expr
           }
@@ -762,6 +764,10 @@ defmodule SPARQL.Algebra.Translation do
 
 
   defp map(ast, state \\ %{}, fun)
+
+  defp map(%{__struct__: _, child_expr: e} = s, state, fun) do
+    Map.put(s, :child_expr, fun.(e, state) || map(e, state, fun))
+  end
 
   defp map(%{__struct__: _, expr: e} = s, state, fun) do
     Map.put(s, :expr, fun.(e, state) || map(e, state, fun))

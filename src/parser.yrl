@@ -261,7 +261,7 @@ graphGraphPattern    -> 'GRAPH' varOrIri groupGraphPattern .
 serviceGraphPattern  -> 'SERVICE' 'SILENT' varOrIri groupGraphPattern .
 serviceGraphPattern  -> 'SERVICE' varOrIri groupGraphPattern .
 
-bind -> 'BIND' '(' expression 'AS' var ')' .
+bind -> 'BIND' '(' expression 'AS' var ')' : {bind, '$3', '$5'}.
 
 inlineData -> 'VALUES' dataBlock .
 

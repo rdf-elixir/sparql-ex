@@ -33,7 +33,7 @@ defmodule SPARQL.Algebra.SolutionModifierTest do
            %SPARQL.Algebra.Project{
              vars: ~w[product price],
              expr: %SPARQL.Algebra.Extend{
-               p: %SPARQL.Algebra.BGP{
+               child_expr: %SPARQL.Algebra.BGP{
                    triples: [
                      {"product", ~I<http://example.org/ns#price>, "p"},
                      {"product", ~I<http://example.org/ns#discount>, "discount"}
@@ -62,8 +62,8 @@ defmodule SPARQL.Algebra.SolutionModifierTest do
            %SPARQL.Algebra.Project{
              vars: ~w[product p2 price],
              expr: %SPARQL.Algebra.Extend{
-               p: %SPARQL.Algebra.Extend{
-                 p: %SPARQL.Algebra.BGP{
+               child_expr: %SPARQL.Algebra.Extend{
+                 child_expr: %SPARQL.Algebra.BGP{
                    triples: [
                      {"product", ~I<http://example.org/ns#price>, "p"},
                      {"product", ~I<http://example.org/ns#discount>, "discount"},

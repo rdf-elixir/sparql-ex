@@ -5,6 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
+## Unreleased
+
+### Added
+
+- Support for assigning to variables with `BIND`
+
+
+[Compare v0.2.5...HEAD](https://github.com/marcelotto/sparql-ex/compare/v0.2.5...HEAD)
+
+
+
 ## 0.2.5 - 2018-10-21
 
 ### Added
