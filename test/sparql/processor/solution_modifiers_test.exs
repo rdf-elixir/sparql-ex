@@ -70,6 +70,9 @@ defmodule SPARQL.Processor.SolutionModifiersTest do
                  results: [
                    %{
                      "o" => ~I<http://example.org/o2>,
+                   },
+                   %{
+                     "o" => ~I<http://example.org/o2>,
                    }
                  ]
                }

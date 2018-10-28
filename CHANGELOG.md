@@ -12,9 +12,14 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 - Support for assigning to variables with `BIND`
 
 
+### Changed
+
+- `REDUCED` no longer removes duplicates without projection (for performance reasons)
+
+
 ### Fixed
 
-- `DISTINCT *` and `REDUCED *` did not work
+- `DISTINCT` did not work without projection
 
 
 [Compare v0.2.5...HEAD](https://github.com/marcelotto/sparql-ex/compare/v0.2.5...HEAD)
