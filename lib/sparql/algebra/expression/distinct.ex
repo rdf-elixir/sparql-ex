@@ -2,9 +2,14 @@ defmodule SPARQL.Algebra.Distinct do
   defstruct [:expr]
 
   alias SPARQL.Algebra.Expression
+  alias SPARQL.Query.Result.SolutionMapping
 
   def result_set(%SPARQL.Query.Result{results: results} = result) do
-    %SPARQL.Query.Result{result | results: Enum.uniq(results)}
+    %SPARQL.Query.Result{result | results:
+      results
+      |> Stream.map(&SolutionMapping.remove_identity/1)
+      |> Enum.uniq()
+    }
   end
 
   defimpl Expression do

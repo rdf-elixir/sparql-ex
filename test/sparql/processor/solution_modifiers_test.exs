@@ -11,8 +11,27 @@ defmodule SPARQL.Processor.SolutionModifiersTest do
   ])
 
   describe "DISTINCT" do
-    test "single {s ?p ?o}" do
+    test "with projection" do
       assert query(@example_graph, "SELECT DISTINCT ?o WHERE { ?s <#{EX.p3}> ?o }") ==
+        %Query.Result{
+          variables: ~w[o],
+          results: [
+            %{
+              "o" => ~I<http://example.org/o2>,
+            }
+          ]
+        }
+    end
+
+    test "without projection" do
+      assert query(@example_graph, """
+        SELECT DISTINCT *
+        WHERE {
+          { <#{EX.s2}> <#{EX.p3}> ?o }
+          UNION
+          { <#{EX.s3}> <#{EX.p3}> ?o }
+        }
+        """) ==
         %Query.Result{
           variables: ~w[o],
           results: [
@@ -25,8 +44,27 @@ defmodule SPARQL.Processor.SolutionModifiersTest do
   end
 
   describe "REDUCED" do
-    test "single {s ?p ?o}" do
+    test "with projection" do
       assert query(@example_graph, "SELECT REDUCED ?o WHERE { ?s <#{EX.p3}> ?o }") ==
+               %Query.Result{
+                 variables: ~w[o],
+                 results: [
+                   %{
+                     "o" => ~I<http://example.org/o2>,
+                   }
+                 ]
+               }
+    end
+
+    test "without projection" do
+      assert query(@example_graph, """
+             SELECT REDUCED *
+             WHERE {
+               { <#{EX.s2}> <#{EX.p3}> ?o }
+               UNION
+               { <#{EX.s3}> <#{EX.p3}> ?o }
+             }
+             """) ==
                %Query.Result{
                  variables: ~w[o],
                  results: [

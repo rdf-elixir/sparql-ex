@@ -12,6 +12,11 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 - Support for assigning to variables with `BIND`
 
 
+### Fixed
+
+- `DISTINCT *` and `REDUCED *` did not work
+
+
 [Compare v0.2.5...HEAD](https://github.com/marcelotto/sparql-ex/compare/v0.2.5...HEAD)
 
 
