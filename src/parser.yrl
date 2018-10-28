@@ -293,7 +293,7 @@ dataBlockValue -> booleanLiteral .
 dataBlockValue -> 'UNDEF' .
 
 minusGraphPattern -> 'MINUS' groupGraphPattern .
-groupOrUnionGraphPattern -> groupGraphPattern 'UNION' groupOrUnionGraphPattern .
+groupOrUnionGraphPattern -> groupGraphPattern 'UNION' groupOrUnionGraphPattern : {union, '$1', '$3'} .
 groupOrUnionGraphPattern -> groupGraphPattern : '$1'.
 
 filter -> 'FILTER' constraint : {filter, '$2' }.

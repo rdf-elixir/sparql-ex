@@ -30,12 +30,6 @@ defmodule SPARQL.W3C.TestSuite.DistinctTest do
               do: @tag skip: "TODO: bnode-isomorphism-problem and rdf1.0-string semantics problem"
           end)
 
-       ["distinct-star-1", "distinct-star-1"]
-       |> Enum.each(fn test_subject ->
-            if test_case.subject |> to_string() |> String.ends_with?(test_subject),
-              do: @tag skip: "TODO: UNION"
-          end)
-
        @tag test_case: test_case
        test TestSuite.test_title(test_case), %{test_case: test_case} do
          assert_query_evaluation_case_result(test_case, @manifest_graph)

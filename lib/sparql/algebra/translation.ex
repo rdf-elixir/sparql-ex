@@ -479,21 +479,29 @@ defmodule SPARQL.Algebra.Translation do
     {:ok, map(ast, &translate_graph_pattern/2)}
   end
 
+  # TODO: remove this when the implementation is complete; we currently need this to make the W3C syntax tests pass on non-select queries
+  defp translate_graph_pattern({:group_graph_pattern, :"$undefined"}, _), do: @zero_bgp
+  defp translate_graph_pattern(:"$undefined", _), do: @zero_bgp
+
   defp translate_graph_pattern(%GroupGraphPattern{expr: patterns} = group_pattern, state) do
     %GroupGraphPattern{group_pattern | expr:
       Enum.reduce(patterns, @zero_bgp, fn
-        %SPARQL.Algebra.BGP{} = e, g ->
-          %SPARQL.Algebra.Join{expr1: g, expr2: e}
-
         %OptionalGraphPattern{} = optional_graph_pattern, g ->
           %SPARQL.Algebra.LeftJoin{
             translate_graph_pattern(optional_graph_pattern, state) | expr1: g}
+
+        %SPARQL.Algebra.BGP{} = e, g ->
+          %SPARQL.Algebra.Join{expr1: g, expr2: e}
 
         %GroupGraphPattern{} = e, g ->
           %SPARQL.Algebra.Join{expr1: g, expr2: translate_graph_pattern(e, state)}
 
         {:bind, expr, var}, g ->
           %SPARQL.Algebra.Extend{child_expr: g, var: var, expr: expr}
+
+        {:union, _, _} = union, g ->
+          %SPARQL.Algebra.Join{expr1: g,
+            expr2: translate_union_graph_pattern(union, nil, state)}
 
         # TODO: handle MINUS
 
@@ -525,6 +533,27 @@ defmodule SPARQL.Algebra.Translation do
   # TODO: optimize performance by providing function clauses for AST patterns which don't need further traversal
 
   defp translate_graph_pattern(_, _), do: @no_mapping
+
+
+  defp translate_union_graph_pattern({:union, left, right} = union, nil, state) do
+    translate_union_graph_pattern(right,
+      translate_graph_pattern(left, state), state)
+  end
+
+  defp translate_union_graph_pattern({:union, left, right} = union, a, state) do
+    translate_union_graph_pattern(right,
+      %SPARQL.Algebra.Union{
+        expr1: a,
+        expr2: translate_graph_pattern(left, state)
+      }, state)
+  end
+
+  defp translate_union_graph_pattern(group_graph_pattern, a, state) do
+    %SPARQL.Algebra.Union{
+      expr1: a,
+      expr2: translate_graph_pattern(group_graph_pattern, state)
+    }
+  end
 
 
   @doc """

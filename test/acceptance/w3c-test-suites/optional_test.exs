@@ -13,15 +13,6 @@ defmodule SPARQL.W3C.TestSuite.OptionalTest do
   TestSuite.test_cases(@test_suite, MF.QueryEvaluationTest)
   |> Enum.each(fn test_case ->
        [
-         "dawg-union-001",
-         "dawg-optional-complex-1",
-       ]
-       |> Enum.each(fn test_subject ->
-         if test_case.subject |> to_string() |> String.ends_with?(test_subject),
-            do: @tag skip: "TODO: UNION"
-       end)
-
-       [
          "dawg-optional-complex-2",
          "dawg-optional-complex-3",
          "dawg-optional-complex-4",

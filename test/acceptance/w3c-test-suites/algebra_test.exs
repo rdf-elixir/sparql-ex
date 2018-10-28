@@ -12,19 +12,10 @@ defmodule SPARQL.W3C.TestSuite.AlgebraTest do
 
   TestSuite.test_cases(@test_suite, MF.QueryEvaluationTest)
   |> Enum.each(fn test_case ->
-       [
-         "join-combo-1",
-         "join-combo-2",
-       ]
-       |> Enum.each(fn test_subject ->
-         if test_case.subject |> to_string() |> String.ends_with?(test_subject),
-            do: @tag skip: "TODO: UNION"
-       end)
-
        ["join-combo-2"]
        |> Enum.each(fn test_subject ->
          if test_case.subject |> to_string() |> String.ends_with?(test_subject),
-            do: @tag skip: "GRAPH"
+            do: @tag skip: "TODO: GRAPH"
        end)
 
 

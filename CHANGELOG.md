@@ -9,6 +9,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 ### Added
 
+- Support for alternative graph patterns with `UNION`
 - Support for assigning to variables with `BIND`
 
 
