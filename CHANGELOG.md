@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## Unreleased
+## 0.2.6 - 2018-10-31
 
 ### Added
 
@@ -23,7 +23,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 - `DISTINCT` did not work without projection
 
 
-[Compare v0.2.5...HEAD](https://github.com/marcelotto/sparql-ex/compare/v0.2.5...HEAD)
+[Compare v0.2.5...v0.2.6](https://github.com/marcelotto/sparql-ex/compare/v0.2.5...v0.2.6)
 
 
 
