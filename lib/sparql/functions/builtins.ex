@@ -9,7 +9,6 @@ defmodule SPARQL.Functions.Builtins do
   @lang_string RDF.langString
   @xsd_integer XSD.integer
   @xsd_datetime XSD.dateTime
-  @xsd_decimal XSD.decimal
 
   @doc """
   Value equality
@@ -48,40 +47,8 @@ defmodule SPARQL.Functions.Builtins do
   see
   - <https://www.w3.org/TR/sparql11-query/#OperatorMapping>
   """
-  def call(:<, [%Literal{datatype: @xsd_decimal} = left,
-                %Literal{datatype: @xsd_decimal} = right], _) do
-    ebv(Decimal.cmp(left.value, right.value) == :lt)
-  end
-
-  def call(:<, [%Literal{datatype: @xsd_decimal} = left,
-                %Literal{datatype: datatype} = right], execution) do
-    if RDF.Numeric.type?(datatype) do
-      call(:<, [left, RDF.decimal(right.value)], execution)
-    else
-      :error
-    end
-  end
-
-  def call(:<, [%Literal{datatype: datatype} = left,
-                %Literal{datatype: @xsd_decimal} = right], execution) do
-    if RDF.Numeric.type?(datatype) do
-      call(:<, [RDF.decimal(left.value), right], execution)
-    else
-      :error
-    end
-  end
-
   def call(:<, [%Literal{} = left, %Literal{} = right], _) do
-    cond do
-      RDF.Numeric.type?(left.datatype) and RDF.Numeric.type?(right.datatype) ->
-        ebv(left.value < right.value)
-
-      left.datatype == right.datatype ->
-        ebv(left.value < right.value)
-
-      true ->
-        :error
-    end
+    ebv(RDF.Literal.less_than?(left, right))
   end
 
   def call(:<, _, _), do: :error
@@ -92,9 +59,11 @@ defmodule SPARQL.Functions.Builtins do
   see
   - <https://www.w3.org/TR/sparql11-query/#OperatorMapping>
   """
-  def call(:>, [arg1, arg2], execution) do
-    call(:<, [arg2, arg1], execution)
+  def call(:>, [%Literal{} = left, %Literal{} = right], _) do
+    ebv(RDF.Literal.greater_than?(left, right))
   end
+
+  def call(:>, _, _), do: :error
 
   @doc """
   Greater-or-equal operator.
@@ -102,12 +71,16 @@ defmodule SPARQL.Functions.Builtins do
   see
   - <https://www.w3.org/TR/sparql11-query/#OperatorMapping>
   """
-  def call(:>=, args, execution) do
-    case call(:>, args, execution) do
-      %RDF.Literal{value: false} -> call(:=, args, execution)
-      true_or_error              -> true_or_error
+  def call(:>=, [%Literal{} = left, %Literal{} = right], _) do
+    case RDF.Literal.compare(left, right) do
+      :gt -> RDF.true
+      :eq -> RDF.true
+      :lt -> RDF.false
+      _   -> :error
     end
   end
+
+  def call(:>=, _, _), do: :error
 
   @doc """
   Less-or-equal operator.
@@ -115,13 +88,16 @@ defmodule SPARQL.Functions.Builtins do
   see
   - <https://www.w3.org/TR/sparql11-query/#OperatorMapping>
   """
-  def call(:<=, args, execution) do
-    case call(:<, args, execution) do
-      %RDF.Literal{value: false} -> call(:=, args, execution)
-      true_or_error              -> true_or_error
+  def call(:<=, [%Literal{} = left, %Literal{} = right], _) do
+    case RDF.Literal.compare(left, right) do
+      :lt -> RDF.true
+      :eq -> RDF.true
+      :gt -> RDF.false
+      _   -> :error
     end
   end
 
+  def call(:<=, _, _), do: :error
 
   @doc """
   Logical `NOT`

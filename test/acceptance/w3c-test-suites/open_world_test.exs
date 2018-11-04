@@ -21,16 +21,6 @@ defmodule SPARQL.W3C.TestSuite.OpenWorldTest do
           end)
 
        [
-         "date-1",
-         "date-2",
-         "date-3",
-       ]
-       |> Enum.each(fn test_subject ->
-            if test_case.subject |> to_string() |> String.ends_with?(test_subject),
-              do: @tag skip: "TODO: fix date and datetime comparisons"
-       end)
-
-       [
          "open-eq-06",
        ]
        |> Enum.each(fn test_subject ->

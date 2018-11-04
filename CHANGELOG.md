@@ -5,7 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## 0.2.6 - 2018-10-31
+## Unreleased
+
+### Fixed
+
+- various fixes on comparisons between `RDF.DateTime`s and `RDF.Date`s  
+
+
+[Compare v0.2.6...HEAD](https://github.com/marcelotto/sparql-ex/compare/v0.2.6...HEAD)
+
+
+
+## 0.2.6 - 2018-10-30
 
 ### Added
 

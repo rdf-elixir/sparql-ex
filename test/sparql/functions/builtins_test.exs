@@ -141,9 +141,6 @@ defmodule SPARQL.Functions.BuiltinsTest do
     {RDF.decimal(3.14), RDF.integer(42)},
 # TODO: How to handle invalid number literals?
 #    {RDF.integer("3.14"), RDF.integer("007")},
-# TODO: We need a RDF.Decimal datatype for this
-#    {RDF.decimal(1.1), RDF.decimal(2.2)},
-#    {RDF.integer(3),   RDF.decimal(3.14)},
 # TODO: We need support for other derived numeric datatypes
 #    {RDF.literal(0, datatype: XSD.byte), RDF.integer(1)},
   ]
