@@ -19,6 +19,14 @@ defmodule SPARQL.W3C.TestSuite do
 
   import RDF.Sigils
 
+  @query_forms %{
+    nil                        => :select,
+    RDF.iri(QT.QuerySelect)    => :select,
+    RDF.iri(QT.QueryAsk)       => :ask,
+    RDF.iri(QT.QueryConstruct) => :construct,
+    RDF.iri(QT.QueryDescribe)  => :describe,
+  }
+
   def dir(),      do: SPARQL.TestData.dir() |> Path.join("w3c-test-suites")
   def dir("1.0"), do: dir() |> Path.join("data-r2")
   def dir("1.1"), do: dir() |> Path.join("data-sparql11")
@@ -149,6 +157,10 @@ defmodule SPARQL.W3C.TestSuite do
 
   def test_result_file_path(test_case, test_suite),
     do: test_case |> test_output_file() |> file_path(test_suite)
+
+  def test_query_form(test_case) do
+    Map.get(@query_forms, Description.first(test_case, QT.queryForm))
+  end
 
 
   defp value(description, property),
