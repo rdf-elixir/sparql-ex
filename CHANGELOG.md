@@ -7,6 +7,10 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 ## Unreleased
 
+### Added
+
+- Support of the `CONSTRUCT` query form
+
 ### Fixed
 
 - various fixes on comparisons between `RDF.DateTime`s and `RDF.Date`s  

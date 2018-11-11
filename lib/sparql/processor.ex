@@ -20,11 +20,17 @@ defmodule SPARQL.Processor do
     {:ok, generator} = RDF.BlankNode.Generator.start_link(RDF.BlankNode.Increment, prefix: "b")
     try do
       Algebra.Expression.evaluate(expr, data, execution_context(base, generator))
-      |> Query.Result.remove_identity()
+      |> query_post_processing()
     after
       RDF.BlankNode.Generator.stop(generator)
     end
   end
+
+  def query_post_processing(%Query.Result{} = result) do
+    Query.Result.remove_identity(result)
+  end
+
+  def query_post_processing(result), do: result
 
   defp execution_context(base, generator) do
     %{

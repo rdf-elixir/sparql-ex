@@ -41,7 +41,7 @@ Note: **The [SPARQL.Client] supports the full SPARQL 1.1 query language**. The m
     - [ ] Property Paths
     - [ ] `ASK` query form
     - [ ] `DESCRIBE` query form
-    - [ ] `CONSTRUCT` query form
+    - [x] `CONSTRUCT` query form
 - [ ] SPARQL 1.1 Update
 - [x] SPARQL Query Results XML Format
 - [x] SPARQL 1.1 Query Results JSON Format
@@ -125,6 +125,32 @@ The list of results for a single variable can be fetched with the `SPARQL.Query.
 ```elixir
 SPARQL.execute_query(graph, query) 
 |> SPARQL.Query.Result.get(:mbox)
+```
+
+If `SPARQL.execute_query/2` is used to execute a `CONSTRUCT` query, it will return an `RDF.Graph`:
+
+```elixir
+iex> SPARQL.execute_query graph, """
+...>  PREFIX foaf:   <http://xmlns.com/foaf/0.1/>
+...>  PREFIX schema: <http://schema.org/>
+...>  CONSTRUCT   
+...>    { ?x schema:name ?name ;
+...>         schema:email ?mbox }
+...>  WHERE
+...>    { ?x foaf:name ?name ;
+...>         foaf:mbox ?mbox }
+...>  """
+#RDF.Graph{name: nil
+     ~B<b0>
+         ~I<http://schema.org/email>
+             ~I<mailto:peter@example.org>
+         ~I<http://schema.org/name>
+             ~L"Peter Goodguy" 
+     ~B<b1>
+         ~I<http://schema.org/email>
+             ~I<mailto:jlow@example.com>
+         ~I<http://schema.org/name>
+             ~L"Johnny Lee Outlaw"}
 ```
 
 The `SPARQL.execute_query/2` function converts a given query string implicitly to a `SPARQL.Query` struct. If you intend to execute the query multiple times it's better to do this step on your own with the `SPARQL.query/1` function and pass the interpreted query directly to `SPARQL.execute_query/2`, in order to not parse the query on every execution.

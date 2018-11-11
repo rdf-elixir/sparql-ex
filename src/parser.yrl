@@ -104,17 +104,17 @@ varDecl  -> '(' expression 'AS' var ')' : {'$4', '$2'} .
 
 constructQuery	-> 'CONSTRUCT' constructTemplate datasetClauses whereClause solutionModifier   : {construct, '$2', '$3', '$4', '$5' } .
 constructQuery	-> 'CONSTRUCT' constructTemplate whereClause solutionModifier                  : {construct, '$2', nil , '$3', '$4' } .
-constructQuery	-> 'CONSTRUCT' datasetClauses 'WHERE' '{' triplesTemplate '}' solutionModifier : {construct, nil, '$2', {where, '$5'}, '$7' } .
-constructQuery	-> 'CONSTRUCT' 'WHERE' '{' triplesTemplate '}' solutionModifier                : {construct, nil, nil , {where, '$4'}, '$6' } .
-constructQuery	-> 'CONSTRUCT' datasetClauses 'WHERE' '{' '}' solutionModifier                 : {construct, nil, '$2', {where, nil}, '$6' } .
-constructQuery	-> 'CONSTRUCT' 'WHERE' '{' '}' solutionModifier                                : {construct, nil, nil , {where, nil}, '$5' } .
+constructQuery	-> 'CONSTRUCT' datasetClauses 'WHERE' '{' triplesTemplate '}' solutionModifier : {construct, nil, '$2', '$5', '$7' } .
+constructQuery	-> 'CONSTRUCT' 'WHERE' '{' triplesTemplate '}' solutionModifier                : {construct, nil, nil , '$4', '$6' } .
+constructQuery	-> 'CONSTRUCT' datasetClauses 'WHERE' '{' '}' solutionModifier                 : {construct, nil, '$2', [], '$6' } .
+constructQuery	-> 'CONSTRUCT' 'WHERE' '{' '}' solutionModifier                                : {construct, nil, nil , [], '$5' } .
 %% without solutionModifier
 constructQuery	-> 'CONSTRUCT' constructTemplate datasetClauses whereClause   : {construct, '$2', '$3', '$4', nil } .
 constructQuery	-> 'CONSTRUCT' constructTemplate whereClause                  : {construct, '$2', nil , '$3', nil } .
-constructQuery	-> 'CONSTRUCT' datasetClauses 'WHERE' '{' triplesTemplate '}' : {construct, nil, '$2', {where, '$5'}, nil } .
-constructQuery	-> 'CONSTRUCT' 'WHERE' '{' triplesTemplate '}'                : {construct, nil, nil , {where, '$4'}, nil } .
-constructQuery	-> 'CONSTRUCT' datasetClauses 'WHERE' '{' '}'                 : {construct, nil, '$2', {where, nil}, nil } .
-constructQuery	-> 'CONSTRUCT' 'WHERE' '{' '}'                                : {construct, nil, nil , {where, nil}, nil } .
+constructQuery	-> 'CONSTRUCT' datasetClauses 'WHERE' '{' triplesTemplate '}' : {construct, nil, '$2', '$5', nil } .
+constructQuery	-> 'CONSTRUCT' 'WHERE' '{' triplesTemplate '}'                : {construct, nil, nil , '$4', nil } .
+constructQuery	-> 'CONSTRUCT' datasetClauses 'WHERE' '{' '}'                 : {construct, nil, '$2', [], nil } .
+constructQuery	-> 'CONSTRUCT' 'WHERE' '{' '}'                                : {construct, nil, nil , [], nil } .
 
 describeQuery	  -> 'DESCRIBE' describeQuerySubject datasetClauses whereClause solutionModifier : {describe, '$2', '$3', '$4', '$5' } .
 describeQuery	  -> 'DESCRIBE' describeQuerySubject whereClause solutionModifier                : {describe, '$2', nil , '$3', '$4' } .
@@ -223,9 +223,9 @@ valuesClause  -> 'VALUES' dataBlock .
 %% quads -> triplesTemplate? ( QuadsNotTriples '.'? TriplesTemplate? )*
 %% QuadsNotTriples -> 'GRAPH' VarOrIri '{' TriplesTemplate? '}'
 
-triplesTemplate -> triplesSameSubject '.' triplesTemplate .
-triplesTemplate -> triplesSameSubject '.' .
-triplesTemplate -> triplesSameSubject .
+triplesTemplate -> triplesSameSubject '.' triplesTemplate : ['$1' | '$3' ] .
+triplesTemplate -> triplesSameSubject '.'                 : ['$1'] .
+triplesTemplate -> triplesSameSubject                     : ['$1'] .
 
 groupGraphPattern -> '{' subSelect '}'            : {group_graph_pattern, '$2'} .
 groupGraphPattern -> '{' groupGraphPatternSub '}' : {group_graph_pattern, '$2'} .
@@ -318,34 +318,34 @@ expressionList -> '(' expression expressionSeq ')' : ['$2' | '$3'] .
 expressionSeq -> ',' expression expressionSeq : ['$2' | '$3'] .
 expressionSeq -> ',' expression               : ['$2'] .
 
-constructTemplate -> '{' constructTriples '}' .
-constructTemplate -> '{' '}' .
-constructTriples -> triplesSameSubject '.' constructTriples .
-constructTriples -> triplesSameSubject '.' .
-constructTriples -> triplesSameSubject  .
+constructTemplate -> '{' constructTriples '}' : '$2' .
+constructTemplate -> '{' '}' 									: [] .
+constructTriples -> triplesSameSubject '.' constructTriples : ['$1' | '$3'] .
+constructTriples -> triplesSameSubject '.'                  : ['$1'] .
+constructTriples -> triplesSameSubject                      : ['$1'] .
 
-triplesSameSubject -> varOrTerm propertyListNotEmpty .
-triplesSameSubject -> triplesNode propertyList .
-triplesSameSubject -> triplesNode .
-propertyList -> propertyListNotEmpty .
+triplesSameSubject -> varOrTerm propertyListNotEmpty : [{subject, '$1'} | '$2'] .
+triplesSameSubject -> triplesNode propertyList       : [{subject, '$1'} | '$2'] .
+triplesSameSubject -> triplesNode                    : [{subject, '$1'}] .
+propertyList -> propertyListNotEmpty : '$1' .
 %% PropertyListNotEmpty -> Verb ObjectList ( ';' ( Verb ObjectList )? )*
-propertyListNotEmpty -> verb objectList propertyListNotEmptyVerbObjectList .
-propertyListNotEmpty -> verb objectList .
-propertyListNotEmptyVerbObjectList -> ';' verb objectList propertyListNotEmptyVerbObjectList .
-propertyListNotEmptyVerbObjectList -> ';' propertyListNotEmptyVerbObjectList .
-propertyListNotEmptyVerbObjectList -> ';' verb objectList .
-propertyListNotEmptyVerbObjectList -> ';' .
+propertyListNotEmpty -> verb objectList propertyListNotEmptyVerbObjectList : [{predicate, '$1'} | '$2'] ++ '$3' .
+propertyListNotEmpty -> verb objectList                                    : [{predicate, '$1'} | '$2'] .
+propertyListNotEmptyVerbObjectList -> ';' verb objectList propertyListNotEmptyVerbObjectList : [{predicate, '$2'} | '$3'] ++ '$4' .
+propertyListNotEmptyVerbObjectList -> ';' propertyListNotEmptyVerbObjectList : '$2' .
+propertyListNotEmptyVerbObjectList -> ';' verb objectList                    : [{predicate, '$2'} | '$3'].
+propertyListNotEmptyVerbObjectList -> ';'                                    : [] .
 
 verb -> varOrIri : '$1' .
 verb -> 'a'      : rdf_type() .
 
-objectList -> object ',' objectList : ['$1' | '$3'] .
-objectList -> object                : ['$1'] .
+objectList -> object ',' objectList : [{object, '$1'} | '$3'] .
+objectList -> object                : [{object, '$1'}] .
 object     -> graphNode             : '$1' .
 
-triplesSameSubjectPath -> varOrTerm propertyListPathNotEmpty       : [{subject, '$1'} | '$2'].
-triplesSameSubjectPath -> triplesNodePath propertyListPathNotEmpty : [{subject, '$1'} | '$2'].
-triplesSameSubjectPath -> triplesNodePath                          : [{subject, '$1'}].
+triplesSameSubjectPath -> varOrTerm propertyListPathNotEmpty       : [{subject, '$1'} | '$2'] .
+triplesSameSubjectPath -> triplesNodePath propertyListPathNotEmpty : [{subject, '$1'} | '$2'] .
+triplesSameSubjectPath -> triplesNodePath                          : [{subject, '$1'}] .
 
 %% PropertyListPathNotEmpty -> ( VerbPath | VerbSimple ) ObjectListPath ( ';' ( ( VerbPath | VerbSimple ) ObjectListPath )? )*
 propertyListPathNotEmpty -> verbObjectList semicolonSeq propertyListPathNotEmpty : '$1' ++ '$3' .

@@ -678,11 +678,28 @@ defmodule SPARQL.Algebra.Translation do
   end
 
   defp convert_select(%{expr:
-        {:construct, _construct_template, _dataset_clauses, where_clause, _solution_modifier}} = state) do
+        {:construct, nil, _dataset_clauses, triple_template, _solution_modifier}} = state) do
     {:ok,
       state
-      |> Map.put(:expr, where_clause)
-      |> Map.put(:pv, visible_variables(where_clause))
+      |> Map.put(:expr,
+           %SPARQL.Algebra.Construct{
+             template: translate_triples_block(triple_template),
+             query: do_translate_basic_graph_patterns({:triples_block, triple_template}, state)
+           }
+         )
+    }
+  end
+
+  defp convert_select(%{expr:
+        {:construct, construct_template, _dataset_clauses, where_clause, _solution_modifier}} = state) do
+    {:ok,
+      state
+      |> Map.put(:expr,
+           %SPARQL.Algebra.Construct{
+             template: translate_triples_block(construct_template),
+             query: where_clause
+           }
+         )
     }
   end
 
@@ -709,7 +726,6 @@ defmodule SPARQL.Algebra.Translation do
          {pv, e} -> {:ok, Enum.reverse(pv), Enum.reverse(e)}
          error   -> {:error, error}
        end
-
   end
 
   ############################################################################
@@ -742,7 +758,7 @@ defmodule SPARQL.Algebra.Translation do
 
     # 18.2.5.2 Projection
     m =
-      if state.pv && not Enum.empty?(state.pv) do
+      if Map.get(state, :pv) && not Enum.empty?(state.pv) do
         %SPARQL.Algebra.Project{vars: state.pv, expr: m}
       else
         m
