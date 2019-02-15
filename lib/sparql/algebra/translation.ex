@@ -59,7 +59,7 @@ defmodule SPARQL.Algebra.Translation do
   ############################################################################
   # 18.2.2 Converting Graph Patterns
 
-  @doc """
+  @doc !"""
   Translates a SPARQL graph pattern into a `SPARQL.Algebra.Expression`
 
   This process is applied to the group graph pattern (the unit between `{...}` delimiters)
@@ -108,7 +108,7 @@ defmodule SPARQL.Algebra.Translation do
   end
 
 
-  @doc """
+  @doc !"""
   Expand Syntax Forms
 
   Expand abbreviations for IRIs and triple patterns.
@@ -156,7 +156,7 @@ defmodule SPARQL.Algebra.Translation do
     }
   end
 
-  defp expand_syntax_form({:function_call, function_name, args} = expr, prologue) do
+  defp expand_syntax_form({:function_call, function_name, args}, prologue) do
     {distinct, args} =
       case args do
         [{:distinct, _}, rest] -> {true, rest}
@@ -175,7 +175,7 @@ defmodule SPARQL.Algebra.Translation do
   defp expand_syntax_form(_, _), do: @no_mapping
 
 
-  @doc """
+  @doc !"""
   Collect FILTER Elements
 
   `FILTER` expressions apply to the whole group graph pattern in which they appear.
@@ -209,8 +209,8 @@ defmodule SPARQL.Algebra.Translation do
       when is_list(graph_patterns) do
     {filters, group} =
       Enum.split_with(graph_patterns, fn
-        {:filter, expr} -> true
-        other           -> false
+        {:filter, _} -> true
+        _            -> false
       end)
 
     # TODO: Do we have to call do_collect_filter_elements recursively on the group? Can it recursively contain other group_graph_patterns, eg. in subqueries
@@ -230,7 +230,7 @@ defmodule SPARQL.Algebra.Translation do
   end
 
 
-  @doc """
+  @doc !"""
   Translate Property Path Expressions
 
   The following table gives the translation of property paths expressions from
@@ -278,7 +278,7 @@ defmodule SPARQL.Algebra.Translation do
   end
 
 
-  @doc """
+  @doc !"""
   Translate Property Path Patterns
 
   The previous step translated property path expressions. This step translates
@@ -311,7 +311,7 @@ defmodule SPARQL.Algebra.Translation do
   end
 
 
-  @doc """
+  @doc !"""
   Translate Basic Graph Patterns
 
   After translating property paths, any adjacent triple patterns are collected
@@ -402,7 +402,7 @@ defmodule SPARQL.Algebra.Translation do
   end
 
 
-  @doc """
+  @doc !"""
   Translate Graph Patterns
 
   Next, we translate each remaining graph pattern form, recursively applying the
@@ -535,12 +535,12 @@ defmodule SPARQL.Algebra.Translation do
   defp translate_graph_pattern(_, _), do: @no_mapping
 
 
-  defp translate_union_graph_pattern({:union, left, right} = union, nil, state) do
+  defp translate_union_graph_pattern({:union, left, right}, nil, state) do
     translate_union_graph_pattern(right,
       translate_graph_pattern(left, state), state)
   end
 
-  defp translate_union_graph_pattern({:union, left, right} = union, a, state) do
+  defp translate_union_graph_pattern({:union, left, right}, a, state) do
     translate_union_graph_pattern(right,
       %SPARQL.Algebra.Union{
         expr1: a,
@@ -556,7 +556,7 @@ defmodule SPARQL.Algebra.Translation do
   end
 
 
-  @doc """
+  @doc !"""
   Add filters of Group
 
   After the group has been translated, the filter expressions are added so they
@@ -587,7 +587,7 @@ defmodule SPARQL.Algebra.Translation do
   defp do_add_filters_of_group(_, _), do: @no_mapping
 
 
-  @doc """
+  @doc !"""
   Simplification step
 
   Some groups of one graph pattern become `join(Z, A)`, where `Z` is the empty
@@ -626,7 +626,7 @@ defmodule SPARQL.Algebra.Translation do
     {:ok, %{state | expr: p}}
   end
 
-  defp convert_final_values_clause(%{expr: {:query, p, data}} = state) do
+  defp convert_final_values_clause(%{expr: {:query, p, _data}} = state) do
     {:ok, %{state | expr: p}}
   end
 
@@ -731,7 +731,7 @@ defmodule SPARQL.Algebra.Translation do
   ############################################################################
   # 18.2.5 Converting Solution Modifiers
 
-  @doc """
+  @doc !"""
   Converting Solution Modifiers
 
   Solutions modifiers apply to the processing of a SPARQL query after pattern matching.
@@ -781,7 +781,7 @@ defmodule SPARQL.Algebra.Translation do
   ############################################################################
   # Helpers
 
-  @doc """
+  @doc !"""
   Turns a multiset into a sequence with the same elements and cardinality.
 
   There is no implied ordering to the sequence; duplicates need not be adjacent.
@@ -800,7 +800,7 @@ defmodule SPARQL.Algebra.Translation do
     end
   end
 
-  @doc """
+  @doc !"""
   https://www.w3.org/TR/sparql11-query/#variableScope
   """
   defp variable_in_scope?(expr) do

@@ -6,11 +6,6 @@ defprotocol SPARQL.Algebra.Expression do
 
 end
 
-defimpl SPARQL.Algebra.Expression, for: RDF.Literal do
-  def variables(_), do: []
-  def evaluate(literal, _, _), do: literal
-end
-
 defimpl SPARQL.Algebra.Expression, for: RDF.IRI do
   def variables(_), do: []
   def evaluate(iri, _, _), do: iri
