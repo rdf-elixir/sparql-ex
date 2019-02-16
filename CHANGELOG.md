@@ -5,14 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## Unreleased
+## 0.2.8 - 2019-02-16
 
 ### Added
 
 - Support for negations with `MINUS`
 
 
-[Compare v0.2.7...HEAD](https://github.com/marcelotto/sparql-ex/compare/v0.2.7...HEAD)
+[Compare v0.2.7...v0.2.8](https://github.com/marcelotto/sparql-ex/compare/v0.2.7...v0.2.8)
 
 
 
