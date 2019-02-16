@@ -6,7 +6,7 @@ defmodule SPARQL.Algebra.Join do
   alias SPARQL.Query.Result.SolutionMapping
 
   def result_set(results1, results2) do
-    # TODO: optimization: if variables are disjoint, build cross-product directly, without checking compatibility for every pair
+    # TODO: optimization: if variables are disjoint, build cross-product directly, without checking compatibility for every pair (Assuming the variables of all solutions are the same)
     joined_results =
       Enum.reduce(results1, [], fn result1, joined_results ->
         Enum.reduce(results2, joined_results, fn result2, joined_results ->

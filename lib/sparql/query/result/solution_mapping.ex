@@ -19,6 +19,16 @@ defmodule SPARQL.Query.Result.SolutionMapping do
   end
 
   @doc """
+  Two solution mappings `m1` and `m2` are disjoint if they don't share any variable.
+  """
+  def disjoint?(m1, m2) do
+    m1
+    |> remove_identity()
+    |> Map.take(Map.keys(remove_identity(m2)))
+    |> Enum.empty?()
+  end
+
+  @doc """
   Merges two solution mappings.
 
   see Definition in <https://www.w3.org/TR/sparql11-query/#BasicGraphPattern>

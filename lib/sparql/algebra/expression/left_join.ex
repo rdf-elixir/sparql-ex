@@ -8,7 +8,7 @@ defmodule SPARQL.Algebra.LeftJoin do
   alias SPARQL.Query.Result.SolutionMapping
 
   def result_set(results1, results2, filter_expr, data, execution) do
-    # TODO: optimization: if variables are disjoint, build cross-product directly, without checking compatibility for every pair
+    # TODO: optimization: if variables are disjoint, build cross-product directly, without checking compatibility for every pair (Assuming the variables of all solutions are the same)
     # TODO: optimization: build the results in one loop, i.e. produce the diff results during join
     Join.result_set(results1, results2)
     |> filter(filter_expr, data, execution)

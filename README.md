@@ -33,8 +33,8 @@ Note: **The [SPARQL.Client] supports the full SPARQL 1.1 query language**. The m
     - [x] Ability to define extension functions
     - [x] All XPath constructor functions as specified in the SPARQL 1.1 spec
     - [x] Assignments via `BIND`
+    - [x] Negation via `MINUS`
     - [ ] Negation via `NOT EXIST`
-    - [ ] Negation via `MINUS`
     - [ ] Inline Data via `VALUES`
     - [ ] Aggregates via `GROUP BY` and `HAVING`
     - [ ] Subqueries

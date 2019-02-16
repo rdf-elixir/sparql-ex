@@ -503,7 +503,10 @@ defmodule SPARQL.Algebra.Translation do
           %SPARQL.Algebra.Join{expr1: g,
             expr2: translate_union_graph_pattern(union, nil, state)}
 
-        # TODO: handle MINUS
+        {:minus, group_graph_pattern_expr}, g ->
+          %SPARQL.Algebra.Minus{expr1: g,
+            expr2: translate_graph_pattern(group_graph_pattern_expr, state)}
+
 
         # TODO: Handle subSelect
         {:group_graph_pattern, :"$undefined"}, _ -> @zero_bgp

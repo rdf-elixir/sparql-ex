@@ -292,7 +292,7 @@ dataBlockValue -> numericLiteral .
 dataBlockValue -> booleanLiteral .
 dataBlockValue -> 'UNDEF' .
 
-minusGraphPattern -> 'MINUS' groupGraphPattern .
+minusGraphPattern -> 'MINUS' groupGraphPattern : {minus, '$2'} .
 groupOrUnionGraphPattern -> groupGraphPattern 'UNION' groupOrUnionGraphPattern : {union, '$1', '$3'} .
 groupOrUnionGraphPattern -> groupGraphPattern : '$1'.
 
