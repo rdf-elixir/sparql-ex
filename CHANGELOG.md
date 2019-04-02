@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
+## Unreleased
+
+### Changed
+
+- Replace the prefix management of SPARQL.ex with the new prefix management 
+  capabilities of RDF.ex 0.6 
+
+
+[Compare v0.2.9...HEAD](https://github.com/marcelotto/sparql-ex/compare/v0.2.9...HEAD)
+
+
+
 ## 0.2.9 - 2019-03-06
 
 ### Fixed

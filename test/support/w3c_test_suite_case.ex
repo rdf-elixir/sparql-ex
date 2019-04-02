@@ -40,7 +40,9 @@ defmodule SPARQL.W3C.TestSuite.Case do
     assert %RDF.Graph{} = actual_result =
              SPARQL.Processor.query(data, query)
 
-    assert actual_result == expected_result
+    assert RDF.Graph.clear_prefixes(actual_result) ==
+             RDF.Graph.clear_prefixes(expected_result)
+
   end
 
   defp read_result(file, query_form) do
