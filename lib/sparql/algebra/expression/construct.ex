@@ -4,9 +4,10 @@ defmodule SPARQL.Algebra.Construct do
   alias SPARQL.Algebra.Expression
   alias RDF.BlankNode
 
-  def result(%SPARQL.Query.Result{results: results}, template, generator) do
+  def result(%SPARQL.Query.Result{results: results}, template, generator, prefixes) do
     template_bnodes = template_bnodes(template)
-    Enum.reduce results, RDF.Graph.new, fn result, graph ->
+    prefixes = if Enum.empty?((prefixes)), do: nil, else: prefixes
+    Enum.reduce results, RDF.Graph.new(prefixes: prefixes), fn result, graph ->
       template_for_solution =
         template_bnodes
         |> create_solution_bnodes(generator)
@@ -87,7 +88,7 @@ defmodule SPARQL.Algebra.Construct do
   defimpl Expression do
     def evaluate(construct, data, execution) do
       Expression.evaluate(construct.query, data, execution)
-      |> SPARQL.Algebra.Construct.result(construct.template, execution.bnode_generator)
+      |> SPARQL.Algebra.Construct.result(construct.template, execution.bnode_generator, execution.prefixes)
     end
 
     def variables(construct) do

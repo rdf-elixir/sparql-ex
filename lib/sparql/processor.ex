@@ -16,10 +16,10 @@ defmodule SPARQL.Processor do
     end
   end
 
-  def query(data, %Query{expr: expr, base: base}, _options) do
+  def query(data, %Query{expr: expr, base: base, prefixes: prefixes}, _options) do
     {:ok, generator} = RDF.BlankNode.Generator.start_link(RDF.BlankNode.Increment, prefix: "b")
     try do
-      Algebra.Expression.evaluate(expr, data, execution_context(base, generator))
+      Algebra.Expression.evaluate(expr, data, execution_context(base, prefixes, generator))
       |> query_post_processing()
     after
       RDF.BlankNode.Generator.stop(generator)
@@ -32,9 +32,10 @@ defmodule SPARQL.Processor do
 
   def query_post_processing(result), do: result
 
-  defp execution_context(base, generator) do
+  defp execution_context(base, prefixes, generator) do
     %{
       base: base,
+      prefixes: prefixes,
       time: DateTime.utc_now(),
       bnode_generator: generator
     }

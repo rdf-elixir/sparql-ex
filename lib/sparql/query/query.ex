@@ -23,10 +23,8 @@ defmodule SPARQL.Query do
   @doc """
   Creates a `SPARQL.Query` struct.
 
-  The `default_prefixes` option, allows to set additional default prefixes above
-  the `SPARQL.Query.standard_prefixes/0` and the configured
-  `SPARQL.Query.default_prefixes/0`. The special value `:none` will disable all
-  default prefixes.
+  See `translate/2` for more information about default prefixes, all of which
+  applies also to this function.
   """
   def new(query, options \\ [])
 
@@ -37,15 +35,24 @@ defmodule SPARQL.Query do
   @doc """
   Creates a `SPARQL.Query` struct from a SPARQL language string.
 
-  The `default_prefixes` option, allows to set additional default prefixes above
-  the `SPARQL.Query.standard_prefixes/0` and the configured
-  `SPARQL.Query.default_prefixes/0`. The special value `:none` will disable all
-  default prefixes.
+  By default the configured `RDF.default_prefixes/0` will be automatically
+  defined for the query, so that you can use these prefixes without having them
+  defined manually in your query.
+  You can overwrite these default prefixes and define another set of prefixes
+  with the `default_prefixes` option.
+  If you don't want to use default prefixes for the given query you
+  can pass `nil` or an empty map for the `default_prefixes` option.
+
+  If you don't want to use default prefixes at all, just don't configure any and
+  set the `rdf` configuration flag `use_standard_prefixes` to `false`.
+  See the [API documentation of RDF.ex](https://hexdocs.pm/rdf/RDF.html) for
+  for more information about `RDF.default_prefixes/0` and `RDF.standard_prefixes/0`
+  and how to configure them.
   """
   def translate(string, options \\ []) do
     with prefixes = (
            options
-           |> Keyword.get(:default_prefixes)
+           |> Keyword.get(:default_prefixes, :default_prefixes)
            |> prefixes()
            |> encode_prefixes()
          ),
@@ -56,8 +63,9 @@ defmodule SPARQL.Query do
     end
   end
 
-  defp prefixes(nil),      do: RDF.default_prefixes()
-  defp prefixes(prefixes), do: RDF.PrefixMap.new(prefixes)
+  defp prefixes(nil),               do: RDF.PrefixMap.new()
+  defp prefixes(:default_prefixes), do: RDF.default_prefixes()
+  defp prefixes(prefixes),          do: RDF.PrefixMap.new(prefixes)
 
   defp encode_prefixes(prefixes) do
     prefixes

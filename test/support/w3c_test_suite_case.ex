@@ -37,12 +37,8 @@ defmodule SPARQL.W3C.TestSuite.Case do
   end
 
   defp assert_query_evaluation_case_result(:construct, query, data, expected_result) do
-    assert %RDF.Graph{} = actual_result =
-             SPARQL.Processor.query(data, query)
-
-    assert RDF.Graph.clear_prefixes(actual_result) ==
-             RDF.Graph.clear_prefixes(expected_result)
-
+    assert %RDF.Graph{} = actual_result = SPARQL.Processor.query(data, query)
+    assert RDF.Graph.equal?(actual_result, expected_result)
   end
 
   defp read_result(file, query_form) do
