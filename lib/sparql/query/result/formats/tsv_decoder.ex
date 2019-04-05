@@ -8,7 +8,7 @@ defmodule SPARQL.Query.Result.TSV.Decoder do
 
   def decode(content, _opts \\ []) do
     try do
-      with [header | rows] <- TSV.parse_string(content, headers: false),
+      with [header | rows] <- TSV.parse_string(content, skip_headers: false),
            {:ok, header}   <- decode_header(header)
       do
         {:ok, %Result{variables: header, results: decode_results(rows, header)}}

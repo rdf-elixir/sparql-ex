@@ -8,7 +8,7 @@ defmodule SPARQL.Query.Result.CSV.Decoder do
 
   def decode(content, _opts \\ []) do
     try do
-      with [header | rows] <- CSV.parse_string(content, headers: false),
+      with [header | rows] <- CSV.parse_string(content, skip_headers: false),
            {:ok, header}   <- valid_header(header)
       do
         {:ok, %Result{variables: header, results: decode_solutions(rows, header)}}

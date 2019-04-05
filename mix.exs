@@ -64,14 +64,14 @@ defmodule SPARQL.Mixfile do
     [
       {:rdf, github: "marcelotto/rdf-ex"},
       {:jason, "~> 1.0"},
-      {:nimble_csv, "~> 0.4"},
+      {:nimble_csv, "~> 0.6"},
       {:sweet_xml, "~> 0.6"},
       {:elixir_uuid, "~> 1.2"},
 
       # Development
       {:dialyxir, "~> 0.5",     only: [:dev, :test], runtime: false},
       {:credo, "~> 1.0",        only: [:dev, :test], runtime: false},
-      {:ex_doc, "~> 0.19",      only: :dev, runtime: false},
+      {:ex_doc, "~> 0.20",      only: :dev, runtime: false},
       {:excoveralls, "~> 0.10", only: :test},
       {:multiset, "~> 0.0.4",   only: :test},
     ]
