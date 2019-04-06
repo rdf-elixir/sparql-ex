@@ -5,15 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## Unreleased
+## 0.3.0 - 2019-04-06
 
 ### Changed
 
 - Replace the prefix management of SPARQL.ex with the new prefix management 
-  capabilities of RDF.ex 0.6 
+  capabilities of RDF.ex 0.6
+- Use the query prefixes as the prefixes of CONSTRUCTed graphs
 
 
-[Compare v0.2.9...HEAD](https://github.com/marcelotto/sparql-ex/compare/v0.2.9...HEAD)
+[Compare v0.2.9...v0.3.0](https://github.com/marcelotto/sparql-ex/compare/v0.2.9...v0.3.0)
 
 
 
