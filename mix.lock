@@ -19,7 +19,7 @@
   "nimble_csv": {:hex, :nimble_csv, "0.6.0", "a3673f26d41f986774fe6060e309615343d3cb83a6d435754d8b1fdbd5764879", [:mix], [], "hexpm"},
   "nimble_parsec": {:hex, :nimble_parsec, "0.5.0", "90e2eca3d0266e5c53f8fbe0079694740b9c91b6747f2b7e3c5d21966bba8300", [:mix], [], "hexpm"},
   "parse_trans": {:hex, :parse_trans, "3.3.0", "09765507a3c7590a784615cfd421d101aec25098d50b89d7aa1d66646bc571c1", [:rebar3], [], "hexpm"},
-  "rdf": {:git, "https://github.com/marcelotto/rdf-ex.git", "67d3746a1a5d31d3e42aa2591638fae17b31e441", []},
+  "rdf": {:hex, :rdf, "0.6.0", "e0d9098c157b91b9e7318a2fca18cc2e2b178e1290c5cfbb014cf2077c4aa778", [:mix], [{:decimal, "~> 1.5", [hex: :decimal, repo: "hexpm", optional: false]}], "hexpm"},
   "ssl_verify_fun": {:hex, :ssl_verify_fun, "1.1.4", "f0eafff810d2041e93f915ef59899c923f4568f4585904d010387ed74988e77b", [:make, :mix, :rebar3], [], "hexpm"},
   "sweet_xml": {:hex, :sweet_xml, "0.6.6", "fc3e91ec5dd7c787b6195757fbcf0abc670cee1e4172687b45183032221b66b8", [:mix], [], "hexpm"},
   "unicode_util_compat": {:hex, :unicode_util_compat, "0.4.1", "d869e4c68901dd9531385bb0c8c40444ebf624e60b6962d95952775cac5e90cd", [:rebar3], [], "hexpm"},
