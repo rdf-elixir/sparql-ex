@@ -680,7 +680,7 @@ defmodule SPARQL.Functions.Builtins do
   @doc """
   Replaces each non-overlapping occurrence of the regular expression pattern with the replacement string.
 
-  Regular expession matching may involve modifier flags. See REGEX.
+  Regular expression matching may involve modifier flags. See REGEX.
 
   see
   - <https://www.w3.org/TR/sparql11-query/#func-replace>
@@ -978,22 +978,11 @@ defmodule SPARQL.Functions.Builtins do
                    %RDF.Literal{datatype: @xsd_string} = pattern,
                    %RDF.Literal{datatype: @xsd_string} = flags)
        when datatype in [@xsd_string, @lang_string] do
-    case xpath_pattern(pattern.value, flags.value) do
-      {:regex, regex} ->
-        Regex.match?(regex, text.value) |> ebv()
-
-      {:q, pattern} ->
-        String.contains?(text.value, pattern) |> ebv()
-
-      {:qi, pattern} ->
-        text.value
-        |> String.downcase()
-        |> String.contains?(String.downcase(pattern))
-        |> ebv()
-
-      _ ->
-        :error
-    end
+    text
+    |> RDF.Literal.matches?(pattern, flags)
+    |> ebv()
+  rescue
+    error -> :error
   end
 
   defp match_regex(_, _, _), do: :error
@@ -1003,7 +992,7 @@ defmodule SPARQL.Functions.Builtins do
                      %RDF.Literal{datatype: @xsd_string} = replacement,
                      %RDF.Literal{datatype: @xsd_string} = flags)
        when datatype in [@xsd_string, @lang_string] do
-    case xpath_pattern(pattern.value, flags.value) do
+    case RDF.Literal.xpath_pattern(pattern.value, flags.value) do
       {:regex, regex} ->
         %RDF.Literal{text | value:
           String.replace(text.value, regex, xpath_to_erlang_regex_variables(replacement.value))}
@@ -1022,26 +1011,6 @@ defmodule SPARQL.Functions.Builtins do
   end
 
   defp replace_regex(_, _, _, _), do: :error
-
-  defp xpath_pattern(pattern, flags) do
-    q_pattern(pattern, flags) || xpath_regex_pattern(pattern, flags)
-  end
-
-  defp q_pattern(pattern, flags) do
-    if String.contains?(flags, "q") and String.replace(flags, ~r/[qi]/, "") == "" do
-      {(if String.contains?(flags, "i"), do: :qi, else: :q), pattern}
-    end
-  end
-
-  defp xpath_regex_pattern(pattern, flags) do
-    with {:ok, regex} <- Regex.compile(pattern, xpath_regex_flags(flags)) do
-      {:regex, regex}
-    end
-  end
-
-  defp xpath_regex_flags(flags) do
-    String.replace(flags, "q", "") <> "u"
-  end
 
   defp xpath_to_erlang_regex_variables(text) do
     String.replace(text, ~r/(?<!\\)\$/, "\\")
