@@ -7,7 +7,11 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 ## Unreleased
 
+### Changed
+
 - Use the new `RDF.Literal.matches?/3` function from RDF.ex 0.6.1 for the `REGEX` function
+- with the fix from RDF.ex 0.6.1 XSD boolean with uppercase letters in the boolean
+  lexical values are no longer valid
 
 
 [Compare v0.3.0...HEAD](https://github.com/marcelotto/sparql-ex/compare/v0.3.0...HEAD)

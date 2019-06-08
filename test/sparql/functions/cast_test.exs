@@ -162,13 +162,13 @@ defmodule SPARQL.Functions.CastTest do
       {RDF.double(0.0),  RDF.false},
 
       {RDF.string("true"),  RDF.true},
-      {RDF.string("tRuE"),  RDF.true},
       {RDF.string("1"),     RDF.true},
       {RDF.string("false"), RDF.false},
-      {RDF.string("FaLsE"), RDF.false},
       {RDF.string("0"),     RDF.false},
 
       {RDF.boolean("42"), :error},
+      {RDF.string("tRuE"),  :error},
+      {RDF.string("FaLsE"), :error},
       {RDF.DateTime.now(), :error},
       {:error, :error},
     ]

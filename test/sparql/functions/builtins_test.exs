@@ -64,7 +64,7 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   @value_equal_rdf_literals [
     # Boolean literals
-    {RDF.true,       RDF.boolean("TRUE")},
+    {RDF.true, RDF.boolean("1")},
 
     # Numeric literals
     {RDF.integer("42"), RDF.integer("042")},
@@ -93,7 +93,7 @@ defmodule SPARQL.Functions.BuiltinsTest do
      RDF.literal("http://example.com/bar", datatype: XSD.anyURI)},
 
     # Boolean literals
-    {RDF.true,       RDF.boolean("FALSE")},
+    {RDF.true,       RDF.boolean("false")},
     {RDF.boolean(0), RDF.true},
 
     # Numeric literals
@@ -110,7 +110,7 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
     # Boolean literals
     {RDF.true,       nil},
-    {RDF.true,       RDF.string("FALSE")},
+    {RDF.true,       RDF.string("false")},
     {RDF.integer(0), RDF.true},
 
     # Numeric literals
