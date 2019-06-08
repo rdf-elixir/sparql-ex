@@ -26,7 +26,7 @@ PNAME_NS	    =	{PN_PREFIX}?:
 PNAME_LN	    =	{PNAME_NS}{PN_LOCAL}
 
 EXPONENT	=	([eE][+-]?[0-9]+)
-BOOLEAN   = true|false
+BOOLEAN   = [Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee]
 INTEGER	  =	[0-9]+
 DECIMAL	  =	[0-9]*\.[0-9]+
 DOUBLE	  =	([0-9]+\.[0-9]*{EXPONENT}|\.[0-9]+{EXPONENT}|[0-9]+{EXPONENT})
@@ -304,7 +304,7 @@ Erlang code.
 integer(TokenChars)  -> 'Elixir.RDF.Serialization.ParseHelper':integer(TokenChars).
 decimal(TokenChars)  -> 'Elixir.RDF.Serialization.ParseHelper':decimal(TokenChars).
 double(TokenChars)   -> 'Elixir.RDF.Serialization.ParseHelper':double(TokenChars).
-boolean(TokenChars)  -> 'Elixir.RDF.Serialization.ParseHelper':boolean(TokenChars).
+boolean(TokenChars)  -> 'Elixir.RDF.Serialization.ParseHelper':boolean(string:lowercase(TokenChars)).
 quoted_content_str(TokenChars) -> 'Elixir.RDF.Serialization.ParseHelper':quoted_content_str(TokenChars).
 long_quoted_content_str(TokenChars) -> 'Elixir.RDF.Serialization.ParseHelper':long_quoted_content_str(TokenChars).
 bnode_str(TokenChars) -> 'Elixir.RDF.Serialization.ParseHelper':bnode_str(TokenChars).

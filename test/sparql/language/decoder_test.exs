@@ -29,6 +29,10 @@ defmodule SPARQL.Language.DecoderTest do
     test "ASK" do
       assert {:ok, %SPARQL.Query{form: :ask}} = decode("ASK { ?s a ?class }")
     end
+
+    test "true and false are case-insensitive" do
+      assert {:ok, %SPARQL.Query{}} = decode("SELECT * WHERE { ?s a TRUE }")
+    end
   end
 
 end

@@ -13,12 +13,16 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 - with the fix from RDF.ex 0.6.1 XSD boolean with uppercase letters in the boolean
   lexical values are no longer valid
 
+### Fixed
+
+- the `true` and `false` keywords from the SPARQL language are case-insensitive
+
 
 [Compare v0.3.0...HEAD](https://github.com/marcelotto/sparql-ex/compare/v0.3.0...HEAD)
 
 
 
-## 0.3.0 - 2019-04-06
+## v0.3.0 - 2019-04-06
 
 ### Changed
 
@@ -31,7 +35,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 
 
-## 0.2.9 - 2019-03-06
+## v0.2.9 - 2019-03-06
 
 ### Fixed
 
@@ -42,7 +46,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 
 
-## 0.2.8 - 2019-02-16
+## v0.2.8 - 2019-02-16
 
 ### Added
 
@@ -53,7 +57,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 
 
-## 0.2.7 - 2018-11-11
+## v0.2.7 - 2018-11-11
 
 ### Added
 
@@ -68,7 +72,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 
 
-## 0.2.6 - 2018-10-30
+## v0.2.6 - 2018-10-30
 
 ### Added
 
@@ -90,7 +94,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 
 
-## 0.2.5 - 2018-10-21
+## v0.2.5 - 2018-10-21
 
 ### Added
 
@@ -108,7 +112,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 
 
-## 0.2.4 - 2018-10-06
+## v0.2.4 - 2018-10-06
 
 ### Added
 
@@ -126,7 +130,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 
 
-## 0.2.3 - 2018-09-23
+## v0.2.3 - 2018-09-23
 
 ### Added
 
@@ -147,7 +151,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 
 
-## 0.2.2 - 2018-09-22
+## v0.2.2 - 2018-09-22
 
 ### Added
 
@@ -161,7 +165,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 
 
-## 0.2.1 - 2018-09-17
+## v0.2.1 - 2018-09-17
 
 ### Fixed
 
@@ -173,7 +177,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 
 
-## 0.2.0 - 2018-09-17
+## v0.2.0 - 2018-09-17
 
 ### Added
 
