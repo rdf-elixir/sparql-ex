@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## Unreleased
+## v0.3.1 - 2019-07-15
 
 ### Changed
 
@@ -16,9 +16,11 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 ### Fixed
 
 - the `true` and `false` keywords from the SPARQL language are case-insensitive
+- the new `RDF.Literal.matches?/3` function also fixes some Unicode escaping
+  issues in regular expressions
 
 
-[Compare v0.3.0...HEAD](https://github.com/marcelotto/sparql-ex/compare/v0.3.0...HEAD)
+[Compare v0.3.0...v0.3.1](https://github.com/marcelotto/sparql-ex/compare/v0.3.0...v0.3.1)
 
 
 
