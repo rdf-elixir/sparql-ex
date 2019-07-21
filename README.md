@@ -1,3 +1,5 @@
+<img src="sparql-logo.png" align="right" />
+
 # SPARQL.ex
 
 [![Travis](https://img.shields.io/travis/marcelotto/sparql-ex.svg?style=flat-square)](https://travis-ci.org/marcelotto/sparql-ex)
