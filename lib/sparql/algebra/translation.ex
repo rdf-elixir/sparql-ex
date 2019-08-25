@@ -124,7 +124,7 @@ defmodule SPARQL.Algebra.Translation do
   defp expand_syntax_form({:prefix_ln, line, {ns, locale}}, %{prefixes: prefixes, base: base}) do
     case prefixes[ns] do
       nil ->
-        {:error, "unknown prefix in '#{ns <> ":" <> locale}' on line #{line}"}
+        raise "unknown prefix in '#{ns <> ":" <> locale}' on line #{line}"
       prefix ->
         IRI.absolute(prefix.value <> locale, base)
     end

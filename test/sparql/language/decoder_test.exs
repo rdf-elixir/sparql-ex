@@ -35,4 +35,15 @@ defmodule SPARQL.Language.DecoderTest do
     end
   end
 
+  describe "invalid query" do
+    test "when using unknown prefixes" do
+      assert_raise RuntimeError, ~r/^unknown prefix/,
+                   fn -> decode("SELECT * WHERE { ?s a unknown:Foo }") end
+
+      # TODO: We actually want the following behaviour, but this requires a larger refactoring
+      #       of the algebra translation to use ok and error tuples consistently
+      # assert {:error, %SPARQL.Query{}} = decode("SELECT * WHERE { ?s a unknown:Foo }")
+    end
+
+  end
 end

@@ -5,6 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
+## Unreleased
+
+### Fixed
+
+- Raise an error when the query uses an unknown prefix
+
+
+[Compare v0.3.1...HEAD](https://github.com/marcelotto/sparql-ex/compare/v0.3.1...HEAD)
+
+
+
 ## v0.3.1 - 2019-07-15
 
 ### Changed
