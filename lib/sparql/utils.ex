@@ -45,9 +45,11 @@ defmodule SPARQL.Utils do
       |> Enum.uniq
       |> Enum.map(fn {module, _} -> module end)
     else
-      IO.warn """
-        You're probably running a release with the runtime system in interactive mode. Not all SPARQL extensions functions may be detected properly. Some of them might not be available.
-        """, []
+      unless Application.get_env(:sparql, :no_extension_detection_in_releases_warning) do
+        IO.warn """
+                You're probably running a release with the runtime system in interactive mode. Not all SPARQL extensions functions may be detected properly. Some of them might not be available.
+                """, []
+      end
       []
     end
   end

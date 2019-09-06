@@ -7,6 +7,12 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 ## Unreleased
 
+### Added
+
+- `no_extension_detection_in_releases_warning` configuration which disables the  
+  warning that not all extension functions may be detected in a release with the
+  runtime system in interactive mode
+
 ### Fixed
 
 - Raise an error when the query uses an unknown prefix
