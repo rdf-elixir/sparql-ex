@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## Unreleased
+## v0.3.2 - 2019-09-08
 
 ### Added
 
@@ -15,10 +15,11 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 ### Fixed
 
-- Raise an error when the query uses an unknown prefix
+- Raise an error when the query uses an unknown prefix instead of producing an 
+  invalid query
 
 
-[Compare v0.3.1...HEAD](https://github.com/marcelotto/sparql-ex/compare/v0.3.1...HEAD)
+[Compare v0.3.1...v0.3.2](https://github.com/marcelotto/sparql-ex/compare/v0.3.1...v0.3.2)
 
 
 
