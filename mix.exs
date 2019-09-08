@@ -76,7 +76,7 @@ defmodule SPARQL.Mixfile do
       # Development
       {:dialyxir, "~> 0.5",     only: [:dev, :test], runtime: false},
       {:credo, "~> 1.1",        only: [:dev, :test], runtime: false},
-      {:ex_doc, "~> 0.20",      only: :dev, runtime: false},
+      {:ex_doc, "~> 0.21",      only: :dev, runtime: false},
       {:excoveralls, "~> 0.11", only: :test},
       {:multiset, "~> 0.0.4",   only: :test},
     ]
