@@ -10,7 +10,7 @@ An implementation of the [SPARQL] standards for Elixir.
 
 It allows to execute SPARQL queries against [RDF.ex] data structures. With the separate [SPARQL.Client] package SPARQL queries can be executed against SPARQL protocol endpoints.
 
-For more about SPARQL.ex and it's related projects, go to <https://rdf-elixir.dev>.
+The API documentation can be found [here](https://hexdocs.pm/sparql/). For a guide and more information about SPARQL.ex and it's related projects, go to <https://rdf-elixir.dev>.
 
 
 ## Current state
