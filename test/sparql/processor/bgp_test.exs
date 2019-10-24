@@ -68,6 +68,19 @@ defmodule SPARQL.Processor.BGPTest do
                results: []}
   end
 
+  test "with solutions on one triple pattern but none on another one" do
+    example_graph = Graph.new([
+      {EX.x, EX.y, EX.z},
+      {EX.y, EX.y, EX.z},
+    ])
+
+    assert query(example_graph,
+             "SELECT ?a WHERE { ?a <#{EX.p1}> 'unmatched' ; <#{EX.y}> <#{EX.z}>}") ==
+             %Query.Result{
+               variables: ~w[a],
+               results: []}
+  end
+
   test "repeated variable: {?a ?a ?b}" do
     example_graph = Graph.new([
         {EX.y, EX.y, EX.x},

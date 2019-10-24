@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
+## Unreleased
+
+### Fixed
+
+- a bug in the BGP processing algorithm lead to wrong solutions when one triple 
+  pattern in a BGP had no solutions 
+
+
+[Compare v0.3.2...HEAD](https://github.com/marcelotto/sparql-ex/compare/v0.3.2...HEAD)
+
+
+
 ## v0.3.2 - 2019-09-08
 
 ### Added

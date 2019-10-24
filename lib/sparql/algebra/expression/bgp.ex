@@ -38,7 +38,6 @@ defmodule SPARQL.Algebra.BGP do
 
   defp do_matching(triple_patterns, data, solutions \\ [])
 
-  defp do_matching(_, _, nil),        do: []
   defp do_matching([], _, solutions), do: solutions
 
   defp do_matching([triple_pattern | remaining], data, acc) do
@@ -48,10 +47,10 @@ defmodule SPARQL.Algebra.BGP do
       remaining
       |> mark_solved_variables(solutions)
       |> Enum.sort_by(&triple_priority/1)
+      |> do_matching(data, solutions)
     else
-      remaining
+      []
     end
-    |> do_matching(data, solutions)
   end
 
 
