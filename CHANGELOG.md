@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## Unreleased
+## v0.3.3 - 2019-10-25
 
 ### Fixed
 
@@ -13,7 +13,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
   pattern in a BGP had no solutions 
 
 
-[Compare v0.3.2...HEAD](https://github.com/marcelotto/sparql-ex/compare/v0.3.2...HEAD)
+[Compare v0.3.2...v0.3.3](https://github.com/marcelotto/sparql-ex/compare/v0.3.2...v0.3.3)
 
 
 
