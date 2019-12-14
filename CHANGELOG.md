@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
+## v0.3.4 - 2019-12-14
+
+- Upgrade to RDF.ex 0.7
+
+[Compare v0.3.3...v0.3.4](https://github.com/marcelotto/sparql-ex/compare/v0.3.3...v0.3.4)
+
+
+
 ## v0.3.3 - 2019-10-25
 
 ### Fixed
