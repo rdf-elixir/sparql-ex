@@ -1,4 +1,5 @@
 defmodule SPARQL.Language.ParseHelper do
+  alias RDF.Literal
 
   def variable('?' ++ name), do: List.to_string(name)
   def variable('$' ++ name), do: List.to_string(name)
@@ -8,9 +9,9 @@ defmodule SPARQL.Language.ParseHelper do
   def extract_literal({_, _, literal}), do: literal
 
 
-  def strip_sign(%RDF.Literal{datatype: datatype} = literal) do
-    {_sign, number} = literal |> RDF.Literal.lexical() |> String.split_at(1)
-    RDF.Literal.new(number, datatype: datatype)
+  def strip_sign(%Literal{} = literal) do
+    {_sign, number} = literal |> Literal.lexical() |> String.split_at(1)
+    Literal.update(literal, fn _ -> number end)
   end
 
 

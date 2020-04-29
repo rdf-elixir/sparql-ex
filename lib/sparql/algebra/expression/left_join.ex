@@ -15,7 +15,7 @@ defmodule SPARQL.Algebra.LeftJoin do
     |> Result.append(diff(results1, results2, filter_expr, data, execution))
   end
 
-  defp filter(result, %RDF.Literal{value: true}, _, _), do: result
+  defp filter(result, %RDF.Literal{literal: %XSD.Boolean{value: true}}, _, _), do: result
   defp filter(result, filters, data, execution),
     do: Filter.result_set(result, filters, data, execution)
 

@@ -16,7 +16,7 @@ defmodule SPARQL.Functions.Cast do
         name: "http://www.w3.org/2001/XMLSchema#integer"
 
     def call(_, [%Literal{} = literal], _, _) do
-      RDF.Integer.cast(literal) || :error
+      RDF.XSD.Integer.cast(literal) || :error
     end
 
     def call(_, _, _, _), do: :error
@@ -36,7 +36,7 @@ defmodule SPARQL.Functions.Cast do
         name: "http://www.w3.org/2001/XMLSchema#decimal"
 
     def call(_, [%Literal{} = literal], _, _) do
-      RDF.Decimal.cast(literal) || :error
+      RDF.XSD.Decimal.cast(literal) || :error
     end
 
     def call(_, _, _, _), do: :error
@@ -56,14 +56,7 @@ defmodule SPARQL.Functions.Cast do
         name: "http://www.w3.org/2001/XMLSchema#float"
 
     def call(_, [%Literal{} = literal], _, _) do
-      # TODO: Remove this hack of reusing the RDF.Double.cast function until we have a proper RDF.Float datatype
-      with %Literal{} = double_literal <- RDF.Double.cast(literal) do
-        double_literal
-        |> Literal.lexical()
-        |> Literal.new(datatype: name())
-      else
-        _ -> :error
-      end
+      RDF.XSD.Float.cast(literal) || :error
     end
 
     def call(_, _, _, _), do: :error
@@ -83,7 +76,7 @@ defmodule SPARQL.Functions.Cast do
         name: "http://www.w3.org/2001/XMLSchema#double"
 
     def call(_, [%Literal{} = literal], _, _) do
-      RDF.Double.cast(literal) || :error
+      RDF.XSD.Double.cast(literal) || :error
     end
 
     def call(_, _, _, _), do: :error
@@ -103,7 +96,7 @@ defmodule SPARQL.Functions.Cast do
         name: "http://www.w3.org/2001/XMLSchema#string"
 
     def call(_, [value], _, _) do
-      RDF.String.cast(value) || :error
+      RDF.XSD.String.cast(value) || :error
     end
 
     def call(_, _, _, _), do: :error
@@ -123,7 +116,7 @@ defmodule SPARQL.Functions.Cast do
         name: "http://www.w3.org/2001/XMLSchema#boolean"
 
     def call(_, [%Literal{} = literal], _, _) do
-      RDF.Boolean.cast(literal) || :error
+      RDF.XSD.Boolean.cast(literal) || :error
     end
 
     def call(_, _, _, _), do: :error
@@ -143,7 +136,7 @@ defmodule SPARQL.Functions.Cast do
         name: "http://www.w3.org/2001/XMLSchema#dateTime"
 
     def call(_, [%Literal{} = literal], _, _) do
-      RDF.DateTime.cast(literal) || :error
+      RDF.XSD.DateTime.cast(literal) || :error
     end
 
     def call(_, _, _, _), do: :error
@@ -163,7 +156,7 @@ defmodule SPARQL.Functions.Cast do
         name: "http://www.w3.org/2001/XMLSchema#date"
 
     def call(_, [%Literal{} = literal], _, _) do
-      RDF.Date.cast(literal) || :error
+      RDF.XSD.Date.cast(literal) || :error
     end
 
     def call(_, _, _, _), do: :error
@@ -183,7 +176,7 @@ defmodule SPARQL.Functions.Cast do
         name: "http://www.w3.org/2001/XMLSchema#time"
 
     def call(_, [%Literal{} = literal], _, _) do
-      RDF.Time.cast(literal) || :error
+      RDF.XSD.Time.cast(literal) || :error
     end
 
     def call(_, _, _, _), do: :error

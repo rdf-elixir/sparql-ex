@@ -41,12 +41,12 @@ defmodule SPARQL.Query.Result.TSV.DecoderTest do
             %{
               "s" => ~I<http://example.org/s4>,
               "p" => ~I<http://example.org/p4>,
-              "o" => RDF.Integer.new(4)
+              "o" => RDF.integer(4)
             },
             %{
               "s" => ~I<http://example.org/s5>,
               "p" => ~I<http://example.org/p5>,
-              "o" => RDF.Literal.new("5.5", datatype: "http://www.w3.org/2001/XMLSchema#decimal")
+              "o" => RDF.decimal("5.5")
             },
             %{
               "s" => ~I<http://example.org/s6>,
@@ -89,14 +89,14 @@ defmodule SPARQL.Query.Result.TSV.DecoderTest do
             %{
               "s" => ~I<http://example.org/s4>,
               "p" => ~I<http://example.org/p4>,
-              "o" => RDF.Integer.new(4),
+              "o" => RDF.integer(4),
               "p2" => nil,
               "o2" => nil
             },
             %{
               "s" => ~I<http://example.org/s5>,
               "p" => ~I<http://example.org/p5>,
-              "o" => RDF.Literal.new("5.5", datatype: "http://www.w3.org/2001/XMLSchema#decimal"),
+              "o" => RDF.decimal("5.5"),
               "p2" => nil,
               "o2" => nil
             },
@@ -127,12 +127,12 @@ defmodule SPARQL.Query.Result.TSV.DecoderTest do
             %{
               "s" => ~I<http://example.org/s2>,
               "p" => ~I<http://example.org/p2>,
-              "o" => RDF.Literal.new("2.2", datatype: "http://www.w3.org/2001/XMLSchema#decimal")
+              "o" => RDF.decimal("2.2")
             },
             %{
               "s" => ~I<http://example.org/s3>,
               "p" => ~I<http://example.org/p3>,
-              "o" => RDF.Literal.new("-3", datatype: "http://www.w3.org/2001/XMLSchema#negativeInteger")
+              "o" => RDF.negativeInteger("-3")
             },
             %{
               "s" => ~I<http://example.org/s4>,
@@ -142,17 +142,17 @@ defmodule SPARQL.Query.Result.TSV.DecoderTest do
             %{
               "s" => ~I<http://example.org/s5>,
               "p" => ~I<http://example.org/p5>,
-              "o" => RDF.Literal.new("5,5", datatype: "http://example.org/myCustomDatatype")
+              "o" => RDF.literal("5,5", datatype: "http://example.org/myCustomDatatype")
             },
             %{
               "s" => ~I<http://example.org/s6>,
               "p" => ~I<http://example.org/p6>,
-              "o" => RDF.Double.new("1.0e6")
+              "o" => RDF.double("1.0e6")
             },
             %{
               "s" => ~I<http://example.org/s7>,
               "p" => ~I<http://example.org/p7>,
-              "o" => RDF.Literal.new("a7", datatype: "http://www.w3.org/2001/XMLSchema#hexBinary")
+              "o" => RDF.literal("a7", datatype: "http://www.w3.org/2001/XMLSchema#hexBinary")
             },
           ]
         }

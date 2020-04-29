@@ -14,14 +14,14 @@ defmodule SPARQL.Algebra.Filter do
     |> Stream.map(fn function_call ->
          Expression.evaluate(function_call, %{solution: solution, data: data}, execution)
        end)
-    |> Stream.map(&(RDF.Boolean.ebv/1))
+    |> Stream.map(&(RDF.XSD.Boolean.ebv/1))
     |> conjunction()
   end
 
   defp conjunction(function_call_results) do
     Enum.all? function_call_results, fn
-      %RDF.Literal{value: true} -> true
-      _                         -> false
+      %RDF.Literal{literal: %XSD.Boolean{value: true}} -> true
+      _ -> false
     end
   end
 

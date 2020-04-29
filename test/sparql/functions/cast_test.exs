@@ -25,7 +25,7 @@ defmodule SPARQL.Functions.CastTest do
       {RDF.string("42"),   RDF.integer(42)},
 
       {RDF.boolean("42"), :error},
-      {RDF.DateTime.now(), :error},
+      {RDF.XSD.DateTime.now(), :error},
       {:error, :error},
     ]
     |> Enum.each(fn {value, result} ->
@@ -52,7 +52,7 @@ defmodule SPARQL.Functions.CastTest do
       {RDF.string("42"),   RDF.decimal(42.0)},
 
       {RDF.boolean("42"), :error},
-      {RDF.DateTime.now(), :error},
+      {RDF.XSD.DateTime.now(), :error},
       {:error, :error},
     ]
     |> Enum.each(fn {value, result} ->
@@ -61,8 +61,7 @@ defmodule SPARQL.Functions.CastTest do
   end
 
   test "xsd:float" do
-    # TODO: Use RDF.Float datatype when available
-    float_literal = fn (value) -> RDF.Literal.new(value, datatype: XSD.float) end
+    float_literal = fn (value) -> RDF.float(value) end
     [
       {RDF.true,  float_literal.("1.0")},
       {RDF.false, float_literal.("0.0")},
@@ -77,10 +76,10 @@ defmodule SPARQL.Functions.CastTest do
       {RDF.double(3.14), float_literal.("3.14")},
       {RDF.double(0.0),  float_literal.("0.0")},
 
-      {RDF.string("3.14"), float_literal.("3.14E0")},
+      {RDF.string("3.14"), float_literal.("3.14")},
 
       {RDF.boolean("42"), :error},
-      {RDF.DateTime.now(), :error},
+      {RDF.XSD.DateTime.now(), :error},
       {:error, :error},
     ]
     |> Enum.each(fn {value, result} ->
@@ -106,7 +105,7 @@ defmodule SPARQL.Functions.CastTest do
       {RDF.string("3.14"), RDF.double("3.14E0")},
 
       {RDF.boolean("42"), :error},
-      {RDF.DateTime.now(), :error},
+      {RDF.XSD.DateTime.now(), :error},
       {:error, :error},
     ]
     |> Enum.each(fn {value, result} ->
@@ -166,10 +165,10 @@ defmodule SPARQL.Functions.CastTest do
       {RDF.string("false"), RDF.false},
       {RDF.string("0"),     RDF.false},
 
-      {RDF.boolean("42"), :error},
+      {RDF.boolean("42"),   :error},
       {RDF.string("tRuE"),  :error},
       {RDF.string("FaLsE"), :error},
-      {RDF.DateTime.now(), :error},
+      {RDF.XSD.DateTime.now(), :error},
       {:error, :error},
     ]
     |> Enum.each(fn {value, result} ->

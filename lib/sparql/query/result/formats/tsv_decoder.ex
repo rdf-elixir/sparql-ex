@@ -87,7 +87,7 @@ defmodule SPARQL.Query.Result.TSV.Decoder do
     do: double
 
   defp do_decode_value([{:boolean, _, boolean}]),
-    do: RDF.Boolean.new(boolean)
+    do: RDF.XSD.Boolean.new(boolean)
 
   defp do_decode_value([{:string_literal_quote, _, literal}]),
     do: RDF.Literal.new(literal)

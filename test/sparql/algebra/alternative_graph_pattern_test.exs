@@ -47,7 +47,7 @@ defmodule SPARQL.Algebra.AlternativeGraphPatternTest do
                  expr2: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p2"}, "v2"}]}
                },
                expr2: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p3"}, "v3"}]},
-               filters: [%RDF.Literal{value: true}]
+               filters: [%RDF.Literal{literal: %XSD.Boolean{value: true}}]
              }
            }} = decode(query)
   end

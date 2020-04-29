@@ -7,11 +7,7 @@ defmodule SPARQL.Functions.BuiltinsTest do
   alias SPARQL.Algebra.Expression
   alias SPARQL.Algebra.FunctionCall
 
-  alias RDF.Literal
-  alias RDF.NS.XSD
-
-  @xsd_string XSD.string
-
+  alias RDF.{Literal, NS}
 
   @example_solution_id :example_ref
   @example_solution_data %{solution: %{:__id__ => @example_solution_id}}
@@ -83,14 +79,12 @@ defmodule SPARQL.Functions.BuiltinsTest do
   @equal_rdf_values [
     # IRIs
     # RDF URI references are compatible with the anyURI datatype as defined by XML schema datatypes, constrained to be an absolute rather than a relative URI reference.
-    {RDF.iri("http://example.com/"),
-     RDF.literal("http://example.com/", datatype: XSD.anyURI)},
+    {RDF.iri("http://example.com/"), RDF.anyURI("http://example.com/")},
   ] ++ @value_equal_rdf_literals
 
   @unequal_rdf_values [
     # IRIs
-    {RDF.iri("http://example.com/foo"),
-     RDF.literal("http://example.com/bar", datatype: XSD.anyURI)},
+    {RDF.iri("http://example.com/foo"), RDF.anyURI("http://example.com/bar")},
 
     # Boolean literals
     {RDF.true,       RDF.boolean("false")},
@@ -139,10 +133,10 @@ defmodule SPARQL.Functions.BuiltinsTest do
     {RDF.decimal(1.1), RDF.double(2.2)},
     {RDF.double(3.14), RDF.integer(42)},
     {RDF.decimal(3.14), RDF.integer(42)},
+    {RDF.literal(0, datatype: NS.XSD.byte), RDF.integer(1)},
+    {RDF.integer(1), RDF.literal(2, datatype: NS.XSD.positiveInteger)},
 # TODO: How to handle invalid number literals?
 #    {RDF.integer("3.14"), RDF.integer("007")},
-# TODO: We need support for other derived numeric datatypes
-#    {RDF.literal(0, datatype: XSD.byte), RDF.integer(1)},
   ]
 
   @ordered_strings [
@@ -784,7 +778,7 @@ defmodule SPARQL.Functions.BuiltinsTest do
     [
       RDF.integer(42),
       RDF.double("3.14"),
-      RDF.literal("42", datatype: XSD.nonPositiveInteger),
+      RDF.nonPositiveInteger("-42"),
     ]
     |> Enum.each(fn positive_example ->
          assert_builtin_result(:isNUMERIC, [positive_example], RDF.true)
@@ -812,7 +806,7 @@ defmodule SPARQL.Functions.BuiltinsTest do
       {RDF.lang_string("foo", language: "en"), RDF.string("foo")},
       {RDF.integer(42), RDF.string("42")},
       {RDF.double("3.14"), RDF.string("3.14")},
-      {RDF.literal("42", datatype: XSD.nonPositiveInteger), RDF.string("42")},
+      {RDF.nonPositiveInteger("42"), RDF.string("42")},
 
       {RDF.iri("http://example.com/"), RDF.string("http://example.com/")},
 
@@ -844,10 +838,11 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "datatype function" do
     [
-      {RDF.integer(42),                        XSD.integer},
-      {RDF.string("foo"),                      XSD.string},
+      {RDF.integer(42),                        NS.XSD.integer},
+      {RDF.string("foo"),                      NS.XSD.string},
       {RDF.lang_string("foo", language: "en"), RDF.langString},
-      {~L"foo",                                XSD.string},
+      {~L"foo",                                NS.XSD.string},
+      {RDF.byte(42),                           NS.XSD.byte},
 
       {RDF.iri("http://example.com/"), :error},
       {RDF.bnode("foo"), :error},
@@ -860,19 +855,19 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "STRDT function" do
     [
-      {RDF.string("123"),  XSD.integer, RDF.integer("123")},
+      {RDF.string("123"),  NS.XSD.integer, RDF.integer("123")},
       {RDF.string("iiii"), RDF.iri("http://example/romanNumeral"),
         RDF.literal("iiii", datatype: RDF.iri("http://example/romanNumeral"))},
 
       # TODO: Should this be an error? An rdf:langString with an empty language is invalid.
-      {RDF.string("foo"), RDF.langString, RDF.lang_string("foo")},
+      {RDF.string("foo"), RDF.langString, RDF.langString("foo", language: nil)},
 
-      {RDF.lang_string("123", language: "en"), XSD.integer, :error},
-      {RDF.integer(123), XSD.string, :error},
-      {RDF.integer(123), XSD.double, :error},
+      {RDF.lang_string("123", language: "en"), NS.XSD.integer, :error},
+      {RDF.integer(123), NS.XSD.string, :error},
+      {RDF.integer(123), NS.XSD.double, :error},
 
       {RDF.string("123"), :error, :error},
-      {:error, XSD.integer, :error},
+      {:error, NS.XSD.integer, :error},
       {:error, :error, :error},
     ]
     |> Enum.each(fn {literal, datatype, result} ->
@@ -883,16 +878,16 @@ defmodule SPARQL.Functions.BuiltinsTest do
   test "STRLANG function" do
     valid_language = RDF.string("en")
     [
-      {RDF.string("foo"), valid_language, RDF.lang_string("foo", language: "en")},
+      {RDF.string("foo"), valid_language, RDF.langString("foo", language: "en")},
 
-      {RDF.lang_string("foo"), valid_language, :error},
-      {RDF.integer(42),        valid_language, :error},
-      {:error,                 valid_language, :error},
+      {RDF.lang_string("foo", language: ""), valid_language,   :error},
+      {RDF.integer(42),                      valid_language,   :error},
+      {:error,                               valid_language,   :error},
 
-      {RDF.string("foo"), RDF.string(""),         :error},
-      {RDF.string("foo"), RDF.lang_string("en"),  :error},
-      {RDF.string("foo"), RDF.integer(42),        :error},
-      {RDF.string("foo"), :error,                 :error},
+      {RDF.string("foo"), RDF.string(""),                      :error},
+      {RDF.string("foo"), RDF.langString("en", language: ""),  :error},
+      {RDF.string("foo"), RDF.integer(42),                     :error},
+      {RDF.string("foo"), :error,                              :error},
 
       {:error, :error, :error},
     ]
@@ -983,10 +978,10 @@ defmodule SPARQL.Functions.BuiltinsTest do
   end
 
   test "STRUUID function" do
-    assert %Literal{datatype: @xsd_string} = uuid1 = Builtins.call(:STRUUID, [], %{})
-    assert %Literal{datatype: @xsd_string} = uuid2 = Builtins.call(:STRUUID, [], %{})
+    assert %Literal{literal: %XSD.String{}} = uuid1 = Builtins.call(:STRUUID, [], %{})
+    assert %Literal{literal: %XSD.String{}} = uuid2 = Builtins.call(:STRUUID, [], %{})
     assert uuid1 != uuid2
-    assert %Literal{datatype: @xsd_string} =
+    assert %Literal{literal: %XSD.String{}} =
              Expression.evaluate(%FunctionCall.Builtin{name: :STRUUID, arguments: []},
                                   @example_solution_data, %{})
   end
@@ -1046,7 +1041,7 @@ defmodule SPARQL.Functions.BuiltinsTest do
     @tag skip: "TODO: We need support for derived datatypes in general and integers in particular"
     test "with derived integer as starting location" do
       assert_builtin_result(:SUBSTR,
-        [RDF.string("foobar"), RDF.literal(4, datatype: XSD.byte)], RDF.string("bar"))
+        [RDF.string("foobar"), RDF.literal(4, datatype: NS.XSD.byte)], RDF.string("bar"))
     end
 
     @tag skip: "TODO: We need support for derived datatypes in general and integers in particular"
@@ -1054,7 +1049,7 @@ defmodule SPARQL.Functions.BuiltinsTest do
       assert_builtin_result(:SUBSTR, [
           RDF.string("foobar"),
           RDF.integer(4),
-          RDF.literal(1, datatype: XSD.byte)
+          RDF.literal(1, datatype: NS.XSD.byte)
         ],
         RDF.string("b"))
     end
@@ -1504,13 +1499,12 @@ defmodule SPARQL.Functions.BuiltinsTest do
   end
 
   test "RAND function" do
-    xsd_double = XSD.double
-    assert %Literal{datatype: ^xsd_double, value: value} = Builtins.call(:RAND, [], %{})
+    assert %Literal{literal: %XSD.Double{value: value}} = Builtins.call(:RAND, [], %{})
     assert value >= 0 and value < 1
-    assert %Literal{datatype: ^xsd_double, value: another_value} = Builtins.call(:RAND, [], %{})
+    assert %Literal{literal: %XSD.Double{value: another_value}} = Builtins.call(:RAND, [], %{})
     assert value != another_value
 
-    assert %Literal{datatype: ^xsd_double, value: value} =
+    assert %Literal{literal: %XSD.Double{value: value}} =
              Expression.evaluate(%FunctionCall.Builtin{name: :RAND, arguments: []},
                                   @example_solution_data, %{})
     assert value >= 0 and value < 1
@@ -1641,9 +1635,9 @@ defmodule SPARQL.Functions.BuiltinsTest do
   # TODO: Use a to be written RDF.day_time_duration datatype
   test "timezone function" do
     [
-      {RDF.date_time("2011-01-10T14:45:13.815-05:00"), RDF.Literal.new("-PT5H", datatype: XSD.dayTimeDuration)},
-      {RDF.date_time("2011-01-10T14:45:13.815Z"),      RDF.Literal.new("PT0S", datatype: XSD.dayTimeDuration)},
-      {RDF.date_time("2011-01-10T14:45:13.815-05:30"), RDF.Literal.new("-PT5H30M", datatype: XSD.dayTimeDuration)},
+      {RDF.date_time("2011-01-10T14:45:13.815-05:00"), RDF.Literal.new("-PT5H", datatype: NS.XSD.dayTimeDuration)},
+      {RDF.date_time("2011-01-10T14:45:13.815Z"),      RDF.Literal.new("PT0S", datatype: NS.XSD.dayTimeDuration)},
+      {RDF.date_time("2011-01-10T14:45:13.815-05:30"), RDF.Literal.new("-PT5H30M", datatype: NS.XSD.dayTimeDuration)},
 
       {RDF.date_time("2011-01-10T14:45:13.815"), :error},
       {~L"1999-05-31T13:20:00-05:00", :error},
@@ -1738,17 +1732,17 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "compatible_arguments?/2" do
     [
-      {RDF.literal("abc"),	                     RDF.literal("b"),                       true},
-      {RDF.literal("abc"),	                     RDF.literal("b", datatype: XSD.string), true},
-      {RDF.literal("abc", datatype: XSD.string), RDF.literal("b"),                       true},
-      {RDF.literal("abc", datatype: XSD.string), RDF.literal("b", datatype: XSD.string), true},
-      {RDF.literal("abc", language: "en"),	     RDF.literal("b"),                       true},
-      {RDF.literal("abc", language: "en"),	     RDF.literal("b", datatype: XSD.string), true},
-      {RDF.literal("abc", language: "en"),	     RDF.literal("b", language: "en"),       true},
-      {RDF.literal("abc", language: "fr"),	     RDF.literal("b", language: "ja"),       false},
-      {RDF.literal("abc"),	                     RDF.literal("b", language: "ja"),       false},
-      {RDF.literal("abc"),	                     RDF.literal("b", language: "en"),       false},
-      {RDF.literal("abc", datatype: XSD.string), RDF.literal("b", language: "en"),       false},
+      {RDF.literal("abc"),	               RDF.literal("b"),                 true},
+      {RDF.literal("abc"),	               RDF.string("b"),                  true},
+      {RDF.string("abc"),                  RDF.literal("b"),                 true},
+      {RDF.string("abc"),                  RDF.string("b"),                  true},
+      {RDF.literal("abc", language: "en"), RDF.literal("b"),                 true},
+      {RDF.literal("abc", language: "en"), RDF.string("b"),                  true},
+      {RDF.literal("abc", language: "en"), RDF.literal("b", language: "en"), true},
+      {RDF.literal("abc", language: "fr"), RDF.literal("b", language: "ja"), false},
+      {RDF.literal("abc"),	               RDF.literal("b", language: "ja"), false},
+      {RDF.literal("abc"),	               RDF.literal("b", language: "en"), false},
+      {RDF.string("abc"),                  RDF.literal("b", language: "en"), false},
     ]
     |> Enum.each(fn {left, right, result} ->
          assert Builtins.compatible_arguments?(left, right) == result, (

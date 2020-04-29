@@ -169,7 +169,7 @@ defmodule SPARQL.Query.Result.XML.DecoderTest do
                       "hpage"  => ~I<http://work.example.org/bob/>,
                       "name"   => ~L"Bob"en,
                       "mbox"   => ~I<mailto:bob@work.example.org>,
-                      "age"    => RDF.Integer.new(30),
+                      "age"    => RDF.integer(30),
                       "friend" => ~B<r1>,
                     }
                   ]}}
@@ -195,7 +195,7 @@ defmodule SPARQL.Query.Result.XML.DecoderTest do
                   variables: ~w[blurb],
                   results: [
                     %{
-                      "blurb"  => RDF.Literal.new(
+                      "blurb"  => RDF.literal(
                         ~S'<p xmlns="http://www.w3.org/1999/xhtml">My name is <b>alice</b></p>',
                         datatype: RDF.XMLLiteral),
                     },

@@ -93,7 +93,7 @@ defmodule SPARQL.Algebra.RDFValueTest do
     test "integer" do
       query = ~s[SELECT * WHERE { ?s ?p 42 }]
 
-      int = RDF.Integer.new(42)
+      int = RDF.integer(42)
       assert {:ok, %SPARQL.Query{expr:
           %SPARQL.Algebra.BGP{
             triples: [{"s", "p", ^int}]
@@ -148,7 +148,7 @@ defmodule SPARQL.Algebra.RDFValueTest do
     @rdf_nil   RDF.nil()
 
     test "simple" do
-      one = RDF.Integer.new(1)
+      one = RDF.integer(1)
 
       query = "SELECT * WHERE { ?s ?p (1 ?second ?third) }"
       assert {:ok, %SPARQL.Query{expr:
@@ -180,7 +180,7 @@ defmodule SPARQL.Algebra.RDFValueTest do
     end
 
     test "nested collection" do
-      one = RDF.Integer.new(1)
+      one = RDF.integer(1)
 
       query = "SELECT * WHERE { ?s ?p (?one (1 ?two) [?foo ?bar]) }"
 

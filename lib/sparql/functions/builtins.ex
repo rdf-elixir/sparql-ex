@@ -2,13 +2,7 @@ defmodule SPARQL.Functions.Builtins do
 
   require Logger
 
-  alias RDF.{Literal, Boolean}
-  alias RDF.NS.XSD
-
-  @xsd_string XSD.string
-  @lang_string RDF.langString
-  @xsd_integer XSD.integer
-  @xsd_datetime XSD.dateTime
+  alias RDF.{IRI, BlankNode, Literal, NS}
 
   @doc """
   Value equality
@@ -48,7 +42,7 @@ defmodule SPARQL.Functions.Builtins do
   - <https://www.w3.org/TR/sparql11-query/#OperatorMapping>
   """
   def call(:<, [%Literal{} = left, %Literal{} = right], _) do
-    ebv(RDF.Literal.less_than?(left, right))
+    ebv(Literal.less_than?(left, right))
   end
 
   def call(:<, _, _), do: :error
@@ -60,7 +54,7 @@ defmodule SPARQL.Functions.Builtins do
   - <https://www.w3.org/TR/sparql11-query/#OperatorMapping>
   """
   def call(:>, [%Literal{} = left, %Literal{} = right], _) do
-    ebv(RDF.Literal.greater_than?(left, right))
+    ebv(Literal.greater_than?(left, right))
   end
 
   def call(:>, _, _), do: :error
@@ -72,7 +66,7 @@ defmodule SPARQL.Functions.Builtins do
   - <https://www.w3.org/TR/sparql11-query/#OperatorMapping>
   """
   def call(:>=, [%Literal{} = left, %Literal{} = right], _) do
-    case RDF.Literal.compare(left, right) do
+    case Literal.compare(left, right) do
       :gt -> RDF.true
       :eq -> RDF.true
       :lt -> RDF.false
@@ -89,7 +83,7 @@ defmodule SPARQL.Functions.Builtins do
   - <https://www.w3.org/TR/sparql11-query/#OperatorMapping>
   """
   def call(:<=, [%Literal{} = left, %Literal{} = right], _) do
-    case RDF.Literal.compare(left, right) do
+    case Literal.compare(left, right) do
       :lt -> RDF.true
       :eq -> RDF.true
       :gt -> RDF.false
@@ -179,9 +173,9 @@ defmodule SPARQL.Functions.Builtins do
 
   see <https://www.w3.org/TR/sparql11-query/#func-isIRI>
   """
-  def call(:isIRI, [%RDF.IRI{}], _), do: RDF.true
-  def call(:isIRI, [:error], _),     do: :error
-  def call(:isIRI, _, _),            do: RDF.false
+  def call(:isIRI, [%IRI{}], _), do: RDF.true
+  def call(:isIRI, [:error], _), do: :error
+  def call(:isIRI, _, _),        do: RDF.false
 
   @doc """
   Checks if the given argument is an IRI.
@@ -195,26 +189,26 @@ defmodule SPARQL.Functions.Builtins do
 
   see <https://www.w3.org/TR/sparql11-query/#func-isBlank>
   """
-  def call(:isBLANK, [%RDF.BlankNode{}], _), do: RDF.true
-  def call(:isBLANK, [:error], _),           do: :error
-  def call(:isBLANK, _, _),                  do: RDF.false
+  def call(:isBLANK, [%BlankNode{}], _), do: RDF.true
+  def call(:isBLANK, [:error], _),       do: :error
+  def call(:isBLANK, _, _),              do: RDF.false
 
   @doc """
   Checks if the given argument is a RDF literal.
 
   see <https://www.w3.org/TR/sparql11-query/#func-isLiteral>
   """
-  def call(:isLITERAL, [%RDF.Literal{}], _), do: RDF.true
-  def call(:isLITERAL, [:error], _),         do: :error
-  def call(:isLITERAL, _, _),                do: RDF.false
+  def call(:isLITERAL, [%Literal{}], _), do: RDF.true
+  def call(:isLITERAL, [:error], _),     do: :error
+  def call(:isLITERAL, _, _),            do: RDF.false
 
   @doc """
   Checks if the given argument is a RDF literal with a numeric datatype.
 
   see <https://www.w3.org/TR/sparql11-query/#func-isNumeric>
   """
-  def call(:isNUMERIC, [%RDF.Literal{datatype: datatype} = literal], _) do
-    if RDF.Numeric.type?(datatype) and RDF.Literal.valid?(literal) do
+  def call(:isNUMERIC, [%Literal{} = literal], _) do
+    if RDF.Numeric.literal?(literal) and Literal.valid?(literal) do
       RDF.true
     else
       RDF.false
@@ -228,9 +222,9 @@ defmodule SPARQL.Functions.Builtins do
 
   see <https://www.w3.org/TR/sparql11-query/#func-str>
   """
-  def call(:STR, [%RDF.Literal{} = literal], _), do: literal |> to_string() |> RDF.string()
-  def call(:STR, [%RDF.IRI{} = iri], _),         do: iri     |> to_string() |> RDF.string()
-  def call(:STR, _, _),                          do: :error
+  def call(:STR, [%Literal{} = literal], _), do: literal |> to_string() |> RDF.string()
+  def call(:STR, [%IRI{} = iri], _),         do: iri     |> to_string() |> RDF.string()
+  def call(:STR, _, _),                      do: :error
 
   @doc """
   Returns the language tag of language tagged literal.
@@ -240,25 +234,25 @@ defmodule SPARQL.Functions.Builtins do
 
   see <https://www.w3.org/TR/sparql11-query/#func-lang>
   """
-  def call(:LANG, [%RDF.Literal{language: language}], _), do: language |> to_string() |> RDF.string()
-  def call(:LANG, [%RDF.Literal{}], _),                   do: RDF.string("")
-  def call(:LANG, _, _),                                  do: :error
+  def call(:LANG, [%Literal{} = literal], _),
+    do: literal |> Literal.language() |> to_string() |> RDF.string()
+  def call(:LANG, _, _), do: :error
 
   @doc """
   Returns the datatype IRI of a literal.
 
   see <https://www.w3.org/TR/sparql11-query/#func-datatype>
   """
-  def call(:DATATYPE, [%RDF.Literal{datatype: datatype}], _), do: datatype
-  def call(:DATATYPE, _, _),                                  do: :error
+  def call(:DATATYPE, [%Literal{} = literal], _), do: Literal.datatype(literal)
+  def call(:DATATYPE, _, _),                          do: :error
 
   @doc """
   Constructs a literal with lexical form and type as specified by the arguments.
 
   see <https://www.w3.org/TR/sparql11-query/#func-strdt>
   """
-  def call(:STRDT, [%RDF.Literal{datatype: @xsd_string} = literal, %RDF.IRI{} = datatype], _) do
-    RDF.Literal.new(to_string(literal), datatype: datatype)
+  def call(:STRDT, [%Literal{literal: %XSD.String{}} = literal, %IRI{} = datatype], _) do
+    literal |> Literal.lexical() |> Literal.new(datatype: datatype)
   end
   def call(:STRDT, _, _), do: :error
 
@@ -267,8 +261,8 @@ defmodule SPARQL.Functions.Builtins do
 
   see <https://www.w3.org/TR/sparql11-query/#func-strlang>
   """
-  def call(:STRLANG, [%RDF.Literal{datatype: @xsd_string} = lexical_form_literal,
-                      %RDF.Literal{datatype: @xsd_string} = language_literal], _) do
+  def call(:STRLANG, [%Literal{literal: %XSD.String{}} = lexical_form_literal,
+                      %Literal{literal: %XSD.String{}} = language_literal], _) do
     language = language_literal |> to_string() |> String.trim()
     if language != "" do
       RDF.LangString.new(to_string(lexical_form_literal), language: language)
@@ -287,11 +281,11 @@ defmodule SPARQL.Functions.Builtins do
 
   see <https://www.w3.org/TR/sparql11-query/#func-iri>
   """
-  def call(:IRI, [%RDF.Literal{datatype: @xsd_string} = literal], execution) do
-    literal |> to_string() |> RDF.IRI.absolute(Map.get(execution, :base)) || :error
+  def call(:IRI, [%Literal{literal: %XSD.String{}} = literal], execution) do
+    literal |> to_string() |> IRI.absolute(Map.get(execution, :base)) || :error
   end
-  def call(:IRI, [%RDF.IRI{} = iri], _), do: iri
-  def call(:IRI, _, _),                  do: :error
+  def call(:IRI, [%IRI{} = iri], _), do: iri
+  def call(:IRI, _, _),              do: :error
 
   @doc """
   Checks if the given argument is an IRI.
@@ -317,12 +311,12 @@ defmodule SPARQL.Functions.Builtins do
   see <https://www.w3.org/TR/sparql11-query/#func-bnode>
   """
   def call(:BNODE, [], %{bnode_generator: generator}) do
-    RDF.BlankNode.Generator.generate(generator)
+    BlankNode.Generator.generate(generator)
   end
 
-  def call(:BNODE, [%RDF.Literal{datatype: @xsd_string} = literal],
+  def call(:BNODE, [%Literal{literal: %XSD.String{}} = literal],
         %{bnode_generator: generator, solution_id: solution_id}) do
-    RDF.BlankNode.Generator.generate_for(generator, {solution_id, to_string(literal)})
+    BlankNode.Generator.generate_for(generator, {solution_id, to_string(literal)})
   end
 
   def call(:BNODE, _, _), do: :error
@@ -336,7 +330,7 @@ defmodule SPARQL.Functions.Builtins do
 
   see <https://www.w3.org/TR/sparql11-query/#func-uuid>
   """
-  def call(:UUID, [], _), do: uuid(:urn) |> RDF.IRI.new()
+  def call(:UUID, [], _), do: uuid(:urn) |> IRI.new()
   def call(:UUID, _, _),  do: :error
 
   @doc """
@@ -356,9 +350,9 @@ defmodule SPARQL.Functions.Builtins do
   - <https://www.w3.org/TR/sparql11-query/#func-strlen>
   - <http://www.w3.org/TR/xpath-functions/#func-string-length>
   """
-  def call(:STRLEN, [%RDF.Literal{datatype: datatype} = literal], _)
-      when datatype in [@xsd_string, @lang_string],
-      do: literal |> to_string() |> String.length() |> RDF.Integer.new()
+  def call(:STRLEN, [%Literal{literal: %datatype{}} = literal], _)
+      when datatype in [XSD.String, RDF.LangString],
+      do: literal |> to_string() |> String.length() |> RDF.XSD.Integer.new()
   def call(:STRLEN, _, _), do: :error
 
   @doc """
@@ -377,27 +371,22 @@ defmodule SPARQL.Functions.Builtins do
   - <https://www.w3.org/TR/sparql11-query/#func-substr>
   - <http://www.w3.org/TR/xpath-functions/#func-substring>
   """
-  def call(:SUBSTR, [%RDF.Literal{datatype: datatype} = source,
-                     %RDF.Literal{datatype: @xsd_integer} = starting_loc], _)
-      when datatype in [@xsd_string, @lang_string] do
-    %RDF.Literal{source |
-      value:
-        source
-        |> to_string()
-        |> String.slice((starting_loc.value - 1) .. -1)
-    }
+  def call(:SUBSTR, [%Literal{literal: %datatype{}} = source,
+                     %Literal{literal: %XSD.Integer{value: starting_loc}}], _)
+      when datatype in [XSD.String, RDF.LangString] and is_integer(starting_loc) do
+    Literal.update(source, fn source_string ->
+      String.slice(source_string, (starting_loc - 1) .. -1)
+    end)
   end
 
-  def call(:SUBSTR, [%RDF.Literal{datatype: datatype} = source,
-                     %RDF.Literal{datatype: @xsd_integer} = starting_loc,
-                     %RDF.Literal{datatype: @xsd_integer} = length], _)
-      when datatype in [@xsd_string, @lang_string] do
-    %RDF.Literal{source |
-      value:
-        source
-        |> to_string()
-        |> String.slice((starting_loc.value - 1), length.value)
-    }
+  def call(:SUBSTR, [%Literal{literal: %datatype{}} = source,
+                     %Literal{literal: %XSD.Integer{value: starting_loc}},
+                     %Literal{literal: %XSD.Integer{value: length}}], _)
+      when datatype in [XSD.String, RDF.LangString] and
+           is_integer(starting_loc) and is_integer(length) do
+    Literal.update(source, fn source_string ->
+      String.slice(source_string, (starting_loc - 1), length)
+    end)
   end
 
   def call(:SUBSTR, _, _), do: :error
@@ -411,9 +400,9 @@ defmodule SPARQL.Functions.Builtins do
   - <https://www.w3.org/TR/sparql11-query/#func-ucase>
   - <http://www.w3.org/TR/xpath-functions/#func-upper-case>
   """
-  def call(:UCASE, [%RDF.Literal{datatype: datatype} = str], _)
-      when datatype in [@xsd_string, @lang_string] do
-    %RDF.Literal{str | value: str |> to_string() |> String.upcase()}
+  def call(:UCASE, [%Literal{literal: %datatype{}} = str], _)
+      when datatype in [XSD.String, RDF.LangString] do
+    Literal.update(str, &String.upcase/1)
   end
 
   def call(:UCASE, _, _), do: :error
@@ -427,9 +416,9 @@ defmodule SPARQL.Functions.Builtins do
   - <https://www.w3.org/TR/sparql11-query/#func-lcase>
   - <http://www.w3.org/TR/xpath-functions/#func-lower-case>
   """
-  def call(:LCASE, [%RDF.Literal{datatype: datatype} = str], _)
-      when datatype in [@xsd_string, @lang_string] do
-    %RDF.Literal{str | value: str |> to_string() |> String.downcase()}
+  def call(:LCASE, [%Literal{literal: %datatype{}} = str], _)
+      when datatype in [XSD.String, RDF.LangString] do
+    Literal.update(str, &String.downcase/1)
   end
 
   def call(:LCASE, _, _), do: :error
@@ -533,12 +522,12 @@ defmodule SPARQL.Functions.Builtins do
   """
   def call(:STRBEFORE, [arg1, arg2], _) do
     cond do
-      not compatible_arguments?(arg1, arg2) ->  :error
-      arg2.value == ""                      -> %RDF.Literal{arg1 | value: ""}
+      not compatible_arguments?(arg1, arg2) -> :error
+      Literal.lexical(arg2) == ""           -> Literal.update(arg1, fn _ -> "" end)
       true ->
-        case String.split(arg1.value, arg2.value, parts: 2) do
-          [left, _] -> %RDF.Literal{arg1 | value: left}
-          [_]       -> RDF.Literal.new("")
+        case String.split(Literal.lexical(arg1), Literal.lexical(arg2), parts: 2) do
+          [left, _] -> Literal.update(arg1, fn _ -> left end)
+          [_]       -> Literal.new("")
         end
     end
   end
@@ -569,12 +558,12 @@ defmodule SPARQL.Functions.Builtins do
   """
   def call(:STRAFTER, [arg1, arg2], _) do
     cond do
-      not compatible_arguments?(arg1, arg2) ->  :error
-      arg2.value == ""                      -> arg1
+      not compatible_arguments?(arg1, arg2) -> :error
+      Literal.lexical(arg2) == ""           -> arg1
       true ->
-        case String.split(arg1.value, arg2.value, parts: 2) do
-          [_, right] -> %RDF.Literal{arg1 | value: right}
-          [_]        -> RDF.Literal.new("")
+        case String.split(Literal.lexical(arg1), Literal.lexical(arg2), parts: 2) do
+          [_, right] -> Literal.update(arg1, fn _ -> right end)
+          [_]        -> Literal.new("")
         end
     end
   end
@@ -590,12 +579,12 @@ defmodule SPARQL.Functions.Builtins do
   - <https://www.w3.org/TR/sparql11-query/#func-encode>
   - <http://www.w3.org/TR/xpath-functions/#func-encode-for-uri>
   """
-  def call(:ENCODE_FOR_URI, [%RDF.Literal{datatype: datatype} = str], _)
-      when datatype in [@xsd_string, @lang_string] do
+  def call(:ENCODE_FOR_URI, [%Literal{literal: %datatype{}} = str], _)
+      when datatype in [XSD.String, RDF.LangString] do
     str
     |> to_string()
     |> URI.encode(&URI.char_unreserved?/1)
-    |> RDF.Literal.new()
+    |> Literal.new()
   end
 
   def call(:ENCODE_FOR_URI, _, _), do: :error
@@ -615,15 +604,15 @@ defmodule SPARQL.Functions.Builtins do
   - <http://www.w3.org/TR/xpath-functions/#func-concat>
   """
   def call(:CONCAT, [], _), do: RDF.string("")
-  def call(:CONCAT, [%RDF.Literal{datatype: datatype} = first |rest], _)
-      when datatype in [@xsd_string, @lang_string] do
+  def call(:CONCAT, [%Literal{literal: %datatype{}} = first |rest], _)
+      when datatype in [XSD.String, RDF.LangString] do
     rest
-    |> Enum.reduce_while({to_string(first), first.language}, fn
-         %RDF.Literal{datatype: datatype} = str, {acc, language}
-               when datatype in [@xsd_string, @lang_string] ->
+    |> Enum.reduce_while({to_string(first), Literal.language(first)}, fn
+         %Literal{literal: %datatype{}} = str, {acc, language}
+               when datatype in [XSD.String, RDF.LangString] ->
            {:cont, {
                acc <> to_string(str),
-               if language && language == str.language do
+               if language && language == Literal.language(str) do
                  language
                else
                  nil
@@ -653,9 +642,9 @@ defmodule SPARQL.Functions.Builtins do
 
   see <https://www.w3.org/TR/sparql11-query/#func-langMatches>
   """
-  def call(:LANGMATCHES, [%RDF.Literal{datatype: @xsd_string} = language_tag,
-                          %RDF.Literal{datatype: @xsd_string} = language_range], _) do
-    if RDF.LangString.match_language?(language_tag.value, language_range.value) do
+  def call(:LANGMATCHES, [%Literal{literal: %XSD.String{value: language_tag}},
+                          %Literal{literal: %XSD.String{value: language_range}}], _) do
+    if RDF.LangString.match_language?(language_tag, language_range) do
       RDF.true
     else
       RDF.false
@@ -701,7 +690,7 @@ defmodule SPARQL.Functions.Builtins do
   - <https://www.w3.org/TR/sparql11-query/#func-abs>
   - <http://www.w3.org/TR/xpath-functions/#func-abs>
   """
-  def call(:ABS, [%RDF.Literal{} = literal], _) do
+  def call(:ABS, [%Literal{} = literal], _) do
     RDF.Numeric.abs(literal) || :error
   end
 
@@ -722,7 +711,7 @@ defmodule SPARQL.Functions.Builtins do
   - <https://www.w3.org/TR/sparql11-query/#func-round>
   - <http://www.w3.org/TR/xpath-functions/#func-round>
   """
-  def call(:ROUND, [%RDF.Literal{} = literal], _) do
+  def call(:ROUND, [%Literal{} = literal], _) do
     RDF.Numeric.round(literal) || :error
   end
 
@@ -737,7 +726,7 @@ defmodule SPARQL.Functions.Builtins do
   - <https://www.w3.org/TR/sparql11-query/#func-ceil>
   - <http://www.w3.org/TR/xpath-functions/#func-ceil>
   """
-  def call(:CEIL, [%RDF.Literal{} = literal], _) do
+  def call(:CEIL, [%Literal{} = literal], _) do
     RDF.Numeric.ceil(literal) || :error
   end
 
@@ -752,7 +741,7 @@ defmodule SPARQL.Functions.Builtins do
   - <https://www.w3.org/TR/sparql11-query/#func-floor>
   - <http://www.w3.org/TR/xpath-functions/#func-floor>
   """
-  def call(:FLOOR, [%RDF.Literal{} = literal], _) do
+  def call(:FLOOR, [%Literal{} = literal], _) do
     RDF.Numeric.floor(literal) || :error
   end
 
@@ -764,7 +753,7 @@ defmodule SPARQL.Functions.Builtins do
   see <https://www.w3.org/TR/sparql11-query/#idp2130040>
   """
   def call(:RAND, [], _) do
-    :rand.uniform() |> RDF.Double.new()
+    :rand.uniform() |> RDF.XSD.Double.new()
   end
 
   def call(:RAND, _, _), do: :error
@@ -789,7 +778,7 @@ defmodule SPARQL.Functions.Builtins do
   - <https://www.w3.org/TR/sparql11-query/#func-year>
   - <https://www.w3.org/TR/xpath-functions/#func-year-from-dateTime>
   """
-  def call(:YEAR, [%RDF.Literal{datatype: @xsd_datetime} = literal], _) do
+  def call(:YEAR, [%Literal{literal: %XSD.DateTime{} = literal}], _) do
     naive_datetime_part(literal, :year)
   end
 
@@ -802,7 +791,7 @@ defmodule SPARQL.Functions.Builtins do
   - <https://www.w3.org/TR/sparql11-query/#func-month>
   - <https://www.w3.org/TR/xpath-functions/#func-month-from-dateTime>
   """
-  def call(:MONTH, [%RDF.Literal{datatype: @xsd_datetime} = literal], _) do
+  def call(:MONTH, [%Literal{literal: %XSD.DateTime{} = literal}], _) do
     naive_datetime_part(literal, :month)
   end
 
@@ -815,7 +804,7 @@ defmodule SPARQL.Functions.Builtins do
   - <https://www.w3.org/TR/sparql11-query/#func-day>
   - <https://www.w3.org/TR/xpath-functions/#func-day-from-dateTime>
   """
-  def call(:DAY, [%RDF.Literal{datatype: @xsd_datetime} = literal], _) do
+  def call(:DAY, [%Literal{literal: %XSD.DateTime{} = literal}], _) do
     naive_datetime_part(literal, :day)
   end
 
@@ -828,7 +817,7 @@ defmodule SPARQL.Functions.Builtins do
   - <https://www.w3.org/TR/sparql11-query/#func-hours>
   - <https://www.w3.org/TR/xpath-functions/#func-hours-from-dateTime>
   """
-  def call(:HOURS, [%RDF.Literal{datatype: @xsd_datetime} = literal], _) do
+  def call(:HOURS, [%Literal{literal: %XSD.DateTime{} = literal}], _) do
     naive_datetime_part(literal, :hour)
   end
 
@@ -841,7 +830,7 @@ defmodule SPARQL.Functions.Builtins do
   - <https://www.w3.org/TR/sparql11-query/#func-minutes>
   - <https://www.w3.org/TR/xpath-functions/#func-minutes-from-dateTime>
   """
-  def call(:MINUTES, [%RDF.Literal{datatype: @xsd_datetime} = literal], _) do
+  def call(:MINUTES, [%Literal{literal: %XSD.DateTime{} = literal}], _) do
     naive_datetime_part(literal, :minute)
   end
 
@@ -854,8 +843,8 @@ defmodule SPARQL.Functions.Builtins do
   - <https://www.w3.org/TR/sparql11-query/#func-seconds>
   - <https://www.w3.org/TR/xpath-functions/#func-seconds-from-dateTime>
   """
-  def call(:SECONDS, [%RDF.Literal{datatype: @xsd_datetime} = literal], _) do
-    if RDF.DateTime.valid?(literal) do
+  def call(:SECONDS, [%Literal{literal: %XSD.DateTime{} = literal}], _) do
+    if RDF.XSD.DateTime.valid?(literal) do
       case literal.value.microsecond do
         {_, 0} ->
           literal.value.second
@@ -886,9 +875,9 @@ defmodule SPARQL.Functions.Builtins do
   - <https://www.w3.org/TR/sparql11-query/#func-timezone>
   - <http://www.w3.org/TR/xpath-functions/#func-timezone-from-dateTime>
   """
-  def call(:TIMEZONE, [%RDF.Literal{datatype: @xsd_datetime} = literal], _) do
+  def call(:TIMEZONE, [%Literal{literal: %XSD.DateTime{} = literal}], _) do
     literal
-    |> RDF.DateTime.tz()
+    |> XSD.DateTime.tz()
     |> tz_duration()
     || :error
   end
@@ -902,8 +891,8 @@ defmodule SPARQL.Functions.Builtins do
 
   see <https://www.w3.org/TR/sparql11-query/#func-tz>
   """
-  def call(:TZ, [%RDF.Literal{datatype: @xsd_datetime} = literal], _) do
-    if tz = RDF.DateTime.tz(literal) do
+  def call(:TZ, [%Literal{literal: %XSD.DateTime{} = literal}], _) do
+    if tz = XSD.DateTime.tz(literal) do
       RDF.string(tz)
     else
       :error
@@ -917,8 +906,8 @@ defmodule SPARQL.Functions.Builtins do
 
   see <https://www.w3.org/TR/sparql11-query/#func-md5>
   """
-  def call(:MD5, [%RDF.Literal{datatype: @xsd_string} = literal], _) do
-    hash(:md5, literal.value)
+  def call(:MD5, [%Literal{literal: %XSD.String{}} = literal], _) do
+    hash(:md5, Literal.value(literal))
   end
 
   def call(:MD5, _, _), do: :error
@@ -928,8 +917,8 @@ defmodule SPARQL.Functions.Builtins do
 
   see <https://www.w3.org/TR/sparql11-query/#func-sha1>
   """
-  def call(:SHA1, [%RDF.Literal{datatype: @xsd_string} = literal], _) do
-    hash(:sha, literal.value)
+  def call(:SHA1, [%Literal{literal: %XSD.String{}} = literal], _) do
+    hash(:sha, Literal.value(literal))
   end
 
   def call(:SHA1, _, _), do: :error
@@ -939,8 +928,8 @@ defmodule SPARQL.Functions.Builtins do
 
   see <https://www.w3.org/TR/sparql11-query/#func-sha256>
   """
-  def call(:SHA256, [%RDF.Literal{datatype: @xsd_string} = literal], _) do
-    hash(:sha256, literal.value)
+  def call(:SHA256, [%Literal{literal: %XSD.String{}} = literal], _) do
+    hash(:sha256, Literal.value(literal))
   end
 
   def call(:SHA256, _, _), do: :error
@@ -950,8 +939,8 @@ defmodule SPARQL.Functions.Builtins do
 
   see <https://www.w3.org/TR/sparql11-query/#fun  c-sha384>
   """
-  def call(:SHA384, [%RDF.Literal{datatype: @xsd_string} = literal], _) do
-    hash(:sha384, literal.value)
+  def call(:SHA384, [%Literal{literal: %XSD.String{}} = literal], _) do
+    hash(:sha384, Literal.value(literal))
   end
 
   def call(:SHA384, _, _), do: :error
@@ -961,8 +950,8 @@ defmodule SPARQL.Functions.Builtins do
 
   see <https://www.w3.org/TR/sparql11-query/#func-sha512>
   """
-  def call(:SHA512, [%RDF.Literal{datatype: @xsd_string} = literal], _) do
-    hash(:sha512, literal.value)
+  def call(:SHA512, [%Literal{literal: %XSD.String{}} = literal], _) do
+    hash(:sha512, Literal.value(literal))
   end
 
   def call(:SHA512, _, _), do: :error
@@ -974,12 +963,12 @@ defmodule SPARQL.Functions.Builtins do
     |> RDF.string()
   end
 
-  defp match_regex(%RDF.Literal{datatype: datatype} = text,
-                   %RDF.Literal{datatype: @xsd_string} = pattern,
-                   %RDF.Literal{datatype: @xsd_string} = flags)
-       when datatype in [@xsd_string, @lang_string] do
+  defp match_regex(%Literal{literal: %datatype{}} = text,
+                   %Literal{literal: %XSD.String{}} = pattern,
+                   %Literal{literal: %XSD.String{}} = flags)
+       when datatype in [XSD.String, RDF.LangString] do
     text
-    |> RDF.Literal.matches?(pattern, flags)
+    |> Literal.matches?(pattern, flags)
     |> ebv()
   rescue
     error -> :error
@@ -987,19 +976,21 @@ defmodule SPARQL.Functions.Builtins do
 
   defp match_regex(_, _, _), do: :error
 
-  defp replace_regex(%RDF.Literal{datatype: datatype} = text,
-                     %RDF.Literal{datatype: @xsd_string} = pattern,
-                     %RDF.Literal{datatype: @xsd_string} = replacement,
-                     %RDF.Literal{datatype: @xsd_string} = flags)
-       when datatype in [@xsd_string, @lang_string] do
-    case RDF.Literal.xpath_pattern(pattern.value, flags.value) do
+  defp replace_regex(%Literal{literal: %datatype{}} = text,
+                     %Literal{literal: %XSD.String{} = pattern},
+                     %Literal{literal: %XSD.String{} = replacement},
+                     %Literal{literal: %XSD.String{} = flags})
+       when datatype in [XSD.String, RDF.LangString] do
+    case XSD.Utils.Regex.xpath_pattern(pattern.value, flags.value) do
       {:regex, regex} ->
-        %RDF.Literal{text | value:
-          String.replace(text.value, regex, xpath_to_erlang_regex_variables(replacement.value))}
+        Literal.update(text, fn text_value ->
+          String.replace(text_value, regex, xpath_to_erlang_regex_variables(replacement.value))
+        end)
 
       {:q, pattern} ->
-        %RDF.Literal{text | value:
-          String.replace(text.value, pattern, replacement.value)}
+        Literal.update(text, fn text_value ->
+          String.replace(text_value, pattern, replacement.value)
+        end)
 
       {:qi, _pattern} ->
         Logger.error "The combination of the q and the i flag is currently not supported in REPLACE"
@@ -1017,14 +1008,14 @@ defmodule SPARQL.Functions.Builtins do
   end
 
 
-  defp naive_datetime_part(%RDF.Literal{value: %DateTime{} = datetime,
-                                        uncanonical_lexical: nil}, field) do
+  defp naive_datetime_part(%XSD.DateTime{value: %DateTime{} = datetime,
+                                         uncanonical_lexical: nil}, field) do
     datetime
     |> Map.get(field)
     |> RDF.integer()
   end
 
-  defp naive_datetime_part(%RDF.Literal{value: %NaiveDateTime{} = datetime}, field) do
+  defp naive_datetime_part(%XSD.DateTime{value: %NaiveDateTime{} = datetime}, field) do
     datetime
     |> Map.get(field)
     |> RDF.integer()
@@ -1033,7 +1024,7 @@ defmodule SPARQL.Functions.Builtins do
   defp naive_datetime_part(literal, field) do
     with {:ok, datetime} <-
            literal
-           |> RDF.DateTime.lexical()
+           |> RDF.XSD.DateTime.lexical()
            |> NaiveDateTime.from_iso8601()
     do
       datetime
@@ -1057,7 +1048,7 @@ defmodule SPARQL.Functions.Builtins do
 
   # TODO: This is just a preliminary implementation until we have a proper RDF.Duration datatype
   defp day_time_duration(value) do
-    RDF.Literal.new(value, datatype: XSD.dayTimeDuration)
+    Literal.new(value, datatype: NS.XSD.dayTimeDuration)
   end
 
   @doc """
@@ -1068,20 +1059,20 @@ defmodule SPARQL.Functions.Builtins do
   def compatible_arguments?(arg1, arg2)
 
   # The arguments are simple literals or literals typed as xsd:string
-  def compatible_arguments?(%RDF.Literal{datatype: @xsd_string},
-                            %RDF.Literal{datatype: @xsd_string}), do: true
+  def compatible_arguments?(%Literal{literal: %XSD.String{}},
+                            %Literal{literal: %XSD.String{}}), do: true
   # The first argument is a plain literal with language tag and the second argument is a simple literal or literal typed as xsd:string
-  def compatible_arguments?(%RDF.Literal{datatype: @lang_string},
-                            %RDF.Literal{datatype: @xsd_string}), do: true
+  def compatible_arguments?(%Literal{literal: %RDF.LangString{}},
+                            %Literal{literal: %XSD.String{}}), do: true
   # The arguments are plain literals with identical language tags
-  def compatible_arguments?(%RDF.Literal{datatype: @lang_string, language: language},
-                            %RDF.Literal{datatype: @lang_string, language: language}), do: true
+  def compatible_arguments?(%Literal{literal: %RDF.LangString{language: language}},
+                            %Literal{literal: %RDF.LangString{language: language}}), do: true
 
   def compatible_arguments?(_, _), do: false
 
 
-  defp ebv(value),    do: Boolean.ebv(value) || :error
-  defp fn_not(value), do: Boolean.fn_not(value) || :error
+  defp ebv(value),    do: RDF.XSD.Boolean.ebv(value) || :error
+  defp fn_not(value), do: RDF.XSD.Boolean.fn_not(value) || :error
 
   defp uuid(format), do: UUID.uuid4(format)
 

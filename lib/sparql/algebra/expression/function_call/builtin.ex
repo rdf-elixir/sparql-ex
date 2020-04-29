@@ -5,6 +5,8 @@ defmodule SPARQL.Algebra.FunctionCall.Builtin do
   alias SPARQL.Algebra.FunctionCall
   alias SPARQL.Functions.Builtins
 
+  @rdf_true RDF.true
+  @rdf_false RDF.false
 
   @doc """
   Invokes a SPARQL builtin function.
@@ -19,19 +21,19 @@ defmodule SPARQL.Algebra.FunctionCall.Builtin do
 
   def invoke(:&&, [left, right], data, execution) do
     case evaluate_to_ebv(left, data, execution) do
-      %RDF.Literal{value: false} ->
-        RDF.false
+      @rdf_false ->
+        @rdf_false
 
-      %RDF.Literal{value: true}  ->
+      @rdf_true ->
         case evaluate_to_ebv(right, data, execution) do
-          %RDF.Literal{value: true}  -> RDF.true
-          %RDF.Literal{value: false} -> RDF.false
-          nil                        -> :error
+          @rdf_true  -> @rdf_true
+          @rdf_false -> @rdf_false
+          nil        -> :error
         end
 
       nil ->
-        if match?(%RDF.Literal{value: false}, evaluate_to_ebv(right, data, execution)) do
-          RDF.false
+        if match?(@rdf_false, evaluate_to_ebv(right, data, execution)) do
+          @rdf_false
         else
           :error
         end
@@ -40,19 +42,19 @@ defmodule SPARQL.Algebra.FunctionCall.Builtin do
 
   def invoke(:||, [left, right], data, execution) do
     case evaluate_to_ebv(left, data, execution) do
-      %RDF.Literal{value: true} ->
-        RDF.true
+      @rdf_true ->
+        @rdf_true
 
-      %RDF.Literal{value: false}  ->
+      @rdf_false  ->
         case evaluate_to_ebv(right, data, execution) do
-          %RDF.Literal{value: true}  -> RDF.true
-          %RDF.Literal{value: false} -> RDF.false
-          nil                        -> :error
+          @rdf_true  -> @rdf_true
+          @rdf_false -> @rdf_false
+          nil        -> :error
         end
 
       nil ->
-        if match?(%RDF.Literal{value: true}, evaluate_to_ebv(right, data, execution)) do
-          RDF.true
+        if match?(@rdf_true, evaluate_to_ebv(right, data, execution)) do
+          @rdf_true
         else
           :error
         end
@@ -61,9 +63,9 @@ defmodule SPARQL.Algebra.FunctionCall.Builtin do
 
   def invoke(:BOUND, [variable], %{solution: solution}, _) when is_binary(variable) do
     if Map.has_key?(solution, variable) do
-      RDF.true
+      @rdf_true
     else
-      RDF.false
+      @rdf_false
     end
   end
 
@@ -71,9 +73,9 @@ defmodule SPARQL.Algebra.FunctionCall.Builtin do
 
   def invoke(:IF, [cond_expression, then_expression, else_expression], data, execution) do
     case evaluate_to_ebv(cond_expression, data, execution) do
-      %RDF.Literal{value: true}  -> FunctionCall.evaluate_argument(then_expression, data, execution)
-      %RDF.Literal{value: false} -> FunctionCall.evaluate_argument(else_expression, data, execution)
-      nil                        -> :error
+      @rdf_true  -> FunctionCall.evaluate_argument(then_expression, data, execution)
+      @rdf_false -> FunctionCall.evaluate_argument(else_expression, data, execution)
+      nil        -> :error
     end
   end
 
@@ -88,12 +90,12 @@ defmodule SPARQL.Algebra.FunctionCall.Builtin do
       :error -> :error
       value ->
         expression_list
-        |> Enum.reduce_while(RDF.false, fn expression, acc ->
+        |> Enum.reduce_while(@rdf_false, fn expression, acc ->
              case FunctionCall.evaluate_argument(expression, data, execution) do
                :error -> {:cont, :error}
                result ->
                  case RDF.Term.equal_value?(value, result) do
-                   true  -> {:halt, RDF.true}
+                   true  -> {:halt, @rdf_true}
                    false -> {:cont, acc}
                    _     -> {:cont, :error}
                  end
@@ -107,12 +109,12 @@ defmodule SPARQL.Algebra.FunctionCall.Builtin do
       :error -> :error
       value ->
         expression_list
-        |> Enum.reduce_while(RDF.true, fn expression, acc ->
+        |> Enum.reduce_while(@rdf_true, fn expression, acc ->
              case FunctionCall.evaluate_argument(expression, data, execution) do
                :error -> {:cont, :error}
                result ->
                  case RDF.Term.equal_value?(value, result) do
-                   true  -> {:halt, RDF.false}
+                   true  -> {:halt, @rdf_false}
                    false -> {:cont, acc}
                    _     -> {:cont, :error}
                  end
@@ -134,7 +136,7 @@ defmodule SPARQL.Algebra.FunctionCall.Builtin do
   defp evaluate_to_ebv(expr, data, execution) do
     expr
     |> FunctionCall.evaluate_argument(data, execution)
-    |> RDF.Boolean.ebv()
+    |> RDF.XSD.Boolean.ebv()
   end
 
 
@@ -147,5 +149,4 @@ defmodule SPARQL.Algebra.FunctionCall.Builtin do
       # TODO: return used and/or introduced variables???
     end
   end
-
 end

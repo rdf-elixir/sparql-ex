@@ -94,7 +94,7 @@ defmodule SPARQL.Algebra.BindTest do
                    },
                    child_expr: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p1"}, "v2"}]},
                  },
-                 filters: [%RDF.Literal{value: true}]
+                 filters: [%RDF.Literal{literal: %XSD.Boolean{value: true}}]
                }
              }} = decode(query)
   end

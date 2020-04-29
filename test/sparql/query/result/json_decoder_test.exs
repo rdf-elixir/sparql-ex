@@ -128,17 +128,17 @@ defmodule SPARQL.Query.Result.JSON.DecoderTest do
             %{
               "s" => ~I<http://example.org/s3>,
               "p" => ~I<http://example.org/p2>,
-              "o" => RDF.String.new("bar")
+              "o" => RDF.string("bar")
             },
             %{
               "s" => ~I<http://example.org/s4>,
               "p" => ~I<http://example.org/p4>,
-              "o" => RDF.Integer.new(4)
+              "o" => RDF.integer(4)
             },
             %{
               "s" => ~I<http://example.org/s5>,
               "p" => ~I<http://example.org/p5>,
-              "o" => RDF.Literal.new("5", datatype: "http://www.w3.org/2001/XMLSchema#decimal")
+              "o" => RDF.decimal("5")
             },
             %{
               "s" => ~I<http://example.org/s6>,
@@ -172,17 +172,17 @@ defmodule SPARQL.Query.Result.JSON.DecoderTest do
             %{
               "s" => ~I<http://example.org/s3>,
               "p" => ~I<http://example.org/p2>,
-              "o" => RDF.String.new("bar")
+              "o" => RDF.string("bar")
             },
             %{
               "s" => ~I<http://example.org/s4>,
               "p" => ~I<http://example.org/p4>,
-              "o" => RDF.Integer.new(4)
+              "o" => RDF.integer(4)
             },
             %{
               "s" => ~I<http://example.org/s5>,
               "p" => ~I<http://example.org/p5>,
-              "o" => RDF.Literal.new("5", datatype: "http://www.w3.org/2001/XMLSchema#decimal")
+              "o" => RDF.decimal("5")
             },
             %{
               "s" => ~I<http://example.org/s6>,
