@@ -13,6 +13,9 @@ defmodule SPARQL.W3C.TestSuite do
 
   end
 
+  @compile {:no_warn_undefined, SPARQL.W3C.TestSuite.NS.MF}
+  @compile {:no_warn_undefined, SPARQL.W3C.TestSuite.NS.QT}
+
   alias NS.{MF, QT}
 
   alias RDF.{Turtle, Graph, Description, IRI, BlankNode}

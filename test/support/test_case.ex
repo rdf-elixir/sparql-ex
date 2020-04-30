@@ -15,6 +15,8 @@ defmodule SPARQL.Test.Case do
       alias SPARQL.Query
 
       alias unquote(__MODULE__).EX
+
+      @compile {:no_warn_undefined, SPARQL.Test.Case.EX}
     end
   end
 
