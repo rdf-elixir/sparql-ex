@@ -2,6 +2,7 @@ defmodule SPARQL.Algebra.Filter do
   defstruct [:filters, :expr]
 
   alias SPARQL.Algebra.Expression
+  alias RDF.XSD
 
   def result_set(%SPARQL.Query.Result{results: results} = result, filters, data, execution) do
     %SPARQL.Query.Result{result |

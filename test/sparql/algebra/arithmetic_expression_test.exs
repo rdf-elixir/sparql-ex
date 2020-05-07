@@ -34,13 +34,13 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
           arguments: [
             %SPARQL.Algebra.FunctionCall.Builtin{
               name: :-,
-              arguments: [RDF.integer(42),
+              arguments: [XSD.integer(42),
                 %SPARQL.Algebra.FunctionCall.Builtin{
                   name: :*,
-                  arguments: [RDF.integer(11), RDF.integer(2)]
+                  arguments: [XSD.integer(11), XSD.integer(2)]
                 }
               ]
-            }, RDF.integer(2)
+            }, XSD.integer(2)
           ]
         }
   end
@@ -52,18 +52,18 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
           arguments: [
             %SPARQL.Algebra.FunctionCall.Builtin{
               name: :-,
-              arguments: [RDF.integer(-42),
+              arguments: [XSD.integer(-42),
                 %SPARQL.Algebra.FunctionCall.Builtin{
                   name: :-,
                   arguments: [
                     %SPARQL.Algebra.FunctionCall.Builtin{
                       name: :*,
-                      arguments: [RDF.integer("+11"), RDF.integer(-2)]
+                      arguments: [XSD.integer("+11"), XSD.integer(-2)]
                     }
                   ]
                 }
               ]
-            }, RDF.integer(-2)
+            }, XSD.integer(-2)
           ]
         }
   end
@@ -75,9 +75,9 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
           arguments: [
             %SPARQL.Algebra.FunctionCall.Builtin{
               name: :-,
-              arguments: [RDF.integer(2), RDF.integer(3)
+              arguments: [XSD.integer(2), XSD.integer(3)
               ]
-            }, RDF.integer(1)
+            }, XSD.integer(1)
           ]
         }
 
@@ -87,12 +87,12 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
             %SPARQL.Algebra.FunctionCall.Builtin{
               arguments: [
                 %SPARQL.Algebra.FunctionCall.Builtin{
-                  arguments: [RDF.integer(2), RDF.integer(3)],
+                  arguments: [XSD.integer(2), XSD.integer(3)],
                   name: :-
-                }, RDF.integer(1)
+                }, XSD.integer(1)
               ],
               name: :+
-            }, RDF.integer(42)
+            }, XSD.integer(42)
           ],
           name: :-
         }
@@ -105,9 +105,9 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
           arguments: [
             %SPARQL.Algebra.FunctionCall.Builtin{
               name: :*,
-              arguments: [RDF.integer(1), RDF.integer(2)
+              arguments: [XSD.integer(1), XSD.integer(2)
               ]
-            }, RDF.integer(3)
+            }, XSD.integer(3)
           ]
         }
 
@@ -117,12 +117,12 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
             %SPARQL.Algebra.FunctionCall.Builtin{
               arguments: [
                 %SPARQL.Algebra.FunctionCall.Builtin{
-                  arguments: [RDF.integer(2), RDF.integer(3)],
+                  arguments: [XSD.integer(2), XSD.integer(3)],
                   name: :/
-                }, RDF.integer(1)
+                }, XSD.integer(1)
               ],
               name: :*
-            }, RDF.integer(42)
+            }, XSD.integer(42)
           ],
           name: :/
         }
@@ -133,10 +133,10 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
         %SPARQL.Algebra.FunctionCall.Builtin{
           name: :+,
           arguments: [
-            RDF.integer(1),
+            XSD.integer(1),
             %SPARQL.Algebra.FunctionCall.Builtin{
               name: :/,
-              arguments: [RDF.integer(2), RDF.integer(3)
+              arguments: [XSD.integer(2), XSD.integer(3)
               ]
             }
           ]
@@ -148,9 +148,9 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
           arguments: [
             %SPARQL.Algebra.FunctionCall.Builtin{
               name: :*,
-              arguments: [RDF.integer(1), RDF.integer(2)
+              arguments: [XSD.integer(1), XSD.integer(2)
               ]
-            }, RDF.integer(3)
+            }, XSD.integer(3)
           ]
         }
 
@@ -158,15 +158,15 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
         %SPARQL.Algebra.FunctionCall.Builtin{
           arguments: [
             %SPARQL.Algebra.FunctionCall.Builtin{
-              arguments: [RDF.integer(2), RDF.integer(3)],
+              arguments: [XSD.integer(2), XSD.integer(3)],
               name: :-
             },
             %SPARQL.Algebra.FunctionCall.Builtin{
               arguments: [
                 %SPARQL.Algebra.FunctionCall.Builtin{
-                  arguments: [RDF.integer(4), RDF.integer(42)],
+                  arguments: [XSD.integer(4), XSD.integer(42)],
                   name: :*
-                }, RDF.integer(5)
+                }, XSD.integer(5)
               ],
               name: :/
             }
@@ -182,9 +182,9 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
           arguments: [
             %SPARQL.Algebra.FunctionCall.Builtin{
               name: :-,
-              arguments: [RDF.integer(2), RDF.integer(3)
+              arguments: [XSD.integer(2), XSD.integer(3)
               ]
-            }, RDF.integer(1)
+            }, XSD.integer(1)
           ]
         }
 
@@ -194,9 +194,9 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
           arguments: [
             %SPARQL.Algebra.FunctionCall.Builtin{
               name: :-,
-              arguments: [RDF.integer(2), RDF.integer("+3")
+              arguments: [XSD.integer(2), XSD.integer("+3")
               ]
-            }, RDF.integer(1)
+            }, XSD.integer(1)
           ]
         }
 
@@ -206,9 +206,9 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
           arguments: [
             %SPARQL.Algebra.FunctionCall.Builtin{
               name: :-,
-              arguments: [RDF.integer(2), RDF.integer("+3")
+              arguments: [XSD.integer(2), XSD.integer("+3")
               ]
-            }, RDF.integer("+1")
+            }, XSD.integer("+1")
           ]
         }
 
@@ -218,10 +218,10 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
           arguments: [
             %SPARQL.Algebra.FunctionCall.Builtin{
               name: :*,
-              arguments: [RDF.integer(-2), RDF.integer("+3")
+              arguments: [XSD.integer(-2), XSD.integer("+3")
               ]
             },
-            RDF.integer(-1),
+            XSD.integer(-1),
           ]
         }
 
@@ -232,10 +232,10 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
         %SPARQL.Algebra.FunctionCall.Builtin{
           name: :-,
           arguments: [
-            RDF.integer(2),
+            XSD.integer(2),
             %SPARQL.Algebra.FunctionCall.Builtin{
               name: :*,
-              arguments: [RDF.integer(3), RDF.integer(1)
+              arguments: [XSD.integer(3), XSD.integer(1)
               ]
             }
           ]
@@ -245,10 +245,10 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
         %SPARQL.Algebra.FunctionCall.Builtin{
           name: :-,
           arguments: [
-            RDF.integer(-2),
+            XSD.integer(-2),
             %SPARQL.Algebra.FunctionCall.Builtin{
               name: :*,
-              arguments: [RDF.integer("+3"), RDF.integer(-1)
+              arguments: [XSD.integer("+3"), XSD.integer(-1)
               ]
             }
           ]
@@ -263,13 +263,13 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
             %SPARQL.Algebra.FunctionCall.Builtin{
               name: :-,
               arguments: [
-                RDF.integer(2),
+                XSD.integer(2),
                 %SPARQL.Algebra.FunctionCall.Builtin{
                   name: :*,
-                  arguments: [RDF.integer(3), RDF.integer(1)]
+                  arguments: [XSD.integer(3), XSD.integer(1)]
                 }
               ]
-            }, RDF.integer(4)
+            }, XSD.integer(4)
           ]
         }
 
@@ -280,18 +280,18 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
             %SPARQL.Algebra.FunctionCall.Builtin{
               name: :-,
               arguments: [
-                RDF.integer(2),
+                XSD.integer(2),
                 %SPARQL.Algebra.FunctionCall.Builtin{
                   name: :/,
                   arguments: [
                     %SPARQL.Algebra.FunctionCall.Builtin{
                       name: :*,
-                      arguments: [RDF.integer(3), RDF.integer(1)]
-                    }, RDF.integer(5)
+                      arguments: [XSD.integer(3), XSD.integer(1)]
+                    }, XSD.integer(5)
                   ]
                 }
               ]
-            }, RDF.integer(4)
+            }, XSD.integer(4)
           ]
         }
   end
@@ -301,14 +301,14 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
         %SPARQL.Algebra.FunctionCall.Builtin{
           name: :-,
           arguments: [
-            RDF.integer(2),
+            XSD.integer(2),
             %SPARQL.Algebra.FunctionCall.Builtin{
               name: :/,
               arguments: [
                 %SPARQL.Algebra.FunctionCall.Builtin{
                   name: :*,
-                  arguments: [RDF.integer(3), RDF.integer(1)]
-                }, RDF.integer(4)
+                  arguments: [XSD.integer(3), XSD.integer(1)]
+                }, XSD.integer(4)
               ]
             }
           ]
@@ -318,7 +318,7 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
         %SPARQL.Algebra.FunctionCall.Builtin{
           name: :-,
           arguments: [
-            RDF.integer(2),
+            XSD.integer(2),
             %SPARQL.Algebra.FunctionCall.Builtin{
               name: :*,
               arguments: [
@@ -327,10 +327,10 @@ defmodule SPARQL.Algebra.ArithmeticExpressionTest do
                   arguments: [
                     %SPARQL.Algebra.FunctionCall.Builtin{
                       name: :*,
-                      arguments: [RDF.integer(3), RDF.integer(1)]
-                    }, RDF.integer(4)
+                      arguments: [XSD.integer(3), XSD.integer(1)]
+                    }, XSD.integer(4)
                   ]
-                }, RDF.integer(5)
+                }, XSD.integer(5)
               ]
             }
           ]

@@ -12,7 +12,7 @@ defmodule SPARQL.Algebra.GroupGraphPatternTest do
         ?s2 ?p2 ?o2
       }
       """
-    n1 = RDF.integer(1)
+    n1 = XSD.integer(1)
     assert {:ok, %SPARQL.Query{
              expr: %SPARQL.Algebra.Project{
                vars: ~w[s],
@@ -71,7 +71,7 @@ defmodule SPARQL.Algebra.GroupGraphPatternTest do
 
 
   test "nested graph pattern with filter" do
-    n1 = RDF.integer(1)
+    n1 = XSD.integer(1)
     [
       """
       SELECT ?s
@@ -158,7 +158,7 @@ defmodule SPARQL.Algebra.GroupGraphPatternTest do
   end
 
   test "nested group graph patterns" do
-    n1 = RDF.integer(1)
+    n1 = XSD.integer(1)
     [
       """
       SELECT ?s
@@ -262,7 +262,7 @@ defmodule SPARQL.Algebra.GroupGraphPatternTest do
              }
            }} = decode(query)
 
-    n1 = RDF.integer(1)
+    n1 = XSD.integer(1)
     [
       """
       SELECT ?s

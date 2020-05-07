@@ -84,7 +84,7 @@ defmodule SPARQL.Algebra.RDFValueTest do
 
     assert {:ok, %SPARQL.Query{expr:
         %SPARQL.Algebra.BGP{
-          triples: [{%RDF.BlankNode{}, "p", "o"}]
+          triples: [{%BlankNode{}, "p", "o"}]
         }}} = decode(query)
   end
 
@@ -93,7 +93,7 @@ defmodule SPARQL.Algebra.RDFValueTest do
     test "integer" do
       query = ~s[SELECT * WHERE { ?s ?p 42 }]
 
-      int = RDF.integer(42)
+      int = XSD.integer(42)
       assert {:ok, %SPARQL.Query{expr:
           %SPARQL.Algebra.BGP{
             triples: [{"s", "p", ^int}]
@@ -148,19 +148,19 @@ defmodule SPARQL.Algebra.RDFValueTest do
     @rdf_nil   RDF.nil()
 
     test "simple" do
-      one = RDF.integer(1)
+      one = XSD.integer(1)
 
       query = "SELECT * WHERE { ?s ?p (1 ?second ?third) }"
       assert {:ok, %SPARQL.Query{expr:
           %SPARQL.Algebra.BGP{
             triples: [
-              {"s", "p", %RDF.BlankNode{} = first_node},
-              {%RDF.BlankNode{} = first_node , @rdf_first, ^one},
-              {%RDF.BlankNode{} = first_node , @rdf_rest, second_node},
-              {%RDF.BlankNode{} = second_node, @rdf_first, "second"},
-              {%RDF.BlankNode{} = second_node, @rdf_rest, third_node},
-              {%RDF.BlankNode{} = third_node , @rdf_first, "third"},
-              {%RDF.BlankNode{} = third_node , @rdf_rest, @rdf_nil},
+              {"s", "p", %BlankNode{} = first_node},
+              {%BlankNode{} = first_node , @rdf_first, ^one},
+              {%BlankNode{} = first_node , @rdf_rest, second_node},
+              {%BlankNode{} = second_node, @rdf_first, "second"},
+              {%BlankNode{} = second_node, @rdf_rest, third_node},
+              {%BlankNode{} = third_node , @rdf_first, "third"},
+              {%BlankNode{} = third_node , @rdf_rest, @rdf_nil},
             ]
           }}} = decode(query)
 
@@ -168,37 +168,37 @@ defmodule SPARQL.Algebra.RDFValueTest do
       assert {:ok, %SPARQL.Query{expr:
           %SPARQL.Algebra.BGP{
             triples: [
-              {%RDF.BlankNode{} = first_node , @rdf_first, ^one},
-              {%RDF.BlankNode{} = first_node , @rdf_rest, second_node},
-              {%RDF.BlankNode{} = second_node, @rdf_first, "second"},
-              {%RDF.BlankNode{} = second_node, @rdf_rest, third_node},
-              {%RDF.BlankNode{} = third_node , @rdf_first, "third"},
-              {%RDF.BlankNode{} = third_node , @rdf_rest, @rdf_nil},
-              {%RDF.BlankNode{} = first_node, "p", "o",},
+              {%BlankNode{} = first_node , @rdf_first, ^one},
+              {%BlankNode{} = first_node , @rdf_rest, second_node},
+              {%BlankNode{} = second_node, @rdf_first, "second"},
+              {%BlankNode{} = second_node, @rdf_rest, third_node},
+              {%BlankNode{} = third_node , @rdf_first, "third"},
+              {%BlankNode{} = third_node , @rdf_rest, @rdf_nil},
+              {%BlankNode{} = first_node, "p", "o",},
             ]
           }}} = decode(query)
     end
 
     test "nested collection" do
-      one = RDF.integer(1)
+      one = XSD.integer(1)
 
       query = "SELECT * WHERE { ?s ?p (?one (1 ?two) [?foo ?bar]) }"
 
       assert {:ok, %SPARQL.Query{expr:
           %SPARQL.Algebra.BGP{
             triples: [
-              {"s", "p", %RDF.BlankNode{} = first_node},
-              {%RDF.BlankNode{} = first_node , @rdf_first, "one"},
-              {%RDF.BlankNode{} = first_node , @rdf_rest, second_node},
-              {%RDF.BlankNode{} = second_node, @rdf_first, first_nested_node},
-              {%RDF.BlankNode{} = first_nested_node , @rdf_first, ^one},
-              {%RDF.BlankNode{} = first_nested_node , @rdf_rest, second_nested_node},
-              {%RDF.BlankNode{} = second_nested_node, @rdf_first, "two"},
-              {%RDF.BlankNode{} = second_nested_node, @rdf_rest, @rdf_nil},
-              {%RDF.BlankNode{} = second_node, @rdf_rest, third_node},
-              {%RDF.BlankNode{} = third_node , @rdf_first, %RDF.BlankNode{} = description_node},
-              {%RDF.BlankNode{} = description_node , "foo", "bar"},
-              {%RDF.BlankNode{} = third_node , @rdf_rest, @rdf_nil},
+              {"s", "p", %BlankNode{} = first_node},
+              {%BlankNode{} = first_node , @rdf_first, "one"},
+              {%BlankNode{} = first_node , @rdf_rest, second_node},
+              {%BlankNode{} = second_node, @rdf_first, first_nested_node},
+              {%BlankNode{} = first_nested_node , @rdf_first, ^one},
+              {%BlankNode{} = first_nested_node , @rdf_rest, second_nested_node},
+              {%BlankNode{} = second_nested_node, @rdf_first, "two"},
+              {%BlankNode{} = second_nested_node, @rdf_rest, @rdf_nil},
+              {%BlankNode{} = second_node, @rdf_rest, third_node},
+              {%BlankNode{} = third_node , @rdf_first, %BlankNode{} = description_node},
+              {%BlankNode{} = description_node , "foo", "bar"},
+              {%BlankNode{} = third_node , @rdf_rest, @rdf_nil},
             ]
           }}} = decode(query)
     end

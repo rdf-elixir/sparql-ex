@@ -11,7 +11,7 @@ defmodule SPARQL.Processor.FilterTest do
       {EX.s5, EX.p4, false},
       {EX.s6, EX.p3, "Foo"},
       {EX.s6, EX.p3, ""},
-      {EX.s7, EX.p3, RDF.date("2010-01-01")},
+      {EX.s7, EX.p3, XSD.date("2010-01-01")},
     ])
 
   test "simple comparison" do

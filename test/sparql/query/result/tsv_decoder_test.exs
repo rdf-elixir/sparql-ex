@@ -5,6 +5,7 @@ defmodule SPARQL.Query.Result.TSV.DecoderTest do
   import RDF.Sigils
 
   alias SPARQL.Query
+  alias RDF.XSD
 
 
   describe "W3C tests" do
@@ -41,12 +42,12 @@ defmodule SPARQL.Query.Result.TSV.DecoderTest do
             %{
               "s" => ~I<http://example.org/s4>,
               "p" => ~I<http://example.org/p4>,
-              "o" => RDF.integer(4)
+              "o" => XSD.integer(4)
             },
             %{
               "s" => ~I<http://example.org/s5>,
               "p" => ~I<http://example.org/p5>,
-              "o" => RDF.decimal("5.5")
+              "o" => XSD.decimal("5.5")
             },
             %{
               "s" => ~I<http://example.org/s6>,
@@ -89,14 +90,14 @@ defmodule SPARQL.Query.Result.TSV.DecoderTest do
             %{
               "s" => ~I<http://example.org/s4>,
               "p" => ~I<http://example.org/p4>,
-              "o" => RDF.integer(4),
+              "o" => XSD.integer(4),
               "p2" => nil,
               "o2" => nil
             },
             %{
               "s" => ~I<http://example.org/s5>,
               "p" => ~I<http://example.org/p5>,
-              "o" => RDF.decimal("5.5"),
+              "o" => XSD.decimal("5.5"),
               "p2" => nil,
               "o2" => nil
             },
@@ -127,12 +128,12 @@ defmodule SPARQL.Query.Result.TSV.DecoderTest do
             %{
               "s" => ~I<http://example.org/s2>,
               "p" => ~I<http://example.org/p2>,
-              "o" => RDF.decimal("2.2")
+              "o" => XSD.decimal("2.2")
             },
             %{
               "s" => ~I<http://example.org/s3>,
               "p" => ~I<http://example.org/p3>,
-              "o" => RDF.negativeInteger("-3")
+              "o" => XSD.negativeInteger("-3")
             },
             %{
               "s" => ~I<http://example.org/s4>,
@@ -147,7 +148,7 @@ defmodule SPARQL.Query.Result.TSV.DecoderTest do
             %{
               "s" => ~I<http://example.org/s6>,
               "p" => ~I<http://example.org/p6>,
-              "o" => RDF.double("1.0e6")
+              "o" => XSD.double("1.0e6")
             },
             %{
               "s" => ~I<http://example.org/s7>,

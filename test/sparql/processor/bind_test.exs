@@ -35,7 +35,7 @@ defmodule SPARQL.Processor.BindTest do
                     results: [
                       %{
                         "title" => ~L<The Semantic Web>,
-                        "price" => RDF.decimal(17.25)
+                        "price" => XSD.decimal(17.25)
                       }
                     ]
                   }

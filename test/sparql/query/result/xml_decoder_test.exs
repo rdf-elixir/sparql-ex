@@ -5,6 +5,7 @@ defmodule SPARQL.Query.Result.XML.DecoderTest do
   import RDF.Sigils
 
   alias SPARQL.Query
+  alias RDF.XSD
 
 
   test "with no head and no results" do
@@ -169,7 +170,7 @@ defmodule SPARQL.Query.Result.XML.DecoderTest do
                       "hpage"  => ~I<http://work.example.org/bob/>,
                       "name"   => ~L"Bob"en,
                       "mbox"   => ~I<mailto:bob@work.example.org>,
-                      "age"    => RDF.integer(30),
+                      "age"    => XSD.integer(30),
                       "friend" => ~B<r1>,
                     }
                   ]}}

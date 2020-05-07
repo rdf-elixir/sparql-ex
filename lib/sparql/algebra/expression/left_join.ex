@@ -6,6 +6,7 @@ defmodule SPARQL.Algebra.LeftJoin do
   alias SPARQL.Algebra.{Filter, Join}
   alias SPARQL.Query.Result
   alias SPARQL.Query.Result.SolutionMapping
+  alias RDF.XSD
 
   def result_set(results1, results2, filter_expr, data, execution) do
     # TODO: optimization: if variables are disjoint, build cross-product directly, without checking compatibility for every pair (Assuming the variables of all solutions are the same)

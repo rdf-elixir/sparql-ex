@@ -12,7 +12,7 @@ defmodule SPARQL.Algebra.FilterTest do
         FILTER (?cost < 10)
       }
       """
-    n10 = RDF.integer(10)
+    n10 = XSD.integer(10)
     assert {:ok, %SPARQL.Query{
         expr: %SPARQL.Algebra.Project{
           vars: ~w[s cost],
@@ -39,7 +39,7 @@ defmodule SPARQL.Algebra.FilterTest do
       ?s ex:cost ?cost .
     }
     """
-    n10 = RDF.integer(10)
+    n10 = XSD.integer(10)
     assert {:ok, %SPARQL.Query{
              expr: %SPARQL.Algebra.Project{
                vars: ~w[s cost],

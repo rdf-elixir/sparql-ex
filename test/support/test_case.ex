@@ -11,7 +11,7 @@ defmodule SPARQL.Test.Case do
     quote do
       import RDF.Sigils
 
-      alias RDF.{Dataset, Graph, Description, IRI}
+      alias RDF.{Dataset, Graph, Description, IRI, BlankNode, Literal, XSD, NS}
       alias SPARQL.Query
 
       alias unquote(__MODULE__).EX

@@ -5,229 +5,227 @@ defmodule SPARQL.Functions.CastTest do
   alias SPARQL.Algebra.FunctionCall
   alias SPARQL.ExtensionFunction
 
-  alias RDF.NS.XSD
-
   test "xsd:integer" do
     [
-      {RDF.true,  RDF.integer(1)},
-      {RDF.false, RDF.integer(0)},
+      {XSD.true,  XSD.integer(1)},
+      {XSD.false, XSD.integer(0)},
 
-      {RDF.integer(1),  RDF.integer(1)},
-      {RDF.integer(42), RDF.integer(42)},
-      {RDF.integer(0),  RDF.integer(0)},
+      {XSD.integer(1),  XSD.integer(1)},
+      {XSD.integer(42), XSD.integer(42)},
+      {XSD.integer(0),  XSD.integer(0)},
 
-      {RDF.decimal(3.14), RDF.integer(3)},
-      {RDF.decimal(0.0),  RDF.integer(0)},
+      {XSD.decimal(3.14), XSD.integer(3)},
+      {XSD.decimal(0.0),  XSD.integer(0)},
 
-      {RDF.double(3.14), RDF.integer(3)},
-      {RDF.double(0.0),  RDF.integer(0)},
+      {XSD.double(3.14), XSD.integer(3)},
+      {XSD.double(0.0),  XSD.integer(0)},
 
-      {RDF.string("42"),   RDF.integer(42)},
+      {XSD.string("42"),   XSD.integer(42)},
 
-      {RDF.boolean("42"), :error},
-      {RDF.XSD.DateTime.now(), :error},
+      {XSD.boolean("42"), :error},
+      {XSD.DateTime.now(), :error},
       {:error, :error},
     ]
     |> Enum.each(fn {value, result} ->
-         assert_result(XSD.integer, [value], result)
+         assert_result(NS.XSD.integer, [value], result)
        end)
   end
 
   test "xsd:decimal" do
     [
-      {RDF.true,  RDF.decimal(1.0)},
-      {RDF.false, RDF.decimal(0.0)},
+      {XSD.true,  XSD.decimal(1.0)},
+      {XSD.false, XSD.decimal(0.0)},
 
-      {RDF.integer(1),  RDF.decimal(1.0)},
-      {RDF.integer(42), RDF.decimal(42.0)},
-      {RDF.integer(0),  RDF.decimal(0.0)},
+      {XSD.integer(1),  XSD.decimal(1.0)},
+      {XSD.integer(42), XSD.decimal(42.0)},
+      {XSD.integer(0),  XSD.decimal(0.0)},
 
-      {RDF.decimal(3.14), RDF.decimal(3.14)},
-      {RDF.decimal(0.0),  RDF.decimal(0.0)},
+      {XSD.decimal(3.14), XSD.decimal(3.14)},
+      {XSD.decimal(0.0),  XSD.decimal(0.0)},
 
-      {RDF.double(3.14), RDF.decimal(3.14)},
-      {RDF.double(0.0),  RDF.decimal(0.0)},
+      {XSD.double(3.14), XSD.decimal(3.14)},
+      {XSD.double(0.0),  XSD.decimal(0.0)},
 
-      {RDF.string("3.14"), RDF.decimal(3.14)},
-      {RDF.string("42"),   RDF.decimal(42.0)},
+      {XSD.string("3.14"), XSD.decimal(3.14)},
+      {XSD.string("42"),   XSD.decimal(42.0)},
 
-      {RDF.boolean("42"), :error},
-      {RDF.XSD.DateTime.now(), :error},
+      {XSD.boolean("42"), :error},
+      {XSD.DateTime.now(), :error},
       {:error, :error},
     ]
     |> Enum.each(fn {value, result} ->
-         assert_result(XSD.decimal, [value], result)
+         assert_result(NS.XSD.decimal, [value], result)
        end)
   end
 
   test "xsd:float" do
-    float_literal = fn (value) -> RDF.float(value) end
+    float_literal = fn (value) -> XSD.float(value) end
     [
-      {RDF.true,  float_literal.("1.0")},
-      {RDF.false, float_literal.("0.0")},
+      {XSD.true,  float_literal.("1.0")},
+      {XSD.false, float_literal.("0.0")},
 
-      {RDF.integer(1),  float_literal.("1.0")},
-      {RDF.integer(42), float_literal.("42.0")},
-      {RDF.integer(0),  float_literal.("0.0")},
+      {XSD.integer(1),  float_literal.("1.0")},
+      {XSD.integer(42), float_literal.("42.0")},
+      {XSD.integer(0),  float_literal.("0.0")},
 
-      {RDF.decimal(3.14), float_literal.("3.14")},
-      {RDF.decimal(0.0),  float_literal.("0.0")},
+      {XSD.decimal(3.14), float_literal.("3.14")},
+      {XSD.decimal(0.0),  float_literal.("0.0")},
 
-      {RDF.double(3.14), float_literal.("3.14")},
-      {RDF.double(0.0),  float_literal.("0.0")},
+      {XSD.double(3.14), float_literal.("3.14")},
+      {XSD.double(0.0),  float_literal.("0.0")},
 
-      {RDF.string("3.14"), float_literal.("3.14")},
+      {XSD.string("3.14"), float_literal.("3.14")},
 
-      {RDF.boolean("42"), :error},
-      {RDF.XSD.DateTime.now(), :error},
+      {XSD.boolean("42"), :error},
+      {XSD.DateTime.now(), :error},
       {:error, :error},
     ]
     |> Enum.each(fn {value, result} ->
-         assert_result(XSD.float, [value], result)
+         assert_result(NS.XSD.float, [value], result)
        end)
   end
 
   test "xsd:double" do
     [
-      {RDF.true,  RDF.double(1.0)},
-      {RDF.false, RDF.double(0.0)},
+      {XSD.true,  XSD.double(1.0)},
+      {XSD.false, XSD.double(0.0)},
 
-      {RDF.integer(1),  RDF.double(1.0)},
-      {RDF.integer(42), RDF.double(42.0)},
-      {RDF.integer(0),  RDF.double(0.0)},
+      {XSD.integer(1),  XSD.double(1.0)},
+      {XSD.integer(42), XSD.double(42.0)},
+      {XSD.integer(0),  XSD.double(0.0)},
 
-      {RDF.decimal(3.14), RDF.double(3.14)},
-      {RDF.decimal(0.0),  RDF.double(0.0)},
+      {XSD.decimal(3.14), XSD.double(3.14)},
+      {XSD.decimal(0.0),  XSD.double(0.0)},
 
-      {RDF.double(3.14), RDF.double(3.14)},
-      {RDF.double(0.0),  RDF.double(0.0)},
+      {XSD.double(3.14), XSD.double(3.14)},
+      {XSD.double(0.0),  XSD.double(0.0)},
 
-      {RDF.string("3.14"), RDF.double("3.14E0")},
+      {XSD.string("3.14"), XSD.double("3.14E0")},
 
-      {RDF.boolean("42"), :error},
-      {RDF.XSD.DateTime.now(), :error},
+      {XSD.boolean("42"), :error},
+      {XSD.DateTime.now(), :error},
       {:error, :error},
     ]
     |> Enum.each(fn {value, result} ->
-         assert_result(XSD.double, [value], result)
+         assert_result(NS.XSD.double, [value], result)
        end)
   end
 
   test "xsd:string" do
     [
-      {RDF.true,  RDF.string("true")},
-      {RDF.false, RDF.string("false")},
+      {XSD.true,  XSD.string("true")},
+      {XSD.false, XSD.string("false")},
 
-      {RDF.integer(1),  RDF.string("1")},
-      {RDF.integer(42), RDF.string("42")},
-      {RDF.integer(0),  RDF.string("0")},
+      {XSD.integer(1),  XSD.string("1")},
+      {XSD.integer(42), XSD.string("42")},
+      {XSD.integer(0),  XSD.string("0")},
 
-      {RDF.decimal(3.14), RDF.string("3.14")},
-      {RDF.decimal(0.0),  RDF.string("0")},
+      {XSD.decimal(3.14), XSD.string("3.14")},
+      {XSD.decimal(0.0),  XSD.string("0")},
 
-      {RDF.double(3.14), RDF.string("3.14")},
-      {RDF.double(0.0),  RDF.string("0")},
+      {XSD.double(3.14), XSD.string("3.14")},
+      {XSD.double(0.0),  XSD.string("0")},
 
-      {RDF.string("foo"), RDF.string("foo")},
+      {XSD.string("foo"), XSD.string("foo")},
 
-      {RDF.date_time(~N[2010-01-01T12:34:56]),     RDF.string("2010-01-01T12:34:56")},
-      {RDF.date_time("2010-01-01T00:00:00+00:00"), RDF.string("2010-01-01T00:00:00Z")},
-      {RDF.date_time("2010-01-01T01:00:00+01:00"), RDF.string("2010-01-01T01:00:00+01:00")},
-      {RDF.date_time("2010-01-01 01:00:00+01:00"), RDF.string("2010-01-01T01:00:00+01:00")},
+      {XSD.date_time(~N[2010-01-01T12:34:56]),     XSD.string("2010-01-01T12:34:56")},
+      {XSD.date_time("2010-01-01T00:00:00+00:00"), XSD.string("2010-01-01T00:00:00Z")},
+      {XSD.date_time("2010-01-01T01:00:00+01:00"), XSD.string("2010-01-01T01:00:00+01:00")},
+      {XSD.date_time("2010-01-01 01:00:00+01:00"), XSD.string("2010-01-01T01:00:00+01:00")},
 
-      {RDF.iri("http://example.com/"), RDF.string("http://example.com/")},
+      {RDF.iri("http://example.com/"), XSD.string("http://example.com/")},
 
-      {RDF.boolean("42"), :error},
+      {XSD.boolean("42"), :error},
       {:error, :error},
     ]
     |> Enum.each(fn {value, result} ->
-         assert_result(XSD.string, [value], result)
+         assert_result(NS.XSD.string, [value], result)
        end)
   end
 
   test "xsd:boolean" do
     [
-      {RDF.true,  RDF.true},
-      {RDF.false, RDF.false},
+      {XSD.true,  XSD.true},
+      {XSD.false, XSD.false},
 
-      {RDF.integer(1),  RDF.true},
-      {RDF.integer(42), RDF.true},
-      {RDF.integer(0),  RDF.false},
+      {XSD.integer(1),  XSD.true},
+      {XSD.integer(42), XSD.true},
+      {XSD.integer(0),  XSD.false},
 
-      {RDF.decimal(3.14), RDF.true},
-      {RDF.decimal(0.0),  RDF.false},
+      {XSD.decimal(3.14), XSD.true},
+      {XSD.decimal(0.0),  XSD.false},
 
-      {RDF.double(3.14), RDF.true},
-      {RDF.double(0.0),  RDF.false},
+      {XSD.double(3.14), XSD.true},
+      {XSD.double(0.0),  XSD.false},
 
-      {RDF.string("true"),  RDF.true},
-      {RDF.string("1"),     RDF.true},
-      {RDF.string("false"), RDF.false},
-      {RDF.string("0"),     RDF.false},
+      {XSD.string("true"),  XSD.true},
+      {XSD.string("1"),     XSD.true},
+      {XSD.string("false"), XSD.false},
+      {XSD.string("0"),     XSD.false},
 
-      {RDF.boolean("42"),   :error},
-      {RDF.string("tRuE"),  :error},
-      {RDF.string("FaLsE"), :error},
-      {RDF.XSD.DateTime.now(), :error},
+      {XSD.boolean("42"),   :error},
+      {XSD.string("tRuE"),  :error},
+      {XSD.string("FaLsE"), :error},
+      {XSD.DateTime.now(), :error},
       {:error, :error},
     ]
     |> Enum.each(fn {value, result} ->
-         assert_result(XSD.boolean, [value], result)
+         assert_result(NS.XSD.boolean, [value], result)
        end)
   end
 
   test "xsd:dateTime" do
     [
-      {RDF.date_time("2010-01-01T12:34:56"),    RDF.date_time("2010-01-01T12:34:56")},
+      {XSD.date_time("2010-01-01T12:34:56"),    XSD.date_time("2010-01-01T12:34:56")},
 
-      {RDF.string("2010-01-01T12:34:56"),       RDF.date_time("2010-01-01T12:34:56")},
-      {RDF.string("2010-01-01T12:34:56Z"),      RDF.date_time("2010-01-01T12:34:56Z")},
-      {RDF.string("2010-01-01T12:34:56+01:00"), RDF.date_time("2010-01-01T12:34:56+01:00")},
+      {XSD.string("2010-01-01T12:34:56"),       XSD.date_time("2010-01-01T12:34:56")},
+      {XSD.string("2010-01-01T12:34:56Z"),      XSD.date_time("2010-01-01T12:34:56Z")},
+      {XSD.string("2010-01-01T12:34:56+01:00"), XSD.date_time("2010-01-01T12:34:56+01:00")},
 
-      {RDF.true, :error},
-      {RDF.date_time("02010-01-01T00:00:00"), :error},
+      {XSD.true, :error},
+      {XSD.date_time("02010-01-01T00:00:00"), :error},
       {:error, :error},
     ]
     |> Enum.each(fn {value, result} ->
-         assert_result(XSD.dateTime, [value], result)
+         assert_result(NS.XSD.dateTime, [value], result)
        end)
   end
 
   test "xsd:date" do
     [
-      {RDF.date("2010-01-01"),         RDF.date("2010-01-01")},
+      {XSD.date("2010-01-01"),         XSD.date("2010-01-01")},
 
-      {RDF.string("2010-01-01"),       RDF.date("2010-01-01")},
-      {RDF.string("2010-01-01Z"),      RDF.date("2010-01-01Z")},
-      {RDF.string("2010-01-01+01:00"), RDF.date("2010-01-01+01:00")},
+      {XSD.string("2010-01-01"),       XSD.date("2010-01-01")},
+      {XSD.string("2010-01-01Z"),      XSD.date("2010-01-01Z")},
+      {XSD.string("2010-01-01+01:00"), XSD.date("2010-01-01+01:00")},
 
-      {RDF.date_time("2010-01-01T12:34:56"),    RDF.date("2010-01-01")},
+      {XSD.date_time("2010-01-01T12:34:56"),    XSD.date("2010-01-01")},
 
-      {RDF.true, :error},
-      {RDF.date_time("02010-01-01T00:00:00"), :error},
+      {XSD.true, :error},
+      {XSD.date_time("02010-01-01T00:00:00"), :error},
       {:error, :error},
     ]
     |> Enum.each(fn {value, result} ->
-         assert_result(XSD.date, [value], result)
+         assert_result(NS.XSD.date, [value], result)
        end)
   end
 
   test "xsd:time" do
     [
-      {RDF.time("12:34:56"), RDF.time("12:34:56")},
+      {XSD.time("12:34:56"), XSD.time("12:34:56")},
 
-      {RDF.date_time("2010-01-01T12:34:56"), RDF.time("12:34:56")},
+      {XSD.date_time("2010-01-01T12:34:56"), XSD.time("12:34:56")},
 
-      {RDF.string("12:34:56"),       RDF.time("12:34:56")},
-      {RDF.string("12:34:56Z"),      RDF.time("12:34:56Z")},
-      {RDF.string("12:34:56+01:00"), RDF.time("12:34:56+01:00")},
+      {XSD.string("12:34:56"),       XSD.time("12:34:56")},
+      {XSD.string("12:34:56Z"),      XSD.time("12:34:56Z")},
+      {XSD.string("12:34:56+01:00"), XSD.time("12:34:56+01:00")},
 
-      {RDF.true, :error},
-      {RDF.date_time("02010-01-01T00:00:00"), :error},
+      {XSD.true, :error},
+      {XSD.date_time("02010-01-01T00:00:00"), :error},
       {:error, :error},
     ]
     |> Enum.each(fn {value, result} ->
-         assert_result(XSD.time, [value], result)
+         assert_result(NS.XSD.time, [value], result)
        end)
   end
 

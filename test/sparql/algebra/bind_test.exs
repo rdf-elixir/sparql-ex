@@ -24,7 +24,7 @@ defmodule SPARQL.Algebra.BindTest do
   end
 
   test "group graph pattern with a single BIND of a function call result at the end" do
-    n2 = RDF.integer(2)
+    n2 = XSD.integer(2)
     [
       """
       PREFIX : <http://example.com/>
@@ -46,7 +46,7 @@ defmodule SPARQL.Algebra.BindTest do
                         name: :*,
                         arguments: [^n2, "v"],
                       },
-                      child_expr: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p"}, "v"}]},
+                      child_expr: %SPARQL.Algebra.BGP{triples: [{"s", %IRI{value: "http://example.com/p"}, "v"}]},
                     }
                   }} = decode(query)
        end)
@@ -58,7 +58,7 @@ defmodule SPARQL.Algebra.BindTest do
       SELECT *
       WHERE  { ?s :p ?v . BIND (2*?v AS ?v2) ?s :p1 ?v2 }
       """
-    n2 = RDF.integer(2)
+    n2 = XSD.integer(2)
     assert {:ok,
              %SPARQL.Query{
                expr: %SPARQL.Algebra.Join{
@@ -68,9 +68,9 @@ defmodule SPARQL.Algebra.BindTest do
                      name: :*,
                      arguments: [^n2, "v"],
                    },
-                   child_expr: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p"}, "v"}]},
+                   child_expr: %SPARQL.Algebra.BGP{triples: [{"s", %IRI{value: "http://example.com/p"}, "v"}]},
                  },
-                 expr2: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p1"}, "v2"}]}
+                 expr2: %SPARQL.Algebra.BGP{triples: [{"s", %IRI{value: "http://example.com/p1"}, "v2"}]}
                }
            }} = decode(query)
   end
@@ -81,20 +81,20 @@ defmodule SPARQL.Algebra.BindTest do
       SELECT *
       WHERE  { ?s :p ?v OPTIONAL { ?s :p1 ?v2 . BIND (2*?v AS ?v2) } }
       """
-    n2 = RDF.integer(2)
+    n2 = XSD.integer(2)
     assert {:ok,
              %SPARQL.Query{
                expr: %SPARQL.Algebra.LeftJoin{
-                 expr1: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p"}, "v"}]},
+                 expr1: %SPARQL.Algebra.BGP{triples: [{"s", %IRI{value: "http://example.com/p"}, "v"}]},
                  expr2: %SPARQL.Algebra.Extend{
                    var: "v2",
                    expr: %SPARQL.Algebra.FunctionCall.Builtin{
                      name: :*,
                      arguments: [^n2, "v"],
                    },
-                   child_expr: %SPARQL.Algebra.BGP{triples: [{"s", %RDF.IRI{value: "http://example.com/p1"}, "v2"}]},
+                   child_expr: %SPARQL.Algebra.BGP{triples: [{"s", %IRI{value: "http://example.com/p1"}, "v2"}]},
                  },
-                 filters: [%RDF.Literal{literal: %XSD.Boolean{value: true}}]
+                 filters: [%Literal{literal: %XSD.Boolean{value: true}}]
                }
              }} = decode(query)
   end

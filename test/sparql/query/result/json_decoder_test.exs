@@ -5,6 +5,7 @@ defmodule SPARQL.Query.Result.JSON.DecoderTest do
   import RDF.Sigils
 
   alias SPARQL.Query
+  alias RDF.XSD
 
   test "with no head and no results" do
     assert Query.Result.JSON.decode("{}") ==
@@ -128,17 +129,17 @@ defmodule SPARQL.Query.Result.JSON.DecoderTest do
             %{
               "s" => ~I<http://example.org/s3>,
               "p" => ~I<http://example.org/p2>,
-              "o" => RDF.string("bar")
+              "o" => XSD.string("bar")
             },
             %{
               "s" => ~I<http://example.org/s4>,
               "p" => ~I<http://example.org/p4>,
-              "o" => RDF.integer(4)
+              "o" => XSD.integer(4)
             },
             %{
               "s" => ~I<http://example.org/s5>,
               "p" => ~I<http://example.org/p5>,
-              "o" => RDF.decimal("5")
+              "o" => XSD.decimal("5")
             },
             %{
               "s" => ~I<http://example.org/s6>,
@@ -172,17 +173,17 @@ defmodule SPARQL.Query.Result.JSON.DecoderTest do
             %{
               "s" => ~I<http://example.org/s3>,
               "p" => ~I<http://example.org/p2>,
-              "o" => RDF.string("bar")
+              "o" => XSD.string("bar")
             },
             %{
               "s" => ~I<http://example.org/s4>,
               "p" => ~I<http://example.org/p4>,
-              "o" => RDF.integer(4)
+              "o" => XSD.integer(4)
             },
             %{
               "s" => ~I<http://example.org/s5>,
               "p" => ~I<http://example.org/p5>,
-              "o" => RDF.decimal("5")
+              "o" => XSD.decimal("5")
             },
             %{
               "s" => ~I<http://example.org/s6>,

@@ -13,7 +13,7 @@ defmodule SPARQL.ExtensionFunctionTest do
   defmodule ExampleFunction do
     use SPARQL.ExtensionFunction, name: "http://example.com/function"
 
-    def call(_distinct, _arguments, _data, _execution), do: RDF.true
+    def call(_distinct, _arguments, _data, _execution), do: XSD.true
   end
 
   alias __MODULE__.ExampleFunction
@@ -33,7 +33,7 @@ defmodule SPARQL.ExtensionFunctionTest do
   test "call" do
     assert Expression.evaluate(
              %FunctionCall.Extension{name: "http://example.com/function", arguments: []},
-             @example_solution_data, %{}) == RDF.true
+             @example_solution_data, %{}) == XSD.true
   end
 
 end

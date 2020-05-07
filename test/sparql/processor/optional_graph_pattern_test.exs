@@ -70,7 +70,7 @@ defmodule SPARQL.Processor.OptionalGraphPatternTest do
                results: [
                  %{
                    "title" => ~L"The Semantic Web",
-                   "price" => RDF.integer(23),
+                   "price" => XSD.integer(23),
                  },
                  %{
                    "title" => ~L"SPARQL Tutorial",

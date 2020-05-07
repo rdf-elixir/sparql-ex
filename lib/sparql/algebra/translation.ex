@@ -5,7 +5,7 @@ defmodule SPARQL.Algebra.Translation do
   <https://www.w3.org/TR/sparql11-query/#sparqlQuery>
   """
 
-  alias RDF.IRI
+  alias RDF.{IRI, XSD}
 
   defmodule GroupGraphPattern do
     @enforce_keys [:expr]
@@ -520,7 +520,7 @@ defmodule SPARQL.Algebra.Translation do
   defp translate_graph_pattern(%OptionalGraphPattern{expr: expr}, state) do
     case translate_graph_pattern(expr, state) do
       %GroupGraphPattern{expr: expr, fs: []} ->
-        %SPARQL.Algebra.LeftJoin{expr2: expr, filters: [RDF.true]}
+        %SPARQL.Algebra.LeftJoin{expr2: expr, filters: [XSD.true]}
 
       %GroupGraphPattern{expr: expr, fs: fs} ->
         %SPARQL.Algebra.LeftJoin{expr2: expr, filters: fs}
@@ -529,7 +529,7 @@ defmodule SPARQL.Algebra.Translation do
 
       # TODO: remove this when the implementation is complete; we currently need this to make the W3C syntax tests pass on non-select queries
       nil ->
-       %SPARQL.Algebra.LeftJoin{expr2: @zero_bgp, filters: [RDF.true]}
+       %SPARQL.Algebra.LeftJoin{expr2: @zero_bgp, filters: [XSD.true]}
     end
   end
 

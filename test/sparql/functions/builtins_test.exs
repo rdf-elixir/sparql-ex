@@ -7,26 +7,24 @@ defmodule SPARQL.Functions.BuiltinsTest do
   alias SPARQL.Algebra.Expression
   alias SPARQL.Algebra.FunctionCall
 
-  alias RDF.{Literal, NS}
-
   @example_solution_id :example_ref
   @example_solution_data %{solution: %{:__id__ => @example_solution_id}}
 
 
   @term_equal_rdf_literals [
     # String literals
-    {RDF.string("foo"), RDF.string("foo")},
+    {XSD.string("foo"), XSD.string("foo")},
     {RDF.lang_string("foo", language: "de"), RDF.lang_string("foo", language: "de")},
 
     # Boolean literals
-    {RDF.false, RDF.false},
+    {XSD.false, XSD.false},
 
     # Numeric literals
-    {RDF.integer("042"), RDF.integer("042")},
+    {XSD.integer("042"), XSD.integer("042")},
 
     # DateTime literals
-    {RDF.date_time("2002-04-02T12:00:00-01:00"), RDF.date_time("2002-04-02T12:00:00-01:00")},
-    {RDF.date_time("2002-04-02T12:00:00"),       RDF.date_time("2002-04-02T12:00:00")},
+    {XSD.date_time("2002-04-02T12:00:00-01:00"), XSD.date_time("2002-04-02T12:00:00-01:00")},
+    {XSD.date_time("2002-04-02T12:00:00"),       XSD.date_time("2002-04-02T12:00:00")},
   ]
 
   @equal_rdf_terms [
@@ -45,133 +43,133 @@ defmodule SPARQL.Functions.BuiltinsTest do
     {RDF.bnode("foo"), RDF.bnode("bar")},
 
     # String literals
-    {RDF.string("foo"), RDF.string("bar")},
+    {XSD.string("foo"), XSD.string("bar")},
     {RDF.lang_string("foo", language: "de"), RDF.lang_string("bar", language: "de")},
 
     # Boolean literals
-    {RDF.true, RDF.false},
+    {XSD.true, XSD.false},
 
     # Numeric literals
-    {RDF.integer(1), RDF.integer(2)},
+    {XSD.integer(1), XSD.integer(2)},
 
     # DateTime literals
-    {RDF.date_time("2002-04-02T12:00:00"), RDF.date_time("2002-04-02T17:00:00")},
+    {XSD.date_time("2002-04-02T12:00:00"), XSD.date_time("2002-04-02T17:00:00")},
   ]
 
   @value_equal_rdf_literals [
     # Boolean literals
-    {RDF.true, RDF.boolean("1")},
+    {XSD.true, XSD.boolean("1")},
 
     # Numeric literals
-    {RDF.integer("42"), RDF.integer("042")},
-    {RDF.integer("42"), RDF.double("42")},
-    {RDF.integer(42),   RDF.double(42.0)},
-    {RDF.integer(42),   RDF.decimal(42.0)},
-    {RDF.double(42.0),  RDF.decimal(42.0)},
-    {RDF.double("+0"),  RDF.double("-0")},
+    {XSD.integer("42"), XSD.integer("042")},
+    {XSD.integer("42"), XSD.double("42")},
+    {XSD.integer(42),   XSD.double(42.0)},
+    {XSD.integer(42),   XSD.decimal(42.0)},
+    {XSD.double(42.0),  XSD.decimal(42.0)},
+    {XSD.double("+0"),  XSD.double("-0")},
 
     # DateTime literals
-    {RDF.date_time("2002-04-02T12:00:00-01:00"), RDF.date_time("2002-04-02T17:00:00+04:00")},
-    {RDF.date_time("2002-04-02T23:00:00-04:00"), RDF.date_time("2002-04-03T02:00:00-01:00")},
-    {RDF.date_time("1999-12-31T24:00:00"),       RDF.date_time("2000-01-01T00:00:00")},
+    {XSD.date_time("2002-04-02T12:00:00-01:00"), XSD.date_time("2002-04-02T17:00:00+04:00")},
+    {XSD.date_time("2002-04-02T23:00:00-04:00"), XSD.date_time("2002-04-03T02:00:00-01:00")},
+    {XSD.date_time("1999-12-31T24:00:00"),       XSD.date_time("2000-01-01T00:00:00")},
   ]
 
   @equal_rdf_values [
     # IRIs
     # RDF URI references are compatible with the anyURI datatype as defined by XML schema datatypes, constrained to be an absolute rather than a relative URI reference.
-    {RDF.iri("http://example.com/"), RDF.anyURI("http://example.com/")},
+    {RDF.iri("http://example.com/"), XSD.anyURI("http://example.com/")},
   ] ++ @value_equal_rdf_literals
 
   @unequal_rdf_values [
     # IRIs
-    {RDF.iri("http://example.com/foo"), RDF.anyURI("http://example.com/bar")},
+    {RDF.iri("http://example.com/foo"), XSD.anyURI("http://example.com/bar")},
 
     # Boolean literals
-    {RDF.true,       RDF.boolean("false")},
-    {RDF.boolean(0), RDF.true},
+    {XSD.true,       XSD.boolean("false")},
+    {XSD.boolean(0), XSD.true},
 
     # Numeric literals
-    {RDF.integer("1"), RDF.double("1.1")},
+    {XSD.integer("1"), XSD.double("1.1")},
 
     # DateTime literals
-    {RDF.date_time("2005-04-04T24:00:00"), RDF.date_time("2005-04-04T00:00:00")},
+    {XSD.date_time("2005-04-04T24:00:00"), XSD.date_time("2005-04-04T00:00:00")},
   ]
 
   @incomparable_literals [
     # String literals
-    {RDF.string("foo"), RDF.lang_string("foo", language: "de")},
-    {RDF.string("foo"), RDF.bnode("foo")},
+    {XSD.string("foo"), RDF.lang_string("foo", language: "de")},
+    {XSD.string("foo"), RDF.bnode("foo")},
 
     # Boolean literals
-    {RDF.true,       nil},
-    {RDF.true,       RDF.string("false")},
-    {RDF.integer(0), RDF.true},
+    {XSD.true,       nil},
+    {XSD.true,       XSD.string("false")},
+    {XSD.integer(0), XSD.true},
 
     # Numeric literals
-    {RDF.integer("42"),   RDF.string("42")},
+    {XSD.integer("42"),   XSD.string("42")},
 # TODO: How to handle invalid number literals?
-#    {RDF.integer("3.14"), RDF.integer("007")},
+#    {XSD.integer("3.14"), XSD.integer("007")},
 
     # DateTime literals
-    {RDF.date_time("2002-04-02T12:00:00-01:00"), RDF.string("2002-04-02T12:00:00-01:00")},
+    {XSD.date_time("2002-04-02T12:00:00-01:00"), XSD.string("2002-04-02T12:00:00-01:00")},
   ]
 
   @incomparable_terms [
     # IRIs
-    {RDF.iri("http://example.com/"), RDF.string("http://example.com/")},
+    {RDF.iri("http://example.com/"), XSD.string("http://example.com/")},
 
     # Blank Nodes
-    {RDF.bnode("foo"), RDF.string("foo")},
+    {RDF.bnode("foo"), XSD.string("foo")},
 
   ] ++ @incomparable_literals
 
   @ordered_numbers [
-    {RDF.integer(0),   RDF.integer(1)},
-    {RDF.integer("3"), RDF.integer("007")},
-    {RDF.double(1.1),  RDF.double(2.2)},
-    {RDF.decimal(1.1), RDF.decimal(2.2)},
-    {RDF.decimal(1.1), RDF.double(2.2)},
-    {RDF.double(3.14), RDF.integer(42)},
-    {RDF.decimal(3.14), RDF.integer(42)},
-    {RDF.literal(0, datatype: NS.XSD.byte), RDF.integer(1)},
-    {RDF.integer(1), RDF.literal(2, datatype: NS.XSD.positiveInteger)},
+    {XSD.integer(0),   XSD.integer(1)},
+    {XSD.integer("3"), XSD.integer("007")},
+    {XSD.double(1.1),  XSD.double(2.2)},
+    {XSD.decimal(1.1), XSD.decimal(2.2)},
+    {XSD.decimal(1.1), XSD.double(2.2)},
+    {XSD.double(3.14), XSD.integer(42)},
+    {XSD.decimal(3.14), XSD.integer(42)},
+    {RDF.literal(0, datatype: NS.XSD.byte), XSD.integer(1)},
+    {XSD.integer(1), RDF.literal(2, datatype: NS.XSD.positiveInteger)},
 # TODO: How to handle invalid number literals?
-#    {RDF.integer("3.14"), RDF.integer("007")},
+#    {XSD.integer("3.14"), XSD.integer("007")},
   ]
 
   @ordered_strings [
-    {RDF.string("a"), RDF.string("b")},
-    {RDF.string("0"), RDF.string("1")},
+    {XSD.string("a"), XSD.string("b")},
+    {XSD.string("0"), XSD.string("1")},
   ]
 
   @ordered_datetimes [
-    {RDF.date_time("2002-04-02T12:00:00"), RDF.date_time("2002-04-02T17:00:00")},
-    {RDF.date_time("2002-04-02T12:00:00+01:00"), RDF.date_time("2002-04-02T12:00:00+00:00")},
+    {XSD.date_time("2002-04-02T12:00:00"), XSD.date_time("2002-04-02T17:00:00")},
+    {XSD.date_time("2002-04-02T12:00:00+01:00"), XSD.date_time("2002-04-02T12:00:00+00:00")},
   ]
 
 
   describe "= operator" do
     test "with equal terms" do
       Enum.each @equal_rdf_terms, fn {left, right} ->
-        assert_builtin_result(:=, [left, right], RDF.true)
+        assert_builtin_result(:=, [left, right], XSD.true)
       end
     end
 
     test "with equal values" do
       Enum.each @equal_rdf_values, fn {left, right} ->
-        assert_builtin_result(:=, [left, right], RDF.true)
+        assert_builtin_result(:=, [left, right], XSD.true)
       end
     end
 
     test "with unequal terms" do
       Enum.each @unequal_rdf_terms, fn {left, right} ->
-        assert_builtin_result(:=, [left, right], RDF.false)
+        assert_builtin_result(:=, [left, right], XSD.false)
       end
     end
 
     test "with unequal values" do
       Enum.each @unequal_rdf_values, fn {left, right} ->
-        assert_builtin_result(:=, [left, right], RDF.false)
+        assert_builtin_result(:=, [left, right], XSD.false)
       end
     end
 
@@ -185,25 +183,25 @@ defmodule SPARQL.Functions.BuiltinsTest do
   describe "!= operator" do
     test "with equal terms" do
       Enum.each @equal_rdf_terms, fn {left, right} ->
-        assert_builtin_result(:!=, [left, right], RDF.false)
+        assert_builtin_result(:!=, [left, right], XSD.false)
       end
     end
 
     test "with equal values" do
       Enum.each @equal_rdf_values, fn {left, right} ->
-        assert_builtin_result(:!=, [left, right], RDF.false)
+        assert_builtin_result(:!=, [left, right], XSD.false)
       end
     end
 
     test "with unequal terms" do
       Enum.each @unequal_rdf_terms, fn {left, right} ->
-        assert_builtin_result(:!=, [left, right], RDF.true)
+        assert_builtin_result(:!=, [left, right], XSD.true)
       end
     end
 
     test "with unequal values" do
       Enum.each @unequal_rdf_values, fn {left, right} ->
-        assert_builtin_result(:!=, [left, right], RDF.true)
+        assert_builtin_result(:!=, [left, right], XSD.true)
       end
     end
 
@@ -217,80 +215,80 @@ defmodule SPARQL.Functions.BuiltinsTest do
   describe "sameTerm function" do
     test "with equal terms" do
       Enum.each @equal_rdf_terms, fn {left, right} ->
-        assert_builtin_result(:sameTerm, [left, right], RDF.true)
+        assert_builtin_result(:sameTerm, [left, right], XSD.true)
       end
     end
 
     test "with equal values, but unequal terms" do
       Enum.each @equal_rdf_values, fn {left, right} ->
-        assert_builtin_result(:sameTerm, [left, right], RDF.false)
+        assert_builtin_result(:sameTerm, [left, right], XSD.false)
       end
     end
 
     test "with unequal terms" do
       Enum.each @unequal_rdf_terms, fn {left, right} ->
-        assert_builtin_result(:sameTerm, [left, right], RDF.false)
+        assert_builtin_result(:sameTerm, [left, right], XSD.false)
       end
     end
 
     test "with unequal values" do
       Enum.each @unequal_rdf_values, fn {left, right} ->
-        assert_builtin_result(:sameTerm, [left, right], RDF.false)
+        assert_builtin_result(:sameTerm, [left, right], XSD.false)
       end
     end
 
     test "with incompatible terms" do
       Enum.each @incomparable_terms, fn {left, right} ->
-        assert_builtin_result(:sameTerm, [left, right], RDF.false)
+        assert_builtin_result(:sameTerm, [left, right], XSD.false)
       end
     end
   end
 
   describe "< operator" do
     test "with booleans" do
-      assert_builtin_result(:<, [RDF.false, RDF.true], RDF.true)
-      assert_builtin_result(:<, [RDF.true, RDF.false], RDF.false)
+      assert_builtin_result(:<, [XSD.false, XSD.true], XSD.true)
+      assert_builtin_result(:<, [XSD.true, XSD.false], XSD.false)
     end
 
     test "with numbers: left number smaller than right number" do
       Enum.each @ordered_numbers, fn {left, right} ->
-        assert_builtin_result(:<, [left, right], RDF.true)
+        assert_builtin_result(:<, [left, right], XSD.true)
       end
     end
 
     test "with numbers: left number greater than right number" do
       Enum.each @ordered_numbers, fn {left, right} ->
-        assert_builtin_result(:<, [right, left], RDF.false)
+        assert_builtin_result(:<, [right, left], XSD.false)
       end
     end
 
     test "with date_times: left date_time before than right date_time" do
       Enum.each @ordered_datetimes, fn {left, right} ->
-        assert_builtin_result(:<, [left, right], RDF.true)
+        assert_builtin_result(:<, [left, right], XSD.true)
       end
     end
 
     test "with date_times: left date_time after than right date_time" do
       Enum.each @ordered_datetimes, fn {left, right} ->
-        assert_builtin_result(:<, [right, left], RDF.false)
+        assert_builtin_result(:<, [right, left], XSD.false)
       end
     end
 
     test "with strings: left string lexicographical before right string" do
       Enum.each @ordered_strings, fn {left, right} ->
-        assert_builtin_result(:<, [left, right], RDF.true)
+        assert_builtin_result(:<, [left, right], XSD.true)
       end
     end
 
     test "with strings: left string lexicographical after right string" do
       Enum.each @ordered_strings, fn {left, right} ->
-        assert_builtin_result(:<, [right, left], RDF.false)
+        assert_builtin_result(:<, [right, left], XSD.false)
       end
     end
 
     test "with equal literals" do
       Enum.each @term_equal_rdf_literals ++ @value_equal_rdf_literals, fn {left, right} ->
-        assert_builtin_result(:<, [left, right], RDF.false)
+        assert_builtin_result(:<, [left, right], XSD.false)
       end
     end
 
@@ -303,49 +301,49 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   describe "<= operator" do
     test "with booleans" do
-      assert_builtin_result(:<=, [RDF.false, RDF.true], RDF.true)
-      assert_builtin_result(:<=, [RDF.true, RDF.false], RDF.false)
+      assert_builtin_result(:<=, [XSD.false, XSD.true], XSD.true)
+      assert_builtin_result(:<=, [XSD.true, XSD.false], XSD.false)
     end
 
     test "with numbers: left number smaller than right number" do
       Enum.each @ordered_numbers, fn {left, right} ->
-        assert_builtin_result(:<=, [left, right], RDF.true)
+        assert_builtin_result(:<=, [left, right], XSD.true)
       end
     end
 
     test "with numbers: left number greater than right number" do
       Enum.each @ordered_numbers, fn {left, right} ->
-        assert_builtin_result(:<=, [right, left], RDF.false)
+        assert_builtin_result(:<=, [right, left], XSD.false)
       end
     end
 
     test "with date_times: left date_time before than right date_time" do
       Enum.each @ordered_datetimes, fn {left, right} ->
-        assert_builtin_result(:<=, [left, right], RDF.true)
+        assert_builtin_result(:<=, [left, right], XSD.true)
       end
     end
 
     test "with date_times: left date_time after than right date_time" do
       Enum.each @ordered_datetimes, fn {left, right} ->
-        assert_builtin_result(:<=, [right, left], RDF.false)
+        assert_builtin_result(:<=, [right, left], XSD.false)
       end
     end
 
     test "with strings: left string lexicographical before right string" do
       Enum.each @ordered_strings, fn {left, right} ->
-        assert_builtin_result(:<=, [left, right], RDF.true)
+        assert_builtin_result(:<=, [left, right], XSD.true)
       end
     end
 
     test "with strings: left string lexicographical after right string" do
       Enum.each @ordered_strings, fn {left, right} ->
-        assert_builtin_result(:<=, [right, left], RDF.false)
+        assert_builtin_result(:<=, [right, left], XSD.false)
       end
     end
 
     test "with equal literals" do
       Enum.each @term_equal_rdf_literals ++ @value_equal_rdf_literals, fn {left, right} ->
-        assert_builtin_result(:<=, [left, right], RDF.true)
+        assert_builtin_result(:<=, [left, right], XSD.true)
       end
     end
 
@@ -358,49 +356,49 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   describe "> operator" do
     test "with booleans" do
-      assert_builtin_result(:>, [RDF.false, RDF.true], RDF.false)
-      assert_builtin_result(:>, [RDF.true, RDF.false], RDF.true)
+      assert_builtin_result(:>, [XSD.false, XSD.true], XSD.false)
+      assert_builtin_result(:>, [XSD.true, XSD.false], XSD.true)
     end
 
     test "with numbers: left number smaller than right number" do
       Enum.each @ordered_numbers, fn {left, right} ->
-        assert_builtin_result(:>, [left, right], RDF.false)
+        assert_builtin_result(:>, [left, right], XSD.false)
       end
     end
 
     test "with numbers: left number greater than right number" do
       Enum.each @ordered_numbers, fn {left, right} ->
-        assert_builtin_result(:>, [right, left], RDF.true)
+        assert_builtin_result(:>, [right, left], XSD.true)
       end
     end
 
     test "with date_times: left date_time before than right date_time" do
       Enum.each @ordered_datetimes, fn {left, right} ->
-        assert_builtin_result(:>, [left, right], RDF.false)
+        assert_builtin_result(:>, [left, right], XSD.false)
       end
     end
 
     test "with date_times: left date_time after than right date_time" do
       Enum.each @ordered_datetimes, fn {left, right} ->
-        assert_builtin_result(:>, [right, left], RDF.true)
+        assert_builtin_result(:>, [right, left], XSD.true)
       end
     end
 
     test "with strings: left string lexicographical before right string" do
       Enum.each @ordered_strings, fn {left, right} ->
-        assert_builtin_result(:>, [left, right], RDF.false)
+        assert_builtin_result(:>, [left, right], XSD.false)
       end
     end
 
     test "with strings: left string lexicographical after right string" do
       Enum.each @ordered_strings, fn {left, right} ->
-        assert_builtin_result(:>, [right, left], RDF.true)
+        assert_builtin_result(:>, [right, left], XSD.true)
       end
     end
 
     test "with equal literals" do
       Enum.each @term_equal_rdf_literals ++ @value_equal_rdf_literals, fn {left, right} ->
-        assert_builtin_result(:>, [left, right], RDF.false)
+        assert_builtin_result(:>, [left, right], XSD.false)
       end
     end
 
@@ -413,49 +411,49 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   describe ">= operator" do
     test "with booleans" do
-      assert_builtin_result(:>=, [RDF.false, RDF.true], RDF.false)
-      assert_builtin_result(:>=, [RDF.true, RDF.false], RDF.true)
+      assert_builtin_result(:>=, [XSD.false, XSD.true], XSD.false)
+      assert_builtin_result(:>=, [XSD.true, XSD.false], XSD.true)
     end
 
     test "with numbers: left number smaller than right number" do
       Enum.each @ordered_numbers, fn {left, right} ->
-        assert_builtin_result(:>=, [left, right], RDF.false)
+        assert_builtin_result(:>=, [left, right], XSD.false)
       end
     end
 
     test "with numbers: left number greater than right number" do
       Enum.each @ordered_numbers, fn {left, right} ->
-        assert_builtin_result(:>=, [right, left], RDF.true)
+        assert_builtin_result(:>=, [right, left], XSD.true)
       end
     end
 
     test "with date_times: left date_time before than right date_time" do
       Enum.each @ordered_datetimes, fn {left, right} ->
-        assert_builtin_result(:>=, [left, right], RDF.false)
+        assert_builtin_result(:>=, [left, right], XSD.false)
       end
     end
 
     test "with date_times: left date_time after than right date_time" do
       Enum.each @ordered_datetimes, fn {left, right} ->
-        assert_builtin_result(:>=, [right, left], RDF.true)
+        assert_builtin_result(:>=, [right, left], XSD.true)
       end
     end
 
     test "with strings: left string lexicographical before right string" do
       Enum.each @ordered_strings, fn {left, right} ->
-        assert_builtin_result(:>=, [left, right], RDF.false)
+        assert_builtin_result(:>=, [left, right], XSD.false)
       end
     end
 
     test "with strings: left string lexicographical after right string" do
       Enum.each @ordered_strings, fn {left, right} ->
-        assert_builtin_result(:>=, [right, left], RDF.true)
+        assert_builtin_result(:>=, [right, left], XSD.true)
       end
     end
 
     test "with equal literals" do
       Enum.each @term_equal_rdf_literals ++ @value_equal_rdf_literals, fn {left, right} ->
-          assert_builtin_result(:>=, [left, right], RDF.true)
+          assert_builtin_result(:>=, [left, right], XSD.true)
         end
     end
 
@@ -470,11 +468,11 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "! operator" do
     [
-      {RDF.true,               RDF.false},
-      {RDF.false,              RDF.true},
-      {RDF.integer(42),        RDF.false},
-      {RDF.string(""),         RDF.true},
-      {RDF.date("2010-01-01"), :error},
+      {XSD.true,               XSD.false},
+      {XSD.false,              XSD.true},
+      {XSD.integer(42),        XSD.false},
+      {XSD.string(""),         XSD.true},
+      {XSD.date("2010-01-01"), :error},
       {nil,                    :error},
       {:error,                 :error},
     ]
@@ -485,14 +483,14 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "&& operator" do
     [
-      {RDF.true,               RDF.true,  RDF.true},
-      {RDF.integer(42),        RDF.false, RDF.false},
-      {RDF.string(""),         RDF.true,  RDF.false},
-      {RDF.false,              RDF.false, RDF.false},
-      {RDF.true,               nil,       :error},
-      {RDF.date("2010-01-01"), RDF.true,  :error},
-      {RDF.false,              nil,       RDF.false},
-      {:error,                 RDF.false, RDF.false},
+      {XSD.true,               XSD.true,  XSD.true},
+      {XSD.integer(42),        XSD.false, XSD.false},
+      {XSD.string(""),         XSD.true,  XSD.false},
+      {XSD.false,              XSD.false, XSD.false},
+      {XSD.true,               nil,       :error},
+      {XSD.date("2010-01-01"), XSD.true,  :error},
+      {XSD.false,              nil,       XSD.false},
+      {:error,                 XSD.false, XSD.false},
       {:error,                 :error,    :error},
     ]
     |> Enum.each(fn {left, right, result} ->
@@ -502,14 +500,14 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "|| operator" do
     [
-      {RDF.true,               RDF.true,  RDF.true},
-      {RDF.string("foo"),      RDF.false, RDF.true},
-      {RDF.integer(42),        RDF.true,  RDF.true},
-      {RDF.false,              RDF.false, RDF.false},
-      {RDF.true,               :error,    RDF.true},
-      {nil,                    RDF.true,  RDF.true},
-      {RDF.false,              :error,    :error},
-      {RDF.date("2010-01-01"), RDF.false, :error},
+      {XSD.true,               XSD.true,  XSD.true},
+      {XSD.string("foo"),      XSD.false, XSD.true},
+      {XSD.integer(42),        XSD.true,  XSD.true},
+      {XSD.false,              XSD.false, XSD.false},
+      {XSD.true,               :error,    XSD.true},
+      {nil,                    XSD.true,  XSD.true},
+      {XSD.false,              :error,    :error},
+      {XSD.date("2010-01-01"), XSD.false, :error},
       {:error,                 :error,    :error},
     ]
     |> Enum.each(fn {left, right, result} ->
@@ -519,12 +517,12 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "IF function" do
     [
-      {RDF.true,        RDF.integer(1),  RDF.integer(2), RDF.integer(1)},
-      {RDF.false,       RDF.integer(1),  RDF.integer(2), RDF.integer(2)},
-      {:error,          RDF.integer(1),  RDF.integer(2), :error},
-      {RDF.integer(42), RDF.true,        :error,         RDF.true},
-      {RDF.string(""),  :error,          RDF.false,      RDF.false},
-      {nil,             RDF.true,        RDF.true,       :error},
+      {XSD.true,        XSD.integer(1),  XSD.integer(2), XSD.integer(1)},
+      {XSD.false,       XSD.integer(1),  XSD.integer(2), XSD.integer(2)},
+      {:error,          XSD.integer(1),  XSD.integer(2), :error},
+      {XSD.integer(42), XSD.true,        :error,         XSD.true},
+      {XSD.string(""),  :error,          XSD.false,      XSD.false},
+      {nil,             XSD.true,        XSD.true,       :error},
     ]
     |> Enum.each(fn {condition, then_value, else_value, result} ->
          assert_builtin_expression_evaluation_result(:IF, [condition, then_value, else_value], result)
@@ -536,12 +534,12 @@ defmodule SPARQL.Functions.BuiltinsTest do
       [
         {"foo", %{"foo" => ~L"bar"}},
         {"foo", %{"foo" => ~L""}},
-        {"foo", %{"foo" => RDF.double("NAN")}},
-        {"foo", %{"foo" => RDF.double("INF")}},
+        {"foo", %{"foo" => XSD.double("NAN")}},
+        {"foo", %{"foo" => XSD.double("INF")}},
       ]
       |> Enum.each(fn {arg, solution} ->
            assert Expression.evaluate(%FunctionCall.Builtin{name: :BOUND, arguments: [arg]},
-                    %{solution: Map.merge(solution, %{:__id__ => @example_solution_id})}, %{}) == RDF.true
+                    %{solution: Map.merge(solution, %{:__id__ => @example_solution_id})}, %{}) == XSD.true
          end)
     end
 
@@ -551,7 +549,7 @@ defmodule SPARQL.Functions.BuiltinsTest do
       ]
       |> Enum.each(fn {arg, solution} ->
            assert Expression.evaluate(%FunctionCall.Builtin{name: :BOUND, arguments: [arg]},
-                    %{solution: Map.merge(solution, %{:__id__ => @example_solution_id})}, %{}) == RDF.false
+                    %{solution: Map.merge(solution, %{:__id__ => @example_solution_id})}, %{}) == XSD.false
          end)
     end
 
@@ -559,7 +557,7 @@ defmodule SPARQL.Functions.BuiltinsTest do
       [
         {~L"foo", %{"foo" => ~L"bar"}},
         {~L<http://foo>, %{"foo" => ~L"bar"}},
-        {RDF.integer(42), %{"foo" => ~L"bar"}},
+        {XSD.integer(42), %{"foo" => ~L"bar"}},
       ]
       |> Enum.each(fn {arg, solution} ->
            assert Expression.evaluate(%FunctionCall.Builtin{name: :BOUND, arguments: [arg]},
@@ -570,9 +568,9 @@ defmodule SPARQL.Functions.BuiltinsTest do
   
   test "COALESCE function" do
     [
-      {[RDF.integer(42)], RDF.integer(42)},
-      {[RDF.string(""), RDF.true], RDF.string("")},
-      {["foo", RDF.true], RDF.true},
+      {[XSD.integer(42)], XSD.integer(42)},
+      {[XSD.string(""), XSD.true], XSD.string("")},
+      {["foo", XSD.true], XSD.true},
       {["foo"], :error},
       {[:error], :error},
       {[], :error},
@@ -584,16 +582,16 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "IN operator" do
     [
-      {RDF.integer(2), [RDF.integer(1), RDF.integer(2), RDF.integer(3)], RDF.true},
-      {RDF.integer(2), [], RDF.false},
-      {RDF.integer(2), [~I<http://example/iri>, RDF.string("str"), RDF.double(2.0)], RDF.true},
+      {XSD.integer(2), [XSD.integer(1), XSD.integer(2), XSD.integer(3)], XSD.true},
+      {XSD.integer(2), [], XSD.false},
+      {XSD.integer(2), [~I<http://example/iri>, XSD.string("str"), XSD.double(2.0)], XSD.true},
 
-      {RDF.integer(2), [:error, RDF.integer(2)], RDF.true},
-      {RDF.integer(2), [RDF.integer(2), :error], RDF.true},
-      {RDF.integer(2), [RDF.integer(3), :error], :error},
+      {XSD.integer(2), [:error, XSD.integer(2)], XSD.true},
+      {XSD.integer(2), [XSD.integer(2), :error], XSD.true},
+      {XSD.integer(2), [XSD.integer(3), :error], :error},
 
-      {:error, [RDF.integer(2)], :error},
-      {:error, [:error, RDF.integer(2)], :error},
+      {:error, [XSD.integer(2)], :error},
+      {:error, [:error, XSD.integer(2)], :error},
     ]
     |> Enum.each(fn {left, right, result} ->
          assert_builtin_expression_evaluation_result(:IN, [left, right], result)
@@ -602,16 +600,16 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "NOT IN operator" do
     [
-      {RDF.integer(2), [RDF.integer(1), RDF.integer(2), RDF.integer(3)],	RDF.false},
-      {RDF.integer(2), [],	RDF.true},
-      {RDF.integer(2), [~I<http://example/iri>, RDF.string("str"), RDF.double(2.0)],	RDF.false},
+      {XSD.integer(2), [XSD.integer(1), XSD.integer(2), XSD.integer(3)],	XSD.false},
+      {XSD.integer(2), [],	XSD.true},
+      {XSD.integer(2), [~I<http://example/iri>, XSD.string("str"), XSD.double(2.0)],	XSD.false},
 
-      {RDF.integer(2), [:error, RDF.integer(2)], RDF.false},
-      {RDF.integer(2), [RDF.integer(2), :error], RDF.false},
-      {RDF.integer(2), [RDF.integer(3), :error], :error},
+      {XSD.integer(2), [:error, XSD.integer(2)], XSD.false},
+      {XSD.integer(2), [XSD.integer(2), :error], XSD.false},
+      {XSD.integer(2), [XSD.integer(3), :error], :error},
 
-      {:error, [RDF.integer(2)], :error},
-      {:error, [:error, RDF.integer(2)], :error},
+      {:error, [XSD.integer(2)], :error},
+      {:error, [:error, XSD.integer(2)], :error},
     ]
     |> Enum.each(fn {left, right, result} ->
          assert_builtin_expression_evaluation_result(:NOT_IN, [left, right], result)
@@ -620,11 +618,11 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "unary + operator" do
     [
-      {RDF.integer(42),   RDF.integer(42)},
-      {RDF.double(3.14),  RDF.double(3.14)},
-      {RDF.decimal(3.14), RDF.decimal(3.14)},
-      {RDF.string("42"),  :error},
-      {RDF.true,          :error},
+      {XSD.integer(42),   XSD.integer(42)},
+      {XSD.double(3.14),  XSD.double(3.14)},
+      {XSD.decimal(3.14), XSD.decimal(3.14)},
+      {XSD.string("42"),  :error},
+      {XSD.true,          :error},
       {nil,               :error},
       {:error,            :error},
     ]
@@ -635,14 +633,14 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "unary - operator" do
     [
-      {RDF.integer(42),    RDF.integer(-42)},
-      {RDF.double(3.14),   RDF.double(-3.14)},
-      {RDF.decimal(3.14),  RDF.decimal(-3.14)},
-      {RDF.integer(-42),   RDF.integer(42)},
-      {RDF.double(-3.14),  RDF.double(3.14)},
-      {RDF.decimal(-3.14), RDF.decimal(3.14)},
-      {RDF.string("42"),   :error},
-      {RDF.true,           :error},
+      {XSD.integer(42),    XSD.integer(-42)},
+      {XSD.double(3.14),   XSD.double(-3.14)},
+      {XSD.decimal(3.14),  XSD.decimal(-3.14)},
+      {XSD.integer(-42),   XSD.integer(42)},
+      {XSD.double(-3.14),  XSD.double(3.14)},
+      {XSD.decimal(-3.14), XSD.decimal(3.14)},
+      {XSD.string("42"),   :error},
+      {XSD.true,           :error},
       {nil,                :error},
       {:error,             :error},
     ]
@@ -653,12 +651,12 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "numeric + operator" do
     [
-      {RDF.integer(1),  RDF.integer(2),    RDF.integer(3)},
-      {RDF.integer(42), RDF.decimal(3.14), RDF.decimal(45.14)},
-      {RDF.integer(42), RDF.double(3.14),  RDF.double(45.14)},
+      {XSD.integer(1),  XSD.integer(2),    XSD.integer(3)},
+      {XSD.integer(42), XSD.decimal(3.14), XSD.decimal(45.14)},
+      {XSD.integer(42), XSD.double(3.14),  XSD.double(45.14)},
 
-      {RDF.integer(1), :error, :error},
-      {:error, RDF.integer(1), :error},
+      {XSD.integer(1), :error, :error},
+      {:error, XSD.integer(1), :error},
       {:error, :error, :error},
     ]
     |> Enum.each(fn {left, right, result} ->
@@ -668,12 +666,12 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "numeric - operator" do
     [
-      {RDF.integer(3),  RDF.integer(2),    RDF.integer(1)},
-      {RDF.integer(42), RDF.decimal(3.14), RDF.decimal(38.86)},
-      {RDF.integer(42), RDF.double(3.14),  RDF.double(38.86)},
+      {XSD.integer(3),  XSD.integer(2),    XSD.integer(1)},
+      {XSD.integer(42), XSD.decimal(3.14), XSD.decimal(38.86)},
+      {XSD.integer(42), XSD.double(3.14),  XSD.double(38.86)},
 
-      {RDF.integer(1), :error, :error},
-      {:error, RDF.integer(1), :error},
+      {XSD.integer(1), :error, :error},
+      {:error, XSD.integer(1), :error},
       {:error, :error, :error},
     ]
     |> Enum.each(fn {left, right, result} ->
@@ -683,11 +681,11 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "numeric * operator" do
     [
-      {RDF.integer(2),   RDF.integer(3),   RDF.integer(6)},
-      {RDF.decimal(1.5), RDF.double(3.14), RDF.double(4.71)},
+      {XSD.integer(2),   XSD.integer(3),   XSD.integer(6)},
+      {XSD.decimal(1.5), XSD.double(3.14), XSD.double(4.71)},
 
-      {RDF.integer(1), :error, :error},
-      {:error, RDF.integer(1), :error},
+      {XSD.integer(1), :error, :error},
+      {:error, XSD.integer(1), :error},
       {:error, :error, :error},
     ]
     |> Enum.each(fn {left, right, result} ->
@@ -697,11 +695,11 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "numeric / operator" do
     [
-      {RDF.integer(3),   RDF.integer(2), RDF.decimal(1.5)},
-      {RDF.decimal(1.5), RDF.double(2),  RDF.double(0.75)},
+      {XSD.integer(3),   XSD.integer(2), XSD.decimal(1.5)},
+      {XSD.decimal(1.5), XSD.double(2),  XSD.double(0.75)},
 
-      {RDF.integer(1), :error, :error},
-      {:error, RDF.integer(1), :error},
+      {XSD.integer(1), :error, :error},
+      {:error, XSD.integer(1), :error},
       {:error, :error, :error},
     ]
     |> Enum.each(fn {left, right, result} ->
@@ -714,8 +712,8 @@ defmodule SPARQL.Functions.BuiltinsTest do
       RDF.iri("http://example.com/foo"),
     ]
     |> Enum.each(fn positive_example ->
-         assert_builtin_result(:isIRI, [positive_example], RDF.true)
-         assert_builtin_result(:isURI, [positive_example], RDF.true)
+         assert_builtin_result(:isIRI, [positive_example], XSD.true)
+         assert_builtin_result(:isURI, [positive_example], XSD.true)
        end)
 
     [
@@ -723,8 +721,8 @@ defmodule SPARQL.Functions.BuiltinsTest do
       RDF.literal("http://example.com/foo"),
     ]
     |> Enum.each(fn negative_example ->
-         assert_builtin_result(:isIRI, [negative_example], RDF.false)
-         assert_builtin_result(:isURI, [negative_example], RDF.false)
+         assert_builtin_result(:isIRI, [negative_example], XSD.false)
+         assert_builtin_result(:isURI, [negative_example], XSD.false)
        end)
 
     assert_builtin_result(:isIRI, [:error], :error)
@@ -738,7 +736,7 @@ defmodule SPARQL.Functions.BuiltinsTest do
       RDF.bnode(),
     ]
     |> Enum.each(fn positive_example ->
-         assert_builtin_result(:isBLANK, [positive_example], RDF.true)
+         assert_builtin_result(:isBLANK, [positive_example], XSD.true)
        end)
 
     [
@@ -746,7 +744,7 @@ defmodule SPARQL.Functions.BuiltinsTest do
       RDF.iri("foo"),
     ]
     |> Enum.each(fn negative_example ->
-         assert_builtin_result(:isBLANK, [negative_example], RDF.false)
+         assert_builtin_result(:isBLANK, [negative_example], XSD.false)
        end)
 
     assert_builtin_result(:isBLANK, [:error], :error)
@@ -756,10 +754,10 @@ defmodule SPARQL.Functions.BuiltinsTest do
     [
       RDF.literal("foo"),
       RDF.literal("foo", language: "en"),
-      RDF.integer(42),
+      XSD.integer(42),
     ]
     |> Enum.each(fn positive_example ->
-         assert_builtin_result(:isLITERAL, [positive_example], RDF.true)
+         assert_builtin_result(:isLITERAL, [positive_example], XSD.true)
        end)
 
     [
@@ -768,7 +766,7 @@ defmodule SPARQL.Functions.BuiltinsTest do
       42,
     ]
     |> Enum.each(fn negative_example ->
-         assert_builtin_result(:isLITERAL, [negative_example], RDF.false)
+         assert_builtin_result(:isLITERAL, [negative_example], XSD.false)
        end)
 
     assert_builtin_result(:isLITERAL, [:error], :error)
@@ -776,25 +774,25 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "isNumeric function" do
     [
-      RDF.integer(42),
-      RDF.double("3.14"),
-      RDF.nonPositiveInteger("-42"),
+      XSD.integer(42),
+      XSD.double("3.14"),
+      XSD.nonPositiveInteger("-42"),
     ]
     |> Enum.each(fn positive_example ->
-         assert_builtin_result(:isNUMERIC, [positive_example], RDF.true)
+         assert_builtin_result(:isNUMERIC, [positive_example], XSD.true)
        end)
 
     [
       RDF.literal("42"),
       RDF.literal("42", language: "en"),
-      RDF.integer("3.14"),
-      RDF.decimal("foo"),
+      XSD.integer("3.14"),
+      XSD.decimal("foo"),
       RDF.iri("http://example.com/foo"),
       RDF.bnode("foo"),
       42,
     ]
     |> Enum.each(fn negative_example ->
-         assert_builtin_result(:isNUMERIC, [negative_example], RDF.false)
+         assert_builtin_result(:isNUMERIC, [negative_example], XSD.false)
        end)
 
     assert_builtin_result(:isNUMERIC, [:error], :error)
@@ -802,13 +800,13 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "str function" do
     [
-      {RDF.string("foo"), RDF.string("foo")},
-      {RDF.lang_string("foo", language: "en"), RDF.string("foo")},
-      {RDF.integer(42), RDF.string("42")},
-      {RDF.double("3.14"), RDF.string("3.14")},
-      {RDF.nonPositiveInteger("42"), RDF.string("42")},
+      {XSD.string("foo"), XSD.string("foo")},
+      {RDF.lang_string("foo", language: "en"), XSD.string("foo")},
+      {XSD.integer(42), XSD.string("42")},
+      {XSD.double("3.14"), XSD.string("3.14")},
+      {XSD.nonPositiveInteger("42"), XSD.string("42")},
 
-      {RDF.iri("http://example.com/"), RDF.string("http://example.com/")},
+      {RDF.iri("http://example.com/"), XSD.string("http://example.com/")},
 
       {RDF.bnode("foo"), :error},
 
@@ -821,11 +819,11 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "lang function" do
     [
-      {RDF.lang_string("foo", language: "en"), RDF.string("en")},
+      {RDF.lang_string("foo", language: "en"), XSD.string("en")},
 
-      {RDF.string("foo"), ~L""},
+      {XSD.string("foo"), ~L""},
 
-      {RDF.integer(42), ~L""},
+      {XSD.integer(42), ~L""},
 
       {RDF.iri("http://example.com/"), :error},
       {RDF.bnode("foo"), :error},
@@ -838,11 +836,11 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "datatype function" do
     [
-      {RDF.integer(42),                        NS.XSD.integer},
-      {RDF.string("foo"),                      NS.XSD.string},
+      {XSD.integer(42),                        NS.XSD.integer},
+      {XSD.string("foo"),                      NS.XSD.string},
       {RDF.lang_string("foo", language: "en"), RDF.langString},
       {~L"foo",                                NS.XSD.string},
-      {RDF.byte(42),                           NS.XSD.byte},
+      {XSD.byte(42),                           NS.XSD.byte},
 
       {RDF.iri("http://example.com/"), :error},
       {RDF.bnode("foo"), :error},
@@ -855,18 +853,18 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "STRDT function" do
     [
-      {RDF.string("123"),  NS.XSD.integer, RDF.integer("123")},
-      {RDF.string("iiii"), RDF.iri("http://example/romanNumeral"),
+      {XSD.string("123"),  NS.XSD.integer, XSD.integer("123")},
+      {XSD.string("iiii"), RDF.iri("http://example/romanNumeral"),
         RDF.literal("iiii", datatype: RDF.iri("http://example/romanNumeral"))},
 
       # TODO: Should this be an error? An rdf:langString with an empty language is invalid.
-      {RDF.string("foo"), RDF.langString, RDF.langString("foo", language: nil)},
+      {XSD.string("foo"), RDF.langString, RDF.langString("foo", language: nil)},
 
       {RDF.lang_string("123", language: "en"), NS.XSD.integer, :error},
-      {RDF.integer(123), NS.XSD.string, :error},
-      {RDF.integer(123), NS.XSD.double, :error},
+      {XSD.integer(123), NS.XSD.string, :error},
+      {XSD.integer(123), NS.XSD.double, :error},
 
-      {RDF.string("123"), :error, :error},
+      {XSD.string("123"), :error, :error},
       {:error, NS.XSD.integer, :error},
       {:error, :error, :error},
     ]
@@ -876,18 +874,18 @@ defmodule SPARQL.Functions.BuiltinsTest do
   end
 
   test "STRLANG function" do
-    valid_language = RDF.string("en")
+    valid_language = XSD.string("en")
     [
-      {RDF.string("foo"), valid_language, RDF.langString("foo", language: "en")},
+      {XSD.string("foo"), valid_language, RDF.langString("foo", language: "en")},
 
       {RDF.lang_string("foo", language: ""), valid_language,   :error},
-      {RDF.integer(42),                      valid_language,   :error},
+      {XSD.integer(42),                      valid_language,   :error},
       {:error,                               valid_language,   :error},
 
-      {RDF.string("foo"), RDF.string(""),                      :error},
-      {RDF.string("foo"), RDF.langString("en", language: ""),  :error},
-      {RDF.string("foo"), RDF.integer(42),                     :error},
-      {RDF.string("foo"), :error,                              :error},
+      {XSD.string("foo"), XSD.string(""),                      :error},
+      {XSD.string("foo"), RDF.langString("en", language: ""),  :error},
+      {XSD.string("foo"), XSD.integer(42),                     :error},
+      {XSD.string("foo"), :error,                              :error},
 
       {:error, :error, :error},
     ]
@@ -901,11 +899,11 @@ defmodule SPARQL.Functions.BuiltinsTest do
     test "simple cases" do
       [
         {RDF.iri("http://example/"),    RDF.iri("http://example/")},
-        {RDF.string("http://example/"), RDF.iri("http://example/")},
+        {XSD.string("http://example/"), RDF.iri("http://example/")},
         {~L"http://example/",           RDF.iri("http://example/")},
 
         {RDF.lang_string("http://example/", language: "en"), :error},
-        {RDF.integer(42),  :error},
+        {XSD.integer(42),  :error},
         {RDF.bnode("foo"), :error},
         {:error, :error}
       ]
@@ -943,36 +941,36 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   describe "BNODE function" do
     test "without args" do
-      {:ok, generator} = RDF.BlankNode.Generator.start_link(RDF.BlankNode.Increment)
+      {:ok, generator} = BlankNode.Generator.start_link(BlankNode.Increment)
       execution = %{bnode_generator: generator, solution_id: @example_solution_id}
-      assert %RDF.BlankNode{} = bnode1 = Builtins.call(:BNODE, [], execution)
-      assert %RDF.BlankNode{} = bnode2 = Builtins.call(:BNODE, [], execution)
+      assert %BlankNode{} = bnode1 = Builtins.call(:BNODE, [], execution)
+      assert %BlankNode{} = bnode2 = Builtins.call(:BNODE, [], execution)
       assert bnode1 != bnode2
-      assert %RDF.BlankNode{} =
+      assert %BlankNode{} =
                Expression.evaluate(%FunctionCall.Builtin{name: :BNODE, arguments: []},
                  @example_solution_data, execution)
-      RDF.BlankNode.Generator.stop(generator)
+      BlankNode.Generator.stop(generator)
     end
 
     test "with a string" do
-      {:ok, generator} = RDF.BlankNode.Generator.start_link(RDF.BlankNode.Increment)
+      {:ok, generator} = BlankNode.Generator.start_link(BlankNode.Increment)
       execution = %{bnode_generator: generator, solution_id: @example_solution_id}
-      assert %RDF.BlankNode{} = bnode1 = Builtins.call(:BNODE, [~L"foo"], execution)
-      assert %RDF.BlankNode{} = bnode2 = Builtins.call(:BNODE, [~L"bar"], execution)
+      assert %BlankNode{} = bnode1 = Builtins.call(:BNODE, [~L"foo"], execution)
+      assert %BlankNode{} = bnode2 = Builtins.call(:BNODE, [~L"bar"], execution)
       assert bnode1 != bnode2
       assert Builtins.call(:BNODE, [~L"foo"], execution) == bnode1
       assert Builtins.call(:BNODE, [~L"foo"], Map.put(execution, :solution_id, :other_ref)) != bnode1
       assert Expression.evaluate(%FunctionCall.Builtin{name: :BNODE, arguments: [~L"foo"]},
                @example_solution_data, execution) == bnode1
-      RDF.BlankNode.Generator.stop(generator)
+      BlankNode.Generator.stop(generator)
     end
   end
 
   test "UUID function" do
-    assert %RDF.IRI{value: "urn:uuid:" <> _} = uuid1 = Builtins.call(:UUID, [], %{})
-    assert %RDF.IRI{value: "urn:uuid:" <> _} = uuid2 = Builtins.call(:UUID, [], %{})
+    assert %IRI{value: "urn:uuid:" <> _} = uuid1 = Builtins.call(:UUID, [], %{})
+    assert %IRI{value: "urn:uuid:" <> _} = uuid2 = Builtins.call(:UUID, [], %{})
     assert uuid1 != uuid2
-    assert %RDF.IRI{value: "urn:uuid:" <> _} =
+    assert %IRI{value: "urn:uuid:" <> _} =
              Expression.evaluate(%FunctionCall.Builtin{name: :UUID, arguments: []},
                                   @example_solution_data, %{})
   end
@@ -988,10 +986,10 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "STRLEN function" do
     [
-      {~L"chat",           RDF.integer(4)},
-      {RDF.string("chat"), RDF.integer(4)},
-      {~L"chat"en,         RDF.integer(4)},
-      {RDF.integer(42),    :error},
+      {~L"chat",           XSD.integer(4)},
+      {XSD.string("chat"), XSD.integer(4)},
+      {~L"chat"en,         XSD.integer(4)},
+      {XSD.integer(42),    :error},
       {:error,             :error},
     ]
     |> Enum.each(fn {string, result} ->
@@ -1002,15 +1000,15 @@ defmodule SPARQL.Functions.BuiltinsTest do
   describe "SUBSTR function" do
     test "without length" do
       [
-        {RDF.string("foobar"), RDF.integer(4), RDF.string("bar")},
-        {~L"foobar",           RDF.integer(4), ~L"bar"},
-        {~L"foobar"en,         RDF.integer(4), ~L"bar"en},
+        {XSD.string("foobar"), XSD.integer(4), XSD.string("bar")},
+        {~L"foobar",           XSD.integer(4), ~L"bar"},
+        {~L"foobar"en,         XSD.integer(4), ~L"bar"en},
 
-        {RDF.integer(42),      RDF.integer(4), :error},
-        {RDF.string("foo"),    RDF.string(4),  :error},
+        {XSD.integer(42),      XSD.integer(4), :error},
+        {XSD.string("foo"),    XSD.string(4),  :error},
 
-        {:error,               RDF.integer(4), :error},
-        {RDF.string("foo"),    :error,         :error},
+        {:error,               XSD.integer(4), :error},
+        {XSD.string("foo"),    :error,         :error},
         {:error,               :error,         :error},
       ]
       |> Enum.each(fn {source, starting_loc, result} ->
@@ -1020,17 +1018,17 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
     test "with length" do
       [
-        {RDF.string("foobar"), RDF.integer(4), RDF.integer(1), RDF.string("b")},
-        {~L"foobar",           RDF.integer(4), RDF.integer(1), ~L"b"},
-        {~L"foobar"en,         RDF.integer(4), RDF.integer(1), ~L"b"en},
+        {XSD.string("foobar"), XSD.integer(4), XSD.integer(1), XSD.string("b")},
+        {~L"foobar",           XSD.integer(4), XSD.integer(1), ~L"b"},
+        {~L"foobar"en,         XSD.integer(4), XSD.integer(1), ~L"b"en},
 
-        {RDF.integer(42),      RDF.integer(4), RDF.integer(1), :error},
-        {RDF.string("foo"),    RDF.string(4),  RDF.integer(1), :error},
-        {RDF.string("foo"),    RDF.integer(4), RDF.string(1),  :error},
+        {XSD.integer(42),      XSD.integer(4), XSD.integer(1), :error},
+        {XSD.string("foo"),    XSD.string(4),  XSD.integer(1), :error},
+        {XSD.string("foo"),    XSD.integer(4), XSD.string(1),  :error},
 
-        {:error,               RDF.integer(4), RDF.integer(1), :error},
-        {RDF.string("foo"),    :error,         RDF.integer(1), :error},
-        {RDF.string("foo"),    RDF.integer(4), :error,         :error},
+        {:error,               XSD.integer(4), XSD.integer(1), :error},
+        {XSD.string("foo"),    :error,         XSD.integer(1), :error},
+        {XSD.string("foo"),    XSD.integer(4), :error,         :error},
         {:error,               :error,         :error,         :error},
       ]
       |> Enum.each(fn {source, starting_loc, length, result} ->
@@ -1041,26 +1039,26 @@ defmodule SPARQL.Functions.BuiltinsTest do
     @tag skip: "TODO: We need support for derived datatypes in general and integers in particular"
     test "with derived integer as starting location" do
       assert_builtin_result(:SUBSTR,
-        [RDF.string("foobar"), RDF.literal(4, datatype: NS.XSD.byte)], RDF.string("bar"))
+        [XSD.string("foobar"), RDF.literal(4, datatype: NS.XSD.byte)], XSD.string("bar"))
     end
 
     @tag skip: "TODO: We need support for derived datatypes in general and integers in particular"
     test "with derived integer as length" do
       assert_builtin_result(:SUBSTR, [
-          RDF.string("foobar"),
-          RDF.integer(4),
+          XSD.string("foobar"),
+          XSD.integer(4),
           RDF.literal(1, datatype: NS.XSD.byte)
         ],
-        RDF.string("b"))
+        XSD.string("b"))
     end
   end
 
   test "UCASE function" do
     [
-      {RDF.string("foo"), RDF.string("FOO")},
+      {XSD.string("foo"), XSD.string("FOO")},
       {~L"foo",           ~L"FOO"},
       {~L"foo"en,         ~L"FOO"en},
-      {RDF.integer(42),    :error},
+      {XSD.integer(42),    :error},
       {:error,             :error},
     ]
     |> Enum.each(fn {string, result} ->
@@ -1070,10 +1068,10 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "LCASE function" do
     [
-      {RDF.string("BAR"), RDF.string("bar")},
+      {XSD.string("BAR"), XSD.string("bar")},
       {~L"BAR",           ~L"bar"},
       {~L"BAR"en,         ~L"bar"en},
-      {RDF.integer(42),    :error},
+      {XSD.integer(42),    :error},
       {:error,             :error},
     ]
     |> Enum.each(fn {string, result} ->
@@ -1083,22 +1081,22 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "STRSTARTS function" do
     [
-      {~L"foobar",           ~L"foo",           RDF.true},
-      {~L"foobar"en,         ~L"foo"en,         RDF.true},
-      {RDF.string("foobar"), RDF.string("foo"), RDF.true},
-      {RDF.string("foobar"), ~L"foo",           RDF.true},
-      {~L"foobar",           RDF.string("foo"), RDF.true},
-      {~L"foobar"en,         ~L"foo",           RDF.true},
-      {~L"foobar"en,         RDF.string("foo"), RDF.true},
-      {~L"foo",           ~L"foobar",           RDF.false},
+      {~L"foobar",           ~L"foo",           XSD.true},
+      {~L"foobar"en,         ~L"foo"en,         XSD.true},
+      {XSD.string("foobar"), XSD.string("foo"), XSD.true},
+      {XSD.string("foobar"), ~L"foo",           XSD.true},
+      {~L"foobar",           XSD.string("foo"), XSD.true},
+      {~L"foobar"en,         ~L"foo",           XSD.true},
+      {~L"foobar"en,         XSD.string("foo"), XSD.true},
+      {~L"foo",           ~L"foobar",           XSD.false},
 
       {~L"foobar"en, ~L"foo"de, :error},
       {~L"foobar",   ~L"foo"de, :error},
 
-      {RDF.string("42"),  RDF.integer("4"), :error},
-      {RDF.integer("42"), RDF.string("4"),  :error},
-      {:error,            RDF.integer(42),  :error},
-      {RDF.integer(42),   :error,           :error},
+      {XSD.string("42"),  XSD.integer("4"), :error},
+      {XSD.integer("42"), XSD.string("4"),  :error},
+      {:error,            XSD.integer(42),  :error},
+      {XSD.integer(42),   :error,           :error},
       {:error,            :error,           :error},
     ]
     |> Enum.each(fn {arg1, arg2, result} ->
@@ -1108,22 +1106,22 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "STRENDS function" do
     [
-      {~L"foobar",           ~L"bar",           RDF.true},
-      {~L"foobar"en,         ~L"bar"en,         RDF.true},
-      {RDF.string("foobar"), RDF.string("bar"), RDF.true},
-      {RDF.string("foobar"), ~L"bar",           RDF.true},
-      {~L"foobar",           RDF.string("bar"), RDF.true},
-      {~L"foobar"en,         ~L"bar",           RDF.true},
-      {~L"foobar"en,         RDF.string("bar"), RDF.true},
-      {~L"foo",           ~L"foobar",           RDF.false},
+      {~L"foobar",           ~L"bar",           XSD.true},
+      {~L"foobar"en,         ~L"bar"en,         XSD.true},
+      {XSD.string("foobar"), XSD.string("bar"), XSD.true},
+      {XSD.string("foobar"), ~L"bar",           XSD.true},
+      {~L"foobar",           XSD.string("bar"), XSD.true},
+      {~L"foobar"en,         ~L"bar",           XSD.true},
+      {~L"foobar"en,         XSD.string("bar"), XSD.true},
+      {~L"foo",           ~L"foobar",           XSD.false},
 
       {~L"foobar"en, ~L"bar"de, :error},
       {~L"foobar",   ~L"bar"de, :error},
 
-      {RDF.string("42"),  RDF.integer("2"), :error},
-      {RDF.integer("42"), RDF.string("2"),  :error},
-      {:error,            RDF.integer(42),  :error},
-      {RDF.integer(42),   :error,           :error},
+      {XSD.string("42"),  XSD.integer("2"), :error},
+      {XSD.integer("42"), XSD.string("2"),  :error},
+      {:error,            XSD.integer(42),  :error},
+      {XSD.integer(42),   :error,           :error},
       {:error,            :error,           :error},
     ]
     |> Enum.each(fn {arg1, arg2, result} ->
@@ -1133,22 +1131,22 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "CONTAINS function" do
     [
-      {~L"foobar",           ~L"bar",           RDF.true},
-      {~L"foobar"en,         ~L"foo"en,         RDF.true},
-      {RDF.string("foobar"), RDF.string("bar"), RDF.true},
-      {RDF.string("foobar"), ~L"foo",           RDF.true},
-      {~L"foobar",           RDF.string("bar"), RDF.true},
-      {~L"foobar"en,         ~L"foo",           RDF.true},
-      {~L"foobar"en,         RDF.string("bar"), RDF.true},
-      {~L"foo",           ~L"foobar",           RDF.false},
+      {~L"foobar",           ~L"bar",           XSD.true},
+      {~L"foobar"en,         ~L"foo"en,         XSD.true},
+      {XSD.string("foobar"), XSD.string("bar"), XSD.true},
+      {XSD.string("foobar"), ~L"foo",           XSD.true},
+      {~L"foobar",           XSD.string("bar"), XSD.true},
+      {~L"foobar"en,         ~L"foo",           XSD.true},
+      {~L"foobar"en,         XSD.string("bar"), XSD.true},
+      {~L"foo",           ~L"foobar",           XSD.false},
 
       {~L"foobar"en, ~L"bar"de, :error},
       {~L"foobar",   ~L"bar"de, :error},
 
-      {RDF.string("42"),  RDF.integer("2"), :error},
-      {RDF.integer("42"), RDF.string("2"),  :error},
-      {:error,            RDF.integer(42),  :error},
-      {RDF.integer(42),   :error,           :error},
+      {XSD.string("42"),  XSD.integer("2"), :error},
+      {XSD.integer("42"), XSD.string("2"),  :error},
+      {:error,            XSD.integer(42),  :error},
+      {XSD.integer(42),   :error,           :error},
       {:error,            :error,           :error},
     ]
     |> Enum.each(fn {arg1, arg2, result} ->
@@ -1161,17 +1159,17 @@ defmodule SPARQL.Functions.BuiltinsTest do
       {~L"abc",           ~L"b",           ~L"a"},
       {~L"abc"en,         ~L"bc",          ~L"a"en},
       {~L"abc"en,         ~L"b"cy,         :error},
-      {RDF.string("abc"), ~L"",            RDF.string("")},
+      {XSD.string("abc"), ~L"",            XSD.string("")},
       {~L"abc",           ~L"xyz",         ~L""},
       {~L"abc"en,         ~L"z"en,         ~L""},
       {~L"abc"en,         ~L"z",           ~L""},
       {~L"abc"en,         ~L""en,          ~L""en},
       {~L"abc"en,         ~L"",            ~L""en},
 
-      {RDF.string("42"),  RDF.integer("2"), :error},
-      {RDF.integer("42"), RDF.string("2"),  :error},
-      {:error,            RDF.integer(42),  :error},
-      {RDF.integer(42),   :error,           :error},
+      {XSD.string("42"),  XSD.integer("2"), :error},
+      {XSD.integer("42"), XSD.string("2"),  :error},
+      {:error,            XSD.integer(42),  :error},
+      {XSD.integer(42),   :error,           :error},
       {:error,            :error,           :error},
     ]
     |> Enum.each(fn {arg1, arg2, result} ->
@@ -1184,17 +1182,17 @@ defmodule SPARQL.Functions.BuiltinsTest do
       {~L"abc",           ~L"b",           ~L"c"},
       {~L"abc"en,         ~L"ab",          ~L"c"en},
       {~L"abc"en,         ~L"b"cy,        :error},
-      {RDF.string("abc"), ~L"",            RDF.string("abc")},
+      {XSD.string("abc"), ~L"",            XSD.string("abc")},
       {~L"abc",           ~L"xyz",         ~L""},
       {~L"abc"en,         ~L"z"en,         ~L""},
       {~L"abc"en,         ~L"z",           ~L""},
       {~L"abc"en,         ~L""en,          ~L"abc"en},
       {~L"abc"en,         ~L"",            ~L"abc"en},
 
-      {RDF.string("42"),  RDF.integer("2"), :error},
-      {RDF.integer("42"), RDF.string("2"),  :error},
-      {:error,            RDF.integer(42),  :error},
-      {RDF.integer(42),   :error,           :error},
+      {XSD.string("42"),  XSD.integer("2"), :error},
+      {XSD.integer("42"), XSD.string("2"),  :error},
+      {:error,            XSD.integer(42),  :error},
+      {XSD.integer(42),   :error,           :error},
       {:error,            :error,           :error},
     ]
     |> Enum.each(fn {arg1, arg2, result} ->
@@ -1206,14 +1204,14 @@ defmodule SPARQL.Functions.BuiltinsTest do
     [
       {~L"Los Angeles",           ~L"Los%20Angeles"},
       {~L"Los Angeles"en,         ~L"Los%20Angeles"},
-      {RDF.string("Los Angeles"), ~L"Los%20Angeles"},
+      {XSD.string("Los Angeles"), ~L"Los%20Angeles"},
 
       {~L"http://www.example.com/00/Weather/CA/Los%20Angeles#ocean",
        ~L"http%3A%2F%2Fwww.example.com%2F00%2FWeather%2FCA%2FLos%2520Angeles%23ocean"},
       {~L"~bébé",        ~L"~b%C3%A9b%C3%A9"},
       {~L"100% organic", ~L"100%25%20organic"},
 
-      {RDF.integer("42"), :error},
+      {XSD.integer("42"), :error},
       {:error,            :error},
     ]
     |> Enum.each(fn {string, result} ->
@@ -1225,22 +1223,22 @@ defmodule SPARQL.Functions.BuiltinsTest do
     [
       {[~L"foo",           ~L"bar"          ], ~L"foobar"},
       {[~L"foo"en,         ~L"bar"en        ], ~L"foobar"en},
-      {[RDF.string("foo"), RDF.string("bar")], RDF.string("foobar")},
-      {[~L"foo",           RDF.string("bar")], ~L"foobar"},
+      {[XSD.string("foo"), XSD.string("bar")], XSD.string("foobar")},
+      {[~L"foo",           XSD.string("bar")], ~L"foobar"},
       {[~L"foo"en,         ~L"bar"          ], ~L"foobar"},
-      {[~L"foo"en,         RDF.string("bar")], ~L"foobar"},
+      {[~L"foo"en,         XSD.string("bar")], ~L"foobar"},
 
 
-      {[~L"foo"en, RDF.string("bar"), ~L"baz"],  ~L"foobarbaz"},
+      {[~L"foo"en, XSD.string("bar"), ~L"baz"],  ~L"foobarbaz"},
 
       {[~L"foo"],   ~L"foo"},
       {[~L"foo"en], ~L"foo"en},
       {[], ~L""},
 
-      {[RDF.string("4"),   RDF.integer("2")], :error},
-      {[RDF.integer("4"),  RDF.string("2")],  :error},
-      {[:error,            RDF.integer(42)],  :error},
-      {[RDF.integer(42),   :error         ],  :error},
+      {[XSD.string("4"),   XSD.integer("2")], :error},
+      {[XSD.integer("4"),  XSD.string("2")],  :error},
+      {[:error,            XSD.integer(42)],  :error},
+      {[XSD.integer(42),   :error         ],  :error},
       {[:error,            :error         ],  :error},
     ]
     |> Enum.each(fn {args, result} ->
@@ -1250,22 +1248,22 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "langMatches function" do
     [
-      {~L"de",         ~L"de",    RDF.true},
-      {~L"de",         ~L"DE",    RDF.true},
-      {~L"de-DE",      ~L"de",    RDF.true},
-      {~L"de-CH",      ~L"de",    RDF.true},
-      {~L"de-CH",      ~L"de-ch", RDF.true},
-      {~L"de-DE-1996", ~L"de-de", RDF.true},
+      {~L"de",         ~L"de",    XSD.true},
+      {~L"de",         ~L"DE",    XSD.true},
+      {~L"de-DE",      ~L"de",    XSD.true},
+      {~L"de-CH",      ~L"de",    XSD.true},
+      {~L"de-CH",      ~L"de-ch", XSD.true},
+      {~L"de-DE-1996", ~L"de-de", XSD.true},
 
-      {~L"en",         ~L"de",    RDF.false},
-      {~L"de",         ~L"de-CH", RDF.false},
-      {~L"de-Deva",    ~L"de-de", RDF.false},
-      {~L"de-Latn-DE", ~L"de-de", RDF.false},
+      {~L"en",         ~L"de",    XSD.false},
+      {~L"de",         ~L"de-CH", XSD.false},
+      {~L"de-Deva",    ~L"de-de", XSD.false},
+      {~L"de-Latn-DE", ~L"de-de", XSD.false},
 
       {~L"en",            ~L"en"en,          :error},
       {~L"en"en,          ~L"en",            :error},
-      {~L"en",            RDF.integer("42"), :error},
-      {RDF.integer("42"), ~L"en",            :error},
+      {~L"en",            XSD.integer("42"), :error},
+      {XSD.integer("42"), ~L"en",            :error},
       {:error,            ~L"en",            :error},
       {~L"en",            :error,            :error},
       {:error,            :error,            :error},
@@ -1276,7 +1274,7 @@ defmodule SPARQL.Functions.BuiltinsTest do
   end
 
   describe "REGEX function" do
-    @poem RDF.string """
+    @poem XSD.string """
       <poem author="Wilhelm Busch">
       Kaum hat dies der Hahn gesehen,
       Fängt er auch schon an zu krähen:
@@ -1287,17 +1285,17 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
     test "without flags" do
       [
-        {~L"abracadabra", ~L"bra",    RDF.true},
-        {~L"abracadabra", ~L"^a.*a$", RDF.true},
-        {~L"abracadabra", ~L"^bra",   RDF.false},
-        {@poem, ~L"Kaum.*krähen",     RDF.false},
-        {@poem, ~L"^Kaum.*gesehen,$", RDF.false},
+        {~L"abracadabra", ~L"bra",    XSD.true},
+        {~L"abracadabra", ~L"^a.*a$", XSD.true},
+        {~L"abracadabra", ~L"^bra",   XSD.false},
+        {@poem, ~L"Kaum.*krähen",     XSD.false},
+        {@poem, ~L"^Kaum.*gesehen,$", XSD.false},
 
-        {~L"abracadabra"en, ~L"bra",    RDF.true},
+        {~L"abracadabra"en, ~L"bra",    XSD.true},
 
         {~L"en",            ~L"en"en,          :error},
-        {~L"en",            RDF.integer("42"), :error},
-        {RDF.integer("42"), ~L"en",            :error},
+        {~L"en",            XSD.integer("42"), :error},
+        {XSD.integer("42"), ~L"en",            :error},
         {:error,            ~L"en",            :error},
         {~L"en",            :error,            :error},
         {:error,            :error,            :error},
@@ -1309,11 +1307,11 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
     test "with flags" do
       [
-        {@poem, ~L"Kaum.*krähen",     ~L"s", RDF.true},
-        {@poem, ~L"^Kaum.*gesehen,$", ~L"m", RDF.true},
-        {@poem, ~L"kiki",             ~L"i", RDF.true},
+        {@poem, ~L"Kaum.*krähen",     ~L"s", XSD.true},
+        {@poem, ~L"^Kaum.*gesehen,$", ~L"m", XSD.true},
+        {@poem, ~L"kiki",             ~L"i", XSD.true},
 
-        {~L"en", ~L"en", RDF.integer("42"), :error},
+        {~L"en", ~L"en", XSD.integer("42"), :error},
         {~L"en", ~L"en", :error, :error},
         {:error, :error, :error, :error},
       ]
@@ -1324,13 +1322,13 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
     test "with q flag" do
       [
-        {~L"abcd",         ~L".*",       ~L"q",  RDF.false},
-        {~L"Mr. B. Obama", ~L"B. OBAMA", ~L"iq", RDF.true},
+        {~L"abcd",         ~L".*",       ~L"q",  XSD.false},
+        {~L"Mr. B. Obama", ~L"B. OBAMA", ~L"iq", XSD.true},
 
         # If the q flag is used together with the m, s, or x flag, that flag has no effect.
-        {~L"abcd",         ~L".*",       ~L"mq",   RDF.true},
-        {~L"abcd",         ~L".*",       ~L"qim",  RDF.true},
-        {~L"abcd",         ~L".*",       ~L"xqm",  RDF.true},
+        {~L"abcd",         ~L".*",       ~L"mq",   XSD.true},
+        {~L"abcd",         ~L".*",       ~L"qim",  XSD.true},
+        {~L"abcd",         ~L".*",       ~L"xqm",  XSD.true},
       ]
       |> Enum.each(fn {text, pattern, flags, result} ->
            assert_builtin_result(:REGEX, [text, pattern, flags], result)
@@ -1382,7 +1380,7 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
     test "with q flag" do
       [
-        {~L"a\b\c", RDF.string("\\"), ~L"\\", ~L"q", ~L"a\\b\\c"},
+        {~L"a\b\c", XSD.string("\\"), ~L"\\", ~L"q", ~L"a\\b\\c"},
         {~L"a/b/c", ~L"/",            ~L"$",    ~L"q", ~L"a$b$c"},
       ]
       |> Enum.each(fn {text, pattern, replacement, flags, result} ->
@@ -1425,7 +1423,7 @@ defmodule SPARQL.Functions.BuiltinsTest do
       [
         {~L"abracadabra", ~L".*?", ~L"$1", :error}, # because the pattern matches the zero-length string
         {~L"abracadabra", ~L"a(.)", ~L"$foo", :error}, # because replacement contains a $ that is not immediately followed by a digit and not immediately preceded by a backslash
-        {~L"abracadabra", ~L"a(.)", RDF.string("\\"), :error}, # because replacement contains a backslash character that is not part of a \\ pair, or immediately followed by a $ character
+        {~L"abracadabra", ~L"a(.)", XSD.string("\\"), :error}, # because replacement contains a backslash character that is not part of a \\ pair, or immediately followed by a $ character
       ]
       |> Enum.each(fn {text, pattern, replacement, result} ->
            assert_builtin_result(:REPLACE, [text, pattern, replacement], result)
@@ -1435,10 +1433,10 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "abs function" do
     [
-      {RDF.integer(1),    RDF.integer(1)},
-      {RDF.integer(-1),   RDF.integer(1)},
-      {RDF.decimal(-1.5), RDF.decimal(1.5)},
-      {RDF.double(-1.5),  RDF.double(1.5)},
+      {XSD.integer(1),    XSD.integer(1)},
+      {XSD.integer(-1),   XSD.integer(1)},
+      {XSD.decimal(-1.5), XSD.decimal(1.5)},
+      {XSD.double(-1.5),  XSD.double(1.5)},
 
       {~L"-42", :error},
       {:error,  :error},
@@ -1450,13 +1448,13 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "round function" do
     [
-      {RDF.integer(1),      RDF.integer(1)},
-      {RDF.decimal(2.4999), RDF.decimal("2")},
-      {RDF.decimal(2.5),    RDF.decimal("3")},
-      {RDF.decimal(-2.5),   RDF.decimal("-2")},
-      {RDF.double(2.4999),  RDF.double(2.0)},
-      {RDF.double(2.5),     RDF.double(3.0)},
-      {RDF.double(-2.5),    RDF.double(-2.0)},
+      {XSD.integer(1),      XSD.integer(1)},
+      {XSD.decimal(2.4999), XSD.decimal("2")},
+      {XSD.decimal(2.5),    XSD.decimal("3")},
+      {XSD.decimal(-2.5),   XSD.decimal("-2")},
+      {XSD.double(2.4999),  XSD.double(2.0)},
+      {XSD.double(2.5),     XSD.double(3.0)},
+      {XSD.double(-2.5),    XSD.double(-2.0)},
 
       {~L"42", :error},
       {:error, :error},
@@ -1468,11 +1466,11 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "ceil function" do
     [
-      {RDF.integer(1),      RDF.integer(1)},
-      {RDF.decimal(10.5),   RDF.decimal("11")},
-      {RDF.decimal(-10.5),  RDF.decimal("-10")},
-      {RDF.double(10.5),    RDF.double("11")},
-      {RDF.double(-10.5),   RDF.double("-10")},
+      {XSD.integer(1),      XSD.integer(1)},
+      {XSD.decimal(10.5),   XSD.decimal("11")},
+      {XSD.decimal(-10.5),  XSD.decimal("-10")},
+      {XSD.double(10.5),    XSD.double("11")},
+      {XSD.double(-10.5),   XSD.double("-10")},
 
       {~L"42", :error},
       {:error, :error},
@@ -1484,11 +1482,11 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "floor function" do
     [
-      {RDF.integer(1),      RDF.integer(1)},
-      {RDF.decimal(10.5),   RDF.decimal("10")},
-      {RDF.decimal(-10.5),  RDF.decimal("-11")},
-      {RDF.double(10.5),    RDF.double("10")},
-      {RDF.double(-10.5),   RDF.double("-11")},
+      {XSD.integer(1),      XSD.integer(1)},
+      {XSD.decimal(10.5),   XSD.decimal("10")},
+      {XSD.decimal(-10.5),  XSD.decimal("-11")},
+      {XSD.double(10.5),    XSD.double("10")},
+      {XSD.double(-10.5),   XSD.double("-11")},
 
       {~L"42", :error},
       {:error, :error},
@@ -1512,28 +1510,28 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "now function" do
     now = DateTime.utc_now()
-    assert RDF.date_time(now) == Builtins.call(:NOW, [], %{time: now})
-    assert RDF.date_time(now) ==
+    assert XSD.date_time(now) == Builtins.call(:NOW, [], %{time: now})
+    assert XSD.date_time(now) ==
              Expression.evaluate(%FunctionCall.Builtin{name: :NOW, arguments: []},
                                   @example_solution_data, %{time: now})
   end
 
   test "year function" do
     [
-      {RDF.date_time("2011-01-10T14:45:13.815-05:00"), RDF.integer(2011)},
-      {RDF.date_time("1999-12-31T19:20:00"),           RDF.integer(1999)},
-      {RDF.date_time("1999-12-31T24:00:00"),           RDF.integer(2000)},
-      {RDF.date_time("1999-05-31T13:20:00Z"),          RDF.integer(1999)},
-      {RDF.date_time("1999-05-31T13:20:00-05:00"),     RDF.integer(1999)},
-      {RDF.date_time("1999-05-31T13:20:00-05:00"),     RDF.integer(1999)},
-      {RDF.date_time("1999-05-31T21:30:00-05:00"),     RDF.integer(1999)},
-      {RDF.date_time("1999-12-31T21:30:00-05:00"),     RDF.integer(1999)},
+      {XSD.date_time("2011-01-10T14:45:13.815-05:00"), XSD.integer(2011)},
+      {XSD.date_time("1999-12-31T19:20:00"),           XSD.integer(1999)},
+      {XSD.date_time("1999-12-31T24:00:00"),           XSD.integer(2000)},
+      {XSD.date_time("1999-05-31T13:20:00Z"),          XSD.integer(1999)},
+      {XSD.date_time("1999-05-31T13:20:00-05:00"),     XSD.integer(1999)},
+      {XSD.date_time("1999-05-31T13:20:00-05:00"),     XSD.integer(1999)},
+      {XSD.date_time("1999-05-31T21:30:00-05:00"),     XSD.integer(1999)},
+      {XSD.date_time("1999-12-31T21:30:00-05:00"),     XSD.integer(1999)},
 
       unless Version.compare(System.version(), "1.7.2") == :lt do
-        {RDF.date_time("-0002-06-06T00:00:00"), RDF.integer(-2)}
+        {XSD.date_time("-0002-06-06T00:00:00"), XSD.integer(-2)}
       end,
 
-      {RDF.integer(1999), :error},
+      {XSD.integer(1999), :error},
       {~L"1999-05-31T13:20:00-05:00", :error},
       {:error, :error},
     ]
@@ -1546,14 +1544,14 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "month function" do
     [
-      {RDF.date_time("2011-01-10T14:45:13.815-05:00"), RDF.integer(1)},
-      {RDF.date_time("1999-12-31T19:20:00"),           RDF.integer(12)},
-      {RDF.date_time("1999-12-31T24:00:00"),           RDF.integer(1)},
-      {RDF.date_time("1999-12-31T19:20:00Z"),          RDF.integer(12)},
-      {RDF.date_time("1999-05-31T13:20:00-05:00"),     RDF.integer(5)},
-      {RDF.date_time("1999-12-31T19:20:00-05:00"),     RDF.integer(12)},
+      {XSD.date_time("2011-01-10T14:45:13.815-05:00"), XSD.integer(1)},
+      {XSD.date_time("1999-12-31T19:20:00"),           XSD.integer(12)},
+      {XSD.date_time("1999-12-31T24:00:00"),           XSD.integer(1)},
+      {XSD.date_time("1999-12-31T19:20:00Z"),          XSD.integer(12)},
+      {XSD.date_time("1999-05-31T13:20:00-05:00"),     XSD.integer(5)},
+      {XSD.date_time("1999-12-31T19:20:00-05:00"),     XSD.integer(12)},
 
-      {RDF.integer(1), :error},
+      {XSD.integer(1), :error},
       {~L"1999-05-31T13:20:00-05:00", :error},
       {:error, :error},
     ]
@@ -1564,14 +1562,14 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "day function" do
     [
-      {RDF.date_time("2011-01-10T14:45:13.815-05:00"), RDF.integer(10)},
-      {RDF.date_time("1999-12-31T19:20:00"),           RDF.integer(31)},
-      {RDF.date_time("1999-12-31T24:00:00"),           RDF.integer(1)},
-      {RDF.date_time("1999-12-31T19:20:00Z"),          RDF.integer(31)},
-      {RDF.date_time("1999-05-31T13:20:00-05:00"),     RDF.integer(31)},
-      {RDF.date_time("1999-12-31T20:00:00-05:00"),     RDF.integer(31)},
+      {XSD.date_time("2011-01-10T14:45:13.815-05:00"), XSD.integer(10)},
+      {XSD.date_time("1999-12-31T19:20:00"),           XSD.integer(31)},
+      {XSD.date_time("1999-12-31T24:00:00"),           XSD.integer(1)},
+      {XSD.date_time("1999-12-31T19:20:00Z"),          XSD.integer(31)},
+      {XSD.date_time("1999-05-31T13:20:00-05:00"),     XSD.integer(31)},
+      {XSD.date_time("1999-12-31T20:00:00-05:00"),     XSD.integer(31)},
 
-      {RDF.integer(1), :error},
+      {XSD.integer(1), :error},
       {~L"1999-05-31T13:20:00-05:00", :error},
       {:error, :error},
     ]
@@ -1582,14 +1580,14 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "hours function" do
     [
-      {RDF.date_time("2011-01-10T14:45:13.815-05:00"), RDF.integer(14)},
-      {RDF.date_time("1999-12-31T12:00:00"),          RDF.integer(12)},
-      {RDF.date_time("1999-12-31T24:00:00"),          RDF.integer(0)},
-      {RDF.date_time("1999-12-31T19:20:00Z"),         RDF.integer(19)},
-      {RDF.date_time("1999-05-31T08:20:00-05:00"),    RDF.integer(8)},
-      {RDF.date_time("1999-12-31T21:20:00-05:00"),    RDF.integer(21)},
+      {XSD.date_time("2011-01-10T14:45:13.815-05:00"), XSD.integer(14)},
+      {XSD.date_time("1999-12-31T12:00:00"),          XSD.integer(12)},
+      {XSD.date_time("1999-12-31T24:00:00"),          XSD.integer(0)},
+      {XSD.date_time("1999-12-31T19:20:00Z"),         XSD.integer(19)},
+      {XSD.date_time("1999-05-31T08:20:00-05:00"),    XSD.integer(8)},
+      {XSD.date_time("1999-12-31T21:20:00-05:00"),    XSD.integer(21)},
 
-      {RDF.integer(1), :error},
+      {XSD.integer(1), :error},
       {~L"1999-05-31T13:20:00-05:00", :error},
       {:error, :error},
     ]
@@ -1600,13 +1598,13 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "minutes function" do
     [
-      {RDF.date_time("2011-01-10T14:45:13.815-05:00"), RDF.integer(45)},
-      {RDF.date_time("1999-05-31T13:30:00"),           RDF.integer(30)},
-      {RDF.date_time("1999-05-31T13:30:00Z"),          RDF.integer(30)},
-      {RDF.date_time("1999-05-31T13:20:00-05:00"),     RDF.integer(20)},
-      {RDF.date_time("1999-05-31T13:30:00+05:30"),     RDF.integer(30)},
+      {XSD.date_time("2011-01-10T14:45:13.815-05:00"), XSD.integer(45)},
+      {XSD.date_time("1999-05-31T13:30:00"),           XSD.integer(30)},
+      {XSD.date_time("1999-05-31T13:30:00Z"),          XSD.integer(30)},
+      {XSD.date_time("1999-05-31T13:20:00-05:00"),     XSD.integer(20)},
+      {XSD.date_time("1999-05-31T13:30:00+05:30"),     XSD.integer(30)},
 
-      {RDF.integer(1), :error},
+      {XSD.integer(1), :error},
       {~L"1999-05-31T13:20:00-05:00", :error},
       {:error, :error},
     ]
@@ -1617,13 +1615,13 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "seconds function" do
     [
-      {RDF.date_time("2011-01-10T14:45:13.815-05:00"), RDF.decimal(13.815)},
-      {RDF.date_time("1999-05-31T13:20:00"),           RDF.decimal("0")},
-      {RDF.date_time("1999-05-31T13:20:42Z"),          RDF.decimal("42")},
-      {RDF.date_time("1999-05-31T13:20:12.340-05:00"), RDF.decimal(12.34)},
-      {RDF.date_time("1999-05-31T13:20:12.034-05:00"), RDF.decimal(12.034)},
+      {XSD.date_time("2011-01-10T14:45:13.815-05:00"), XSD.decimal(13.815)},
+      {XSD.date_time("1999-05-31T13:20:00"),           XSD.decimal("0")},
+      {XSD.date_time("1999-05-31T13:20:42Z"),          XSD.decimal("42")},
+      {XSD.date_time("1999-05-31T13:20:12.340-05:00"), XSD.decimal(12.34)},
+      {XSD.date_time("1999-05-31T13:20:12.034-05:00"), XSD.decimal(12.034)},
 
-      {RDF.integer(1), :error},
+      {XSD.integer(1), :error},
       {~L"1999-05-31T13:20:00-05:00", :error},
       {:error, :error},
     ]
@@ -1632,16 +1630,16 @@ defmodule SPARQL.Functions.BuiltinsTest do
        end)
   end
 
-  # TODO: Use a to be written RDF.day_time_duration datatype
+  # TODO: Use a to be written XSD.day_time_duration datatype
   test "timezone function" do
     [
-      {RDF.date_time("2011-01-10T14:45:13.815-05:00"), RDF.Literal.new("-PT5H", datatype: NS.XSD.dayTimeDuration)},
-      {RDF.date_time("2011-01-10T14:45:13.815Z"),      RDF.Literal.new("PT0S", datatype: NS.XSD.dayTimeDuration)},
-      {RDF.date_time("2011-01-10T14:45:13.815-05:30"), RDF.Literal.new("-PT5H30M", datatype: NS.XSD.dayTimeDuration)},
+      {XSD.date_time("2011-01-10T14:45:13.815-05:00"), Literal.new("-PT5H", datatype: NS.XSD.dayTimeDuration)},
+      {XSD.date_time("2011-01-10T14:45:13.815Z"),      Literal.new("PT0S", datatype: NS.XSD.dayTimeDuration)},
+      {XSD.date_time("2011-01-10T14:45:13.815-05:30"), Literal.new("-PT5H30M", datatype: NS.XSD.dayTimeDuration)},
 
-      {RDF.date_time("2011-01-10T14:45:13.815"), :error},
+      {XSD.date_time("2011-01-10T14:45:13.815"), :error},
       {~L"1999-05-31T13:20:00-05:00", :error},
-      {RDF.integer(1), :error},
+      {XSD.integer(1), :error},
       {:error, :error},
     ]
     |> Enum.each(fn {datetime, result} ->
@@ -1651,12 +1649,12 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   test "tz function" do
     [
-      {RDF.date_time("2011-01-10T14:45:13.815-05:00"), ~L"-05:00"},
-      {RDF.date_time("2011-01-10T14:45:13.815Z"),      ~L"Z"},
-      {RDF.date_time("2011-01-10T14:45:13.815"),       ~L""},
+      {XSD.date_time("2011-01-10T14:45:13.815-05:00"), ~L"-05:00"},
+      {XSD.date_time("2011-01-10T14:45:13.815Z"),      ~L"Z"},
+      {XSD.date_time("2011-01-10T14:45:13.815"),       ~L""},
 
       {~L"1999-05-31T13:20:00-05:00", :error},
-      {RDF.integer(1), :error},
+      {XSD.integer(1), :error},
       {:error, :error},
     ]
     |> Enum.each(fn {datetime, result} ->
@@ -1667,9 +1665,9 @@ defmodule SPARQL.Functions.BuiltinsTest do
   test "MD5 function" do
     [
       {~L"abc",           ~L"900150983cd24fb0d6963f7d28e17f72"},
-      {RDF.string("abc"), ~L"900150983cd24fb0d6963f7d28e17f72"},
+      {XSD.string("abc"), ~L"900150983cd24fb0d6963f7d28e17f72"},
 
-      {RDF.integer(42), :error},
+      {XSD.integer(42), :error},
       {:error, :error},
     ]
     |> Enum.each(fn {value, result} ->
@@ -1680,9 +1678,9 @@ defmodule SPARQL.Functions.BuiltinsTest do
   test "SHA1 function" do
     [
       {~L"abc",           ~L"a9993e364706816aba3e25717850c26c9cd0d89d"},
-      {RDF.string("abc"), ~L"a9993e364706816aba3e25717850c26c9cd0d89d"},
+      {XSD.string("abc"), ~L"a9993e364706816aba3e25717850c26c9cd0d89d"},
 
-      {RDF.integer(42), :error},
+      {XSD.integer(42), :error},
       {:error, :error},
     ]
     |> Enum.each(fn {value, result} ->
@@ -1693,9 +1691,9 @@ defmodule SPARQL.Functions.BuiltinsTest do
   test "SHA256 function" do
     [
       {~L"abc",           ~L"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"},
-      {RDF.string("abc"), ~L"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"},
+      {XSD.string("abc"), ~L"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"},
 
-      {RDF.integer(42), :error},
+      {XSD.integer(42), :error},
       {:error, :error},
     ]
     |> Enum.each(fn {value, result} ->
@@ -1706,9 +1704,9 @@ defmodule SPARQL.Functions.BuiltinsTest do
   test "SHA384 function" do
     [
       {~L"abc",           ~L"cb00753f45a35e8bb5a03d699ac65007272c32ab0eded1631a8b605a43ff5bed8086072ba1e7cc2358baeca134c825a7"},
-      {RDF.string("abc"), ~L"cb00753f45a35e8bb5a03d699ac65007272c32ab0eded1631a8b605a43ff5bed8086072ba1e7cc2358baeca134c825a7"},
+      {XSD.string("abc"), ~L"cb00753f45a35e8bb5a03d699ac65007272c32ab0eded1631a8b605a43ff5bed8086072ba1e7cc2358baeca134c825a7"},
 
-      {RDF.integer(42), :error},
+      {XSD.integer(42), :error},
       {:error, :error},
     ]
     |> Enum.each(fn {value, result} ->
@@ -1719,9 +1717,9 @@ defmodule SPARQL.Functions.BuiltinsTest do
   test "SHA512 function" do
     [
       {~L"abc",           ~L"ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f"},
-      {RDF.string("abc"), ~L"ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f"},
+      {XSD.string("abc"), ~L"ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f"},
 
-      {RDF.integer(42), :error},
+      {XSD.integer(42), :error},
       {:error, :error},
     ]
     |> Enum.each(fn {value, result} ->
@@ -1733,16 +1731,16 @@ defmodule SPARQL.Functions.BuiltinsTest do
   test "compatible_arguments?/2" do
     [
       {RDF.literal("abc"),	               RDF.literal("b"),                 true},
-      {RDF.literal("abc"),	               RDF.string("b"),                  true},
-      {RDF.string("abc"),                  RDF.literal("b"),                 true},
-      {RDF.string("abc"),                  RDF.string("b"),                  true},
+      {RDF.literal("abc"),	               XSD.string("b"),                  true},
+      {XSD.string("abc"),                  RDF.literal("b"),                 true},
+      {XSD.string("abc"),                  XSD.string("b"),                  true},
       {RDF.literal("abc", language: "en"), RDF.literal("b"),                 true},
-      {RDF.literal("abc", language: "en"), RDF.string("b"),                  true},
+      {RDF.literal("abc", language: "en"), XSD.string("b"),                  true},
       {RDF.literal("abc", language: "en"), RDF.literal("b", language: "en"), true},
       {RDF.literal("abc", language: "fr"), RDF.literal("b", language: "ja"), false},
       {RDF.literal("abc"),	               RDF.literal("b", language: "ja"), false},
       {RDF.literal("abc"),	               RDF.literal("b", language: "en"), false},
-      {RDF.string("abc"),                  RDF.literal("b", language: "en"), false},
+      {XSD.string("abc"),                  RDF.literal("b", language: "en"), false},
     ]
     |> Enum.each(fn {left, right, result} ->
          assert Builtins.compatible_arguments?(left, right) == result, (
