@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
+## Unreleased
+
+### Changed
+
+- the SPARQL extension function registry is now implemented with the FastGlobal library,
+  improving the performance of queries using SPARQL extension functions (including the 
+  builtin casting functions)
+
+[Compare v0.3.4...HEAD](https://github.com/marcelotto/sparql-ex/compare/v0.3.4...HEAD)
+
+
+
 ## v0.3.4 - 2019-12-14
 
 - Upgrade to RDF.ex 0.7

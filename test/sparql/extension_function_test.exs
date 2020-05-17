@@ -20,7 +20,7 @@ defmodule SPARQL.ExtensionFunctionTest do
 
 
   setup_all do
-    ExtensionFunction.Registry.refresh()
+    ExtensionFunction.Registry.init()
     :ok
   end
 

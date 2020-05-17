@@ -72,6 +72,7 @@ defmodule SPARQL.Mixfile do
       {:nimble_csv, "~> 0.6"},
       {:sweet_xml, "~> 0.6"},
       {:elixir_uuid, "~> 1.2"},
+      {:fastglobal, "~> 1.0"},
 
       # Development
       {:dialyxir, "~> 0.5",     only: [:dev, :test], runtime: false},
