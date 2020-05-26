@@ -122,7 +122,7 @@ defmodule SPARQL.Functions.Builtins do
   see <http://www.w3.org/TR/xpath-functions/#func-numeric-unary-plus>
   """
   def call(:+, [number], _) do
-    if XSD.Numeric.literal?(number) do
+    if XSD.Numeric.datatype?(number) do
       number
     else
       :error
@@ -135,7 +135,7 @@ defmodule SPARQL.Functions.Builtins do
   see <http://www.w3.org/TR/xpath-functions/#func-numeric-unary-minus>
   """
   def call(:-, [number], _) do
-    if XSD.Numeric.literal?(number) do
+    if XSD.Numeric.datatype?(number) do
       XSD.Numeric.multiply(number, -1)
     else
       :error
@@ -218,7 +218,7 @@ defmodule SPARQL.Functions.Builtins do
   see <https://www.w3.org/TR/sparql11-query/#func-isNumeric>
   """
   def call(:isNUMERIC, [%Literal{} = literal], _) do
-    if XSD.Numeric.literal?(literal) and Literal.valid?(literal) do
+    if XSD.Numeric.datatype?(literal) and Literal.valid?(literal) do
       XSD.true
     else
       XSD.false
@@ -253,7 +253,7 @@ defmodule SPARQL.Functions.Builtins do
 
   see <https://www.w3.org/TR/sparql11-query/#func-datatype>
   """
-  def call(:DATATYPE, [%Literal{} = literal], _), do: Literal.datatype(literal)
+  def call(:DATATYPE, [%Literal{} = literal], _), do: Literal.datatype_id(literal)
   def call(:DATATYPE, _, _),                          do: :error
 
   @doc """
