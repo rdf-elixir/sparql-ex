@@ -381,22 +381,27 @@ defmodule SPARQL.Functions.Builtins do
   - <https://www.w3.org/TR/sparql11-query/#func-substr>
   - <http://www.w3.org/TR/xpath-functions/#func-substring>
   """
-  def call(:SUBSTR, [%Literal{literal: %datatype{}} = source,
-                     %Literal{literal: %XSD.Integer{value: starting_loc}}], _)
-      when datatype in [XSD.String, RDF.LangString] and is_integer(starting_loc) do
-    Literal.update(source, fn source_string ->
-      String.slice(source_string, (starting_loc - 1) .. -1)
-    end)
+  def call(:SUBSTR, [%Literal{literal: %source_datatype{}} = source, %Literal{} = starting_loc], _)
+      when source_datatype in [XSD.String, RDF.LangString] do
+    if XSD.Integer.valid?(starting_loc) do
+      Literal.update(source, fn source_string ->
+        String.slice(source_string, (XSD.Integer.value(starting_loc) - 1) .. -1)
+      end)
+    else
+      :error
+    end
   end
 
-  def call(:SUBSTR, [%Literal{literal: %datatype{}} = source,
-                     %Literal{literal: %XSD.Integer{value: starting_loc}},
-                     %Literal{literal: %XSD.Integer{value: length}}], _)
-      when datatype in [XSD.String, RDF.LangString] and
-           is_integer(starting_loc) and is_integer(length) do
-    Literal.update(source, fn source_string ->
-      String.slice(source_string, (starting_loc - 1), length)
-    end)
+  def call(:SUBSTR, [%Literal{literal: %source_datatype{}} = source,
+                     %Literal{} = starting_loc, %Literal{} = length], _)
+      when source_datatype in [XSD.String, RDF.LangString] do
+    if XSD.Integer.valid?(starting_loc) and XSD.Integer.valid?(length) do
+      Literal.update(source, fn source_string ->
+        String.slice(source_string, (XSD.Integer.value(starting_loc) - 1), XSD.Integer.value(length))
+      end)
+    else
+      :error
+    end
   end
 
   def call(:SUBSTR, _, _), do: :error

@@ -1036,13 +1036,11 @@ defmodule SPARQL.Functions.BuiltinsTest do
          end)
     end
 
-    @tag skip: "TODO: We need support for derived datatypes in general and integers in particular"
     test "with derived integer as starting location" do
       assert_builtin_result(:SUBSTR,
         [XSD.string("foobar"), RDF.literal(4, datatype: NS.XSD.byte)], XSD.string("bar"))
     end
 
-    @tag skip: "TODO: We need support for derived datatypes in general and integers in particular"
     test "with derived integer as length" do
       assert_builtin_result(:SUBSTR, [
           XSD.string("foobar"),
