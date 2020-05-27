@@ -63,12 +63,21 @@ defmodule SPARQL.ExtensionFunction do
 
   defmacro __using__(opts) do
     name = Keyword.fetch!(opts, :name)
+    extension_function = __CALLER__.module
 
     quote do
       @behaviour unquote(__MODULE__)
 
       @impl unquote(__MODULE__)
       def name(), do: unquote(name)
+
+
+      import ProtocolEx
+
+      defimpl_ex Registration, unquote(name),
+                 for: SPARQL.ExtensionFunction.Registration do
+        def extension_function(name), do: unquote(extension_function)
+      end
     end
   end
 

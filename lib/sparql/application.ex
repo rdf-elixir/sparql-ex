@@ -4,8 +4,6 @@ defmodule SPARQL.Application do
   use Application
 
   def start(_type, _args) do
-    SPARQL.ExtensionFunction.Registry.init()
-
     children = []
 
     opts = [strategy: :one_for_one, name: SPARQL.Supervisor]

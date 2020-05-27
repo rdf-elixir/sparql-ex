@@ -236,7 +236,7 @@ defmodule SPARQL.Functions.CastTest do
   end
 
   defp assert_call_result(function_name, args, expected) do
-    function_extension = ExtensionFunction.Registry.get_extension(function_name)
+    function_extension = ExtensionFunction.Registry.extension_function(function_name)
     assert function_extension, "extension for #{function_name} not found"
 
     result = function_extension.call(false, args, nil, %{})

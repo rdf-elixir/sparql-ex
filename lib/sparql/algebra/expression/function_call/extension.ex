@@ -9,7 +9,7 @@ defmodule SPARQL.Algebra.FunctionCall.Extension do
     def evaluate(%SPARQL.Algebra.FunctionCall.Extension{
                     name: name, arguments: arguments, distinct: distinct},
                   data, execution) do
-      case SPARQL.ExtensionFunction.Registry.get_extension(name) do
+      case SPARQL.ExtensionFunction.Registry.extension_function(name) do
         nil ->
           # TODO: What should happen when no function_extension found?
           :error

@@ -14,6 +14,7 @@ defmodule SPARQL.Mixfile do
       start_permanent: Mix.env == :prod,
       deps: deps(),
       elixirc_paths: elixirc_paths(Mix.env()),
+      compilers: Mix.compilers ++ [:protocol_ex],
 
       # Hex
       package: package(),
@@ -72,7 +73,7 @@ defmodule SPARQL.Mixfile do
       {:nimble_csv, "~> 0.6"},
       {:sweet_xml, "~> 0.6"},
       {:elixir_uuid, "~> 1.2"},
-      {:fastglobal, "~> 1.0"},
+      {:protocol_ex, "~> 0.4"},
 
       # Development
       {:dialyxir, "~> 0.5",     only: [:dev, :test], runtime: false},

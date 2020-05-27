@@ -9,9 +9,10 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 ### Changed
 
-- the SPARQL extension function registry is now implemented with the FastGlobal library,
+- the SPARQL extension function registry is now implemented with the ProtocolEx library,
   improving the performance of queries using SPARQL extension functions (including the 
-  builtin casting functions)
+  builtin casting functions); unfortunately this means the `SPARQL.ExtensionFunction.Registry.get_all/0`
+  function to get all registered extension functions can no longer be supported 
 
 [Compare v0.3.4...HEAD](https://github.com/marcelotto/sparql-ex/compare/v0.3.4...HEAD)
 
