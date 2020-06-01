@@ -2,7 +2,7 @@
 
 # SPARQL.ex
 
-[![Travis](https://img.shields.io/travis/marcelotto/sparql-ex.svg?style=flat-square)](https://travis-ci.org/marcelotto/sparql-ex)
+[![Travis](https://img.shields.io/travis/rdf-elixir/sparql-ex.svg?style=flat-square)](https://travis-ci.org/rdf-elixir/sparql-ex)
 [![Hex.pm](https://img.shields.io/hexpm/v/sparql.svg?style=flat-square)](https://hex.pm/packages/sparql)
 
 
@@ -49,7 +49,7 @@ Note: **The [SPARQL.Client] supports the full SPARQL 1.1 query language**. The m
 - [x] SPARQL Query Results XML Format
 - [x] SPARQL 1.1 Query Results JSON Format
 - [x] SPARQL 1.1 Query Results CSV and TSV Formats
-- [x] SPARQL 1.1 Protocol (currently client-only; in a separate package: [sparql_client](https://github.com/marcelotto/sparql_client))
+- [x] SPARQL 1.1 Protocol (currently client-only; in a separate package: [sparql_client](https://github.com/rdf-elixir/sparql_client))
 - [ ] SPARQL 1.1 Graph Store HTTP Protocol
 - [ ] SPARQL 1.1 Service Description
 - [ ] SPARQL 1.1 Federated Query

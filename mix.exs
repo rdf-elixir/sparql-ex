@@ -1,7 +1,7 @@
 defmodule SPARQL.Mixfile do
   use Mix.Project
 
-  @repo_url "https://github.com/marcelotto/sparql-ex"
+  @repo_url "https://github.com/rdf-elixir/sparql-ex"
 
   @version File.read!("VERSION") |> String.trim
 
@@ -68,7 +68,7 @@ defmodule SPARQL.Mixfile do
 
   defp deps do
     [
-      {:rdf, github: "marcelotto/rdf-ex"},
+      {:rdf, github: "rdf-elixir/rdf-ex"},
       {:jason, "~> 1.0"},
       {:nimble_csv, "~> 0.6"},
       {:sweet_xml, "~> 0.6"},

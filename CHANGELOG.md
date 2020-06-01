@@ -15,7 +15,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
   builtin casting functions); unfortunately this means the `SPARQL.ExtensionFunction.Registry.get_all/0`
   function to get all registered extension functions can no longer be supported 
 
-[Compare v0.3.4...HEAD](https://github.com/marcelotto/sparql-ex/compare/v0.3.4...HEAD)
+[Compare v0.3.4...HEAD](https://github.com/rdf-elixir/sparql-ex/compare/v0.3.4...HEAD)
 
 
 
@@ -23,7 +23,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 - Upgrade to RDF.ex 0.7
 
-[Compare v0.3.3...v0.3.4](https://github.com/marcelotto/sparql-ex/compare/v0.3.3...v0.3.4)
+[Compare v0.3.3...v0.3.4](https://github.com/rdf-elixir/sparql-ex/compare/v0.3.3...v0.3.4)
 
 
 
@@ -35,7 +35,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
   pattern in a BGP had no solutions 
 
 
-[Compare v0.3.2...v0.3.3](https://github.com/marcelotto/sparql-ex/compare/v0.3.2...v0.3.3)
+[Compare v0.3.2...v0.3.3](https://github.com/rdf-elixir/sparql-ex/compare/v0.3.2...v0.3.3)
 
 
 
@@ -53,7 +53,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
   invalid query
 
 
-[Compare v0.3.1...v0.3.2](https://github.com/marcelotto/sparql-ex/compare/v0.3.1...v0.3.2)
+[Compare v0.3.1...v0.3.2](https://github.com/rdf-elixir/sparql-ex/compare/v0.3.1...v0.3.2)
 
 
 
@@ -72,7 +72,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
   issues in regular expressions
 
 
-[Compare v0.3.0...v0.3.1](https://github.com/marcelotto/sparql-ex/compare/v0.3.0...v0.3.1)
+[Compare v0.3.0...v0.3.1](https://github.com/rdf-elixir/sparql-ex/compare/v0.3.0...v0.3.1)
 
 
 
@@ -85,7 +85,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 - Use the query prefixes as the prefixes of CONSTRUCTed graphs
 
 
-[Compare v0.2.9...v0.3.0](https://github.com/marcelotto/sparql-ex/compare/v0.2.9...v0.3.0)
+[Compare v0.2.9...v0.3.0](https://github.com/rdf-elixir/sparql-ex/compare/v0.2.9...v0.3.0)
 
 
 
@@ -96,7 +96,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 - the application failed to start in OTP releases (#2)
 
 
-[Compare v0.2.8...v0.2.9](https://github.com/marcelotto/sparql-ex/compare/v0.2.8...v0.2.9)
+[Compare v0.2.8...v0.2.9](https://github.com/rdf-elixir/sparql-ex/compare/v0.2.8...v0.2.9)
 
 
 
@@ -107,7 +107,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 - Support for negations with `MINUS`
 
 
-[Compare v0.2.7...v0.2.8](https://github.com/marcelotto/sparql-ex/compare/v0.2.7...v0.2.8)
+[Compare v0.2.7...v0.2.8](https://github.com/rdf-elixir/sparql-ex/compare/v0.2.7...v0.2.8)
 
 
 
@@ -122,7 +122,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 - various fixes on comparisons between `RDF.DateTime`s and `RDF.Date`s  
 
 
-[Compare v0.2.6...v0.2.7](https://github.com/marcelotto/sparql-ex/compare/v0.2.6...v0.2.7)
+[Compare v0.2.6...v0.2.7](https://github.com/rdf-elixir/sparql-ex/compare/v0.2.6...v0.2.7)
 
 
 
@@ -144,7 +144,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 - `DISTINCT` did not work without projection
 
 
-[Compare v0.2.5...v0.2.6](https://github.com/marcelotto/sparql-ex/compare/v0.2.5...v0.2.6)
+[Compare v0.2.5...v0.2.6](https://github.com/rdf-elixir/sparql-ex/compare/v0.2.5...v0.2.6)
 
 
 
@@ -162,7 +162,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 - `SPARQL.Query.Result.get/2` failed when the given variable was not in the results
 
 
-[Compare v0.2.4...v0.2.5](https://github.com/marcelotto/sparql-ex/compare/v0.2.4...v0.2.5)
+[Compare v0.2.4...v0.2.5](https://github.com/rdf-elixir/sparql-ex/compare/v0.2.4...v0.2.5)
 
 
 
@@ -180,7 +180,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 - `FILTER` expressions at the beginning of a graph pattern
 
 
-[Compare v0.2.3...v0.2.4](https://github.com/marcelotto/sparql-ex/compare/v0.2.3...v0.2.4)
+[Compare v0.2.3...v0.2.4](https://github.com/rdf-elixir/sparql-ex/compare/v0.2.3...v0.2.4)
 
 
 
@@ -201,7 +201,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 	- `SPARQL.Processor.query` (and the `SPARQL.execute_query` alias) pass options
 	  down `SPARQL.Query.new/2`, so it can also used with `default_prefixes`
 
-[Compare v0.2.2...v0.2.3](https://github.com/marcelotto/sparql-ex/compare/v0.2.2...v0.2.3)
+[Compare v0.2.2...v0.2.3](https://github.com/rdf-elixir/sparql-ex/compare/v0.2.2...v0.2.3)
 
 
 
@@ -215,7 +215,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 - bug in the lexer grammar which caused a scanner error on lowercase `distinct`
 
-[Compare v0.2.1...v0.2.2](https://github.com/marcelotto/sparql-ex/compare/v0.2.1...v0.2.2)
+[Compare v0.2.1...v0.2.2](https://github.com/rdf-elixir/sparql-ex/compare/v0.2.1...v0.2.2)
 
 
 
@@ -227,7 +227,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
   which caused issues using the SPARQL.ex Hex package on OTP < 21
   (because the package was released with OTP 21)
 
-[Compare v0.2.0...v0.2.1](https://github.com/marcelotto/sparql-ex/compare/v0.2.0...v0.2.1)
+[Compare v0.2.0...v0.2.1](https://github.com/rdf-elixir/sparql-ex/compare/v0.2.0...v0.2.1)
 
 
 
@@ -246,7 +246,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
   are now represented as simple maps
 
 
-[Compare v0.1.0...v0.2.0](https://github.com/marcelotto/sparql-ex/compare/v0.1.0...v0.2.0)
+[Compare v0.1.0...v0.2.0](https://github.com/rdf-elixir/sparql-ex/compare/v0.1.0...v0.2.0)
 
 
 
