@@ -1,12 +1,14 @@
 import RDF.Sigils
 
-alias RDF.NS.{XSD, RDFS, OWL, SKOS}
+alias RDF.NS
+alias RDF.NS.{RDFS, OWL, SKOS}
 
 alias RDF.{
   Term,
   IRI,
-  Literal,
   BlankNode,
+  Literal,
+  XSD,
 
   Triple,
   Quad,
