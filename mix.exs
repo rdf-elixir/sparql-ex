@@ -68,7 +68,7 @@ defmodule SPARQL.Mixfile do
 
   defp deps do
     [
-      {:rdf, "~> 0.7"},
+      {:rdf, github: "marcelotto/rdf-ex"},
       {:jason, "~> 1.0"},
       {:nimble_csv, "~> 0.6"},
       {:sweet_xml, "~> 0.6"},
@@ -76,10 +76,10 @@ defmodule SPARQL.Mixfile do
       {:protocol_ex, "~> 0.4"},
 
       # Development
-      {:dialyxir, "~> 0.5",     only: [:dev, :test], runtime: false},
-      {:credo, "~> 1.1",        only: [:dev, :test], runtime: false},
-      {:ex_doc, "~> 0.21",      only: :dev, runtime: false},
-      {:excoveralls, "~> 0.12", only: :test},
+      {:dialyxir, "~> 1.0",     only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.4",        only: [:dev, :test], runtime: false},
+      {:ex_doc, "~> 0.22",      only: :dev, runtime: false},
+      {:excoveralls, "~> 0.13", only: :test},
       {:multiset, "~> 0.0.4",   only: :test},
     ]
   end
