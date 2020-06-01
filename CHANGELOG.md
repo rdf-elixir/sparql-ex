@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## Unreleased
+## v0.3.5 - 2020-06-01
 
 ### Changed
 
@@ -15,7 +15,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
   builtin casting functions); unfortunately this means the `SPARQL.ExtensionFunction.Registry.get_all/0`
   function to get all registered extension functions can no longer be supported 
 
-[Compare v0.3.4...HEAD](https://github.com/rdf-elixir/sparql-ex/compare/v0.3.4...HEAD)
+[Compare v0.3.4...v0.3.5](https://github.com/rdf-elixir/sparql-ex/compare/v0.3.4...v0.3.5)
 
 
 
