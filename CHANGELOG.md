@@ -9,6 +9,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 ### Changed
 
+- Upgrade to RDF.ex 0.8. With that Elixir versions < 1.8 are no longer supported.
 - the SPARQL extension function registry is now implemented with the ProtocolEx library,
   improving the performance of queries using SPARQL extension functions (including the 
   builtin casting functions); unfortunately this means the `SPARQL.ExtensionFunction.Registry.get_all/0`
