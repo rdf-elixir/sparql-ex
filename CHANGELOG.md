@@ -5,6 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
+## Unreleased
+
+### Changed
+
+- recognize more values in CSV results as IRIs (only some very common URI schemes
+  are recognized still; if there's really need, this requires further work)
+
+[Compare v0.3.5...HEAD](https://github.com/rdf-elixir/sparql-ex/compare/v0.3.5...HEAD)
+
+
+
 ## v0.3.5 - 2020-06-01
 
 ### Changed

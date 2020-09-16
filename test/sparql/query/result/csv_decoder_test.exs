@@ -179,4 +179,26 @@ defmodule SPARQL.Query.Result.CSV.DecoderTest do
     assert {:error, %NimbleCSV.ParseError{}} = Query.Result.CSV.decode("a\"")
   end
 
+  test "IRIs with non-http scheme" do
+    assert Query.Result.CSV.decode("""
+             o
+             urn:uuid:f81d4fae-7dec-11d0-a765-00a0c91e6bf6
+             file:///etc/hosts
+             ftp://ftp.is.co.za/rfc/rfc1808.txt
+             mailto:John.Doe@example.com
+             "geo:48.198634,-16.371648,3.4;crs=wgs84;u=40.0"
+             "data:;base64,SGVsbG8gV29ybGQh"
+             """) == {:ok,
+             %Query.Result{
+               variables: ~w[o],
+               results: [
+                 %{"o" => ~I<urn:uuid:f81d4fae-7dec-11d0-a765-00a0c91e6bf6>},
+                 %{"o" => ~I<file:///etc/hosts>},
+                 %{"o" => ~I<ftp://ftp.is.co.za/rfc/rfc1808.txt>},
+                 %{"o" => ~I<mailto:John.Doe@example.com>},
+                 %{"o" => ~I<geo:48.198634,-16.371648,3.4;crs=wgs84;u=40.0>},
+                 %{"o" => ~I<data:;base64,SGVsbG8gV29ybGQh>},
+             ]}}
+  end
+
 end

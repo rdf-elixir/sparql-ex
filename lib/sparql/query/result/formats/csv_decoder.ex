@@ -45,8 +45,25 @@ defmodule SPARQL.Query.Result.CSV.Decoder do
   defp decode_value({variable, "_:" <> label}),
     do: {variable, RDF.BlankNode.new(label)}
 
-  defp decode_value({variable, ("http://" <> _str) = iri}),
-    do: {variable, RDF.IRI.new(iri)}
+  # before starting to add all of the official IANA-registered URI schemes here we should
+  # consider alternatives, like
+  # - using an external URI parser lib for this (will make the CSV result parsing considerably slower)
+  # - allow the user to provide a list of additional regexes of what should be recognized as IRIs
+  ~w[
+    urn:
+    http://
+    https://
+    ftp://
+    file:/
+    ldap://
+    mailto:
+    geo:
+    data:
+  ]
+  |> Enum.each(fn scheme ->
+    defp decode_value({variable, (unquote(scheme) <> _str) = iri}),
+      do: {variable, RDF.IRI.new(iri)}
+  end)
 
   defp decode_value({variable, ""}),
     do: {variable, nil}
