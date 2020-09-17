@@ -95,6 +95,33 @@ defmodule SPARQL.Query.Result.JSON.DecoderTest do
       """) == {:ok, %Query.Result{results: [%{"name" => ~L"東京"jp}]}}
   end
 
+  test "literals with datatype" do
+    assert Query.Result.JSON.decode("""
+            {
+              "head" : {
+                "vars" : [
+                  "count"
+                ]
+              },
+              "results" : {
+                "bindings" : [
+                  {
+                    "count" : {
+                      "datatype" : "http://www.w3.org/2001/XMLSchema#integer",
+                      "type" : "literal",
+                      "value" : "42"
+                    }
+                  }
+                ]
+              }
+            }
+          """) == {:ok,
+             %Query.Result{
+               variables: ["count"],
+               results: [%{"count" => XSD.integer(42)}]}
+           }
+  end
+
   test "ASK result with non-boolean value" do
     assert Query.Result.JSON.decode(~S[{"boolean": "foo"}]) ==
       {:error, ~S[invalid boolean: "foo"]}
