@@ -5,18 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## Unreleased
+## v0.3.6 - 2020-09-21
 
 ### Fixed
 
 - The JSON query result decoder didn't recognize the datatype of literals when the JSON
   value object was `"type" : "literal"`. Only for those with `"typed-literal"` the `"datatype"` 
   field was interpreted.    
-- Not all IRI values in CSV results were recognized as IRIs. Values starting with the most  
+- Not all IRI values in CSV results were recognized as IRIs. Values starting with the most
   common URI schemes (http/https, urn, ftp, file, ldap, mailto, geo, data) are now recognized 
   correctly. 
 
-[Compare v0.3.5...HEAD](https://github.com/rdf-elixir/sparql-ex/compare/v0.3.5...HEAD)
+[Compare v0.3.5...v0.3.6](https://github.com/rdf-elixir/sparql-ex/compare/v0.3.5...v0.3.6)
 
 
 
