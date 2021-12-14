@@ -76,10 +76,10 @@ defmodule SPARQL.Mixfile do
       {:protocol_ex, "~> 0.4"},
 
       # Development
-      {:dialyxir, "~> 1.0",     only: [:dev, :test], runtime: false},
-      {:credo, "~> 1.4",        only: [:dev, :test], runtime: false},
-      {:ex_doc, "~> 0.22",      only: :dev, runtime: false},
-      {:excoveralls, "~> 0.13", only: :test},
+      {:dialyxir, "~> 1.1",     only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.6",        only: [:dev, :test], runtime: false},
+      {:ex_doc, "~> 0.26",      only: :dev, runtime: false},
+      {:excoveralls, "~> 0.14", only: :test},
       {:multiset, "~> 0.0.4",   only: :test},
     ]
   end
