@@ -7,7 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 ## Unreleased
 
-Elixir versions < 1.9 are no longer supported
+Elixir versions < 1.10 are no longer supported
 
 [Compare v0.3.6...HEAD](https://github.com/rdf-elixir/sparql-ex/compare/v0.3.6...HEAD)
 
