@@ -4,43 +4,28 @@ defmodule SPARQL.Functions.Builtins do
 
   alias RDF.{IRI, BlankNode, Literal, XSD, NS}
 
-  @doc """
-  Value equality
-
-  see
-  - <https://www.w3.org/TR/sparql11-query/#OperatorMapping>
-  - <https://www.w3.org/TR/sparql11-query/#func-RDFterm-equal>
-  """
+  # Value equality
+  # - <https://www.w3.org/TR/sparql11-query/#OperatorMapping>
+  # - <https://www.w3.org/TR/sparql11-query/#func-RDFterm-equal>
   def call(:=, [left, right], _) do
     left |> RDF.Term.equal_value?(right) |> ebv()
   end
 
-  @doc """
-  Value inequality
-
-  see
-  - <https://www.w3.org/TR/sparql11-query/#OperatorMapping>
-  - <https://www.w3.org/TR/sparql11-query/#func-RDFterm-equal>
-  """
+  # Value inequality
+  # - <https://www.w3.org/TR/sparql11-query/#OperatorMapping>
+  # - <https://www.w3.org/TR/sparql11-query/#func-RDFterm-equal>
   def call(:!=, [left, right], _) do
     left |> RDF.Term.equal_value?(right) |> fn_not()
   end
 
-  @doc """
-  `sameTerm` equality
-
-  see <https://www.w3.org/TR/sparql11-query/#func-sameTerm>
-  """
+  # sameTerm equality
+  # - <https://www.w3.org/TR/sparql11-query/#func-sameTerm>
   def call(:sameTerm, [left, right], _) do
     left |> RDF.Term.equal?(right) |> ebv()
   end
 
-  @doc """
-  Less-than operator.
-
-  see
-  - <https://www.w3.org/TR/sparql11-query/#OperatorMapping>
-  """
+  # Less-than operator
+  # - <https://www.w3.org/TR/sparql11-query/#OperatorMapping>
   def call(:<, [%Literal{} = left, %Literal{} = right], _) do
     case Literal.compare(left, right) do
       :lt -> true
@@ -52,12 +37,8 @@ defmodule SPARQL.Functions.Builtins do
 
   def call(:<, _, _), do: :error
 
-  @doc """
-  Greater-than operator.
-
-  see
-  - <https://www.w3.org/TR/sparql11-query/#OperatorMapping>
-  """
+  # Greater-than operator
+  # - <https://www.w3.org/TR/sparql11-query/#OperatorMapping>
   def call(:>, [%Literal{} = left, %Literal{} = right], _) do
     case Literal.compare(left, right) do
       :gt -> true
@@ -69,12 +50,8 @@ defmodule SPARQL.Functions.Builtins do
 
   def call(:>, _, _), do: :error
 
-  @doc """
-  Greater-or-equal operator.
-
-  see
-  - <https://www.w3.org/TR/sparql11-query/#OperatorMapping>
-  """
+  # Greater-or-equal operator
+  # - <https://www.w3.org/TR/sparql11-query/#OperatorMapping>
   def call(:>=, [%Literal{} = left, %Literal{} = right], _) do
     case Literal.compare(left, right) do
       :gt -> XSD.true
@@ -86,12 +63,8 @@ defmodule SPARQL.Functions.Builtins do
 
   def call(:>=, _, _), do: :error
 
-  @doc """
-  Less-or-equal operator.
-
-  see
-  - <https://www.w3.org/TR/sparql11-query/#OperatorMapping>
-  """
+  # Less-or-equal operator
+  # - <https://www.w3.org/TR/sparql11-query/#OperatorMapping>
   def call(:<=, [%Literal{} = left, %Literal{} = right], _) do
     case Literal.compare(left, right) do
       :lt -> XSD.true
@@ -103,24 +76,19 @@ defmodule SPARQL.Functions.Builtins do
 
   def call(:<=, _, _), do: :error
 
-  @doc """
-  Logical `NOT`
-
-  Returns `RDF.XSD.true` if the effective boolean value of the given argument is
-  `RDF.XSD.false`, or `RDF.XSD.false` if it is `RDF.XSD.true`. Otherwise it returns `error`.
-
-  see <http://www.w3.org/TR/xpath-functions/#func-not>
-  """
+  # Logical `NOT`
+  #
+  # Returns `RDF.XSD.true` if the effective boolean value of the given argument is
+  # `RDF.XSD.false`, or `RDF.XSD.false` if it is `RDF.XSD.true`. Otherwise it returns `error`.
+  #
+  # - <http://www.w3.org/TR/xpath-functions/#func-not>
   def call(:!, [argument], _) do
     fn_not(argument)
   end
 
 
-  @doc """
-  Numeric unary plus.
-
-  see <http://www.w3.org/TR/xpath-functions/#func-numeric-unary-plus>
-  """
+  # Numeric unary plus
+  # - <http://www.w3.org/TR/xpath-functions/#func-numeric-unary-plus>
   def call(:+, [number], _) do
     if XSD.Numeric.datatype?(number) do
       number
@@ -129,11 +97,8 @@ defmodule SPARQL.Functions.Builtins do
     end
   end
 
-  @doc """
-  Numeric unary minus.
-
-  see <http://www.w3.org/TR/xpath-functions/#func-numeric-unary-minus>
-  """
+  # Numeric unary minus
+  # - <http://www.w3.org/TR/xpath-functions/#func-numeric-unary-minus>
   def call(:-, [number], _) do
     if XSD.Numeric.datatype?(number) do
       XSD.Numeric.multiply(number, -1)
@@ -142,81 +107,54 @@ defmodule SPARQL.Functions.Builtins do
     end
   end
 
-  @doc """
-  Numeric addition.
-
-  see <http://www.w3.org/TR/xpath-functions/#func-numeric-add>
-  """
+  # Numeric addition
+  # - <http://www.w3.org/TR/xpath-functions/#func-numeric-add>
   def call(:+, [left, right], _) do
     XSD.Numeric.add(left, right) || :error
   end
 
-  @doc """
-  Numeric subtraction.
-
-  see <http://www.w3.org/TR/xpath-functions/#func-numeric-subtract>
-  """
+  # Numeric subtraction
+  # - <http://www.w3.org/TR/xpath-functions/#func-numeric-subtract>
   def call(:-, [left, right], _) do
     XSD.Numeric.subtract(left, right) || :error
   end
 
-  @doc """
-  Numeric multiplication.
-
-  see <http://www.w3.org/TR/xpath-functions/#func-numeric-multiply>
-  """
+  # Numeric multiplication
+  # - <http://www.w3.org/TR/xpath-functions/#func-numeric-multiply>
   def call(:*, [left, right], _) do
     XSD.Numeric.multiply(left, right) || :error
   end
 
-  @doc """
-  Numeric division.
-
-  see <http://www.w3.org/TR/xpath-functions/#func-numeric-divide>
-  """
+  # Numeric division
+  # - <http://www.w3.org/TR/xpath-functions/#func-numeric-divide>
   def call(:/, [left, right], _) do
     XSD.Numeric.divide(left, right) || :error
   end
 
-  @doc """
-  Checks if the given argument is an IRI.
-
-  see <https://www.w3.org/TR/sparql11-query/#func-isIRI>
-  """
+  # Checks if the given argument is an IRI.
+  # - <https://www.w3.org/TR/sparql11-query/#func-isIRI>
   def call(:isIRI, [%IRI{}], _), do: XSD.true
   def call(:isIRI, [:error], _), do: :error
   def call(:isIRI, _, _),        do: XSD.false
 
-  @doc """
-  Checks if the given argument is an IRI.
-
-  see <https://www.w3.org/TR/sparql11-query/#func-isIRI>
-  """
+  # Checks if the given argument is an IRI.
+  # - <https://www.w3.org/TR/sparql11-query/#func-isIRI>
   def call(:isURI, args, execution), do: call(:isIRI, args, execution)
 
-  @doc """
-  Checks if the given argument is a blank node.
-
-  see <https://www.w3.org/TR/sparql11-query/#func-isBlank>
-  """
+  # Checks if the given argument is a blank node.
+  # - <https://www.w3.org/TR/sparql11-query/#func-isBlank>
   def call(:isBLANK, [%BlankNode{}], _), do: XSD.true
   def call(:isBLANK, [:error], _),       do: :error
   def call(:isBLANK, _, _),              do: XSD.false
 
-  @doc """
-  Checks if the given argument is a RDF literal.
-
-  see <https://www.w3.org/TR/sparql11-query/#func-isLiteral>
-  """
+  # Checks if the given argument is a RDF literal.
+  # - <https://www.w3.org/TR/sparql11-query/#func-isLiteral>
   def call(:isLITERAL, [%Literal{}], _), do: XSD.true
   def call(:isLITERAL, [:error], _),     do: :error
   def call(:isLITERAL, _, _),            do: XSD.false
 
-  @doc """
-  Checks if the given argument is a RDF literal with a numeric datatype.
-
-  see <https://www.w3.org/TR/sparql11-query/#func-isNumeric>
-  """
+  # Checks if the given argument is a RDF literal with a numeric datatype.
+  # - <https://www.w3.org/TR/sparql11-query/#func-isNumeric>
   def call(:isNUMERIC, [%Literal{} = literal], _) do
     if XSD.Numeric.datatype?(literal) and Literal.valid?(literal) do
       XSD.true
@@ -227,50 +165,36 @@ defmodule SPARQL.Functions.Builtins do
   def call(:isNUMERIC, [:error], _), do: :error
   def call(:isNUMERIC, _, _),        do: XSD.false
 
-  @doc """
-  Returns the lexical form of a literal or the codepoint representation of an IRI.
-
-  see <https://www.w3.org/TR/sparql11-query/#func-str>
-  """
+  # Returns the lexical form of a literal or the codepoint representation of an IRI
+  # - <https://www.w3.org/TR/sparql11-query/#func-str>
   def call(:STR, [%Literal{} = literal], _), do: literal |> to_string() |> XSD.string()
   def call(:STR, [%IRI{} = iri], _),         do: iri     |> to_string() |> XSD.string()
   def call(:STR, _, _),                      do: :error
 
-  @doc """
-  Returns the language tag of language tagged literal.
-
-  It returns `~L""` if the given literal has no language tag. Note that the RDF
-  data model does not include literals with an empty language tag.
-
-  see <https://www.w3.org/TR/sparql11-query/#func-lang>
-  """
+  # Returns the language tag of language tagged literal.
+  #
+  # It returns `~L""` if the given literal has no language tag. Note that the RDF
+  # data model does not include literals with an empty language tag.
+  #
+  # - <https://www.w3.org/TR/sparql11-query/#func-lang>
   def call(:LANG, [%Literal{} = literal], _),
     do: literal |> Literal.language() |> to_string() |> XSD.string()
   def call(:LANG, _, _), do: :error
 
-  @doc """
-  Returns the datatype IRI of a literal.
-
-  see <https://www.w3.org/TR/sparql11-query/#func-datatype>
-  """
+  # Returns the datatype IRI of a literal.
+  # - <https://www.w3.org/TR/sparql11-query/#func-datatype>
   def call(:DATATYPE, [%Literal{} = literal], _), do: Literal.datatype_id(literal)
   def call(:DATATYPE, _, _),                          do: :error
 
-  @doc """
-  Constructs a literal with lexical form and type as specified by the arguments.
-
-  see <https://www.w3.org/TR/sparql11-query/#func-strdt>
-  """
+  # Constructs a literal with lexical form and type as specified by the arguments.
+  # - <https://www.w3.org/TR/sparql11-query/#func-strdt>
   def call(:STRDT, [%Literal{literal: %XSD.String{}} = literal, %IRI{} = datatype], _) do
     literal |> Literal.lexical() |> Literal.new(datatype: datatype)
   end
   def call(:STRDT, _, _), do: :error
 
-  @doc """
-  Constructs a literal with lexical form and language tag as specified by the arguments.
-
-  see <https://www.w3.org/TR/sparql11-query/#func-strlang>
-  """
+  # Constructs a literal with lexical form and language tag as specified by the arguments.
+  # - <https://www.w3.org/TR/sparql11-query/#func-strlang>
   def call(:STRLANG, [%Literal{literal: %XSD.String{}} = lexical_form_literal,
                       %Literal{literal: %XSD.String{}} = language_literal], _) do
     language = language_literal |> to_string() |> String.trim()
@@ -282,44 +206,38 @@ defmodule SPARQL.Functions.Builtins do
   end
   def call(:STRLANG, _, _), do: :error
 
-  @doc """
-  Constructs an IRI from the given string argument.
-
-  It constructs an IRI by resolving the string argument (see RFC 3986 and RFC 3987
-  or any later RFC that supersedes RFC 3986 or RFC 3987). The IRI is resolved
-  against the base IRI of the query and must result in an absolute IRI.
-
-  see <https://www.w3.org/TR/sparql11-query/#func-iri>
-  """
+  # Constructs an IRI from the given string argument.
+  #
+  # It constructs an IRI by resolving the string argument (see RFC 3986 and RFC 3987
+  # or any later RFC that supersedes RFC 3986 or RFC 3987). The IRI is resolved
+  # against the base IRI of the query and must result in an absolute IRI.
+  #
+  # - <https://www.w3.org/TR/sparql11-query/#func-iri>
   def call(:IRI, [%Literal{literal: %XSD.String{}} = literal], execution) do
     literal |> to_string() |> IRI.absolute(Map.get(execution, :base)) || :error
   end
   def call(:IRI, [%IRI{} = iri], _), do: iri
   def call(:IRI, _, _),              do: :error
 
-  @doc """
-  Checks if the given argument is an IRI.
-
-  Alias for `IRI`.
-
-  see <https://www.w3.org/TR/sparql11-query/#func-isIRI>
-  """
+  # Checks if the given argument is an IRI.
+  #
+  # Alias for `IRI`.
+  #
+  # - <https://www.w3.org/TR/sparql11-query/#func-isIRI>
   def call(:URI, args, execution), do: call(:IRI, args, execution)
 
-  @doc """
-  Constructs a blank node.
-
-  The constructed blank node is distinct from all blank nodes in the dataset
-  being queried and distinct from all blank nodes created by calls to this
-  constructor for other query solutions.
-
-  If the no argument form is used, every call results in a distinct blank node.
-  If the form with a simple literal is used, every call results in distinct
-  blank nodes for different simple literals, and the same blank node for calls
-  with the same simple literal within expressions for one solution mapping.
-
-  see <https://www.w3.org/TR/sparql11-query/#func-bnode>
-  """
+  # Constructs a blank node.
+  #
+  # The constructed blank node is distinct from all blank nodes in the dataset
+  # being queried and distinct from all blank nodes created by calls to this
+  # constructor for other query solutions.
+  #
+  # If the no argument form is used, every call results in a distinct blank node.
+  # If the form with a simple literal is used, every call results in distinct
+  # blank nodes for different simple literals, and the same blank node for calls
+  # with the same simple literal within expressions for one solution mapping.
+  #
+  # - <https://www.w3.org/TR/sparql11-query/#func-bnode>
   def call(:BNODE, [], %{bnode_generator: generator}) do
     BlankNode.Generator.generate(generator)
   end
@@ -331,56 +249,45 @@ defmodule SPARQL.Functions.Builtins do
 
   def call(:BNODE, _, _), do: :error
 
-  @doc """
-  Return a fresh IRI from the UUID URN scheme.
-
-  Each call of UUID() returns a different UUID.
-
-  Currently, UUID v4 ids according to RFC 4122 are produced.
-
-  see <https://www.w3.org/TR/sparql11-query/#func-uuid>
-  """
+  # Return a fresh IRI from the UUID URN scheme.
+  #
+  # Each call of UUID() returns a different UUID.
+  #
+  # Currently, UUID v4 ids according to RFC 4122 are produced.
+  #
+  # - <https://www.w3.org/TR/sparql11-query/#func-uuid>
   def call(:UUID, [], _), do: uuid(:urn) |> IRI.new()
   def call(:UUID, _, _),  do: :error
 
-  @doc """
-  Return a string literal that is the scheme specific part of UUID.
-
-  Currently, UUID v4 ids according to RFC 4122 are produced.
-
-  see <https://www.w3.org/TR/sparql11-query/#func-struuid>
-  """
+  # Return a string literal that is the scheme specific part of UUID.
+  #
+  # Currently, UUID v4 ids according to RFC 4122 are produced.
+  #
+  # - <https://www.w3.org/TR/sparql11-query/#func-struuid>
   def call(:STRUUID, [], _), do: uuid(:default) |> XSD.string()
   def call(:STRUUID, _, _),  do: :error
 
-  @doc """
-  Returns an `xsd:integer` equal to the length in characters of the lexical form of a literal.
-
-  see:
-  - <https://www.w3.org/TR/sparql11-query/#func-strlen>
-  - <http://www.w3.org/TR/xpath-functions/#func-string-length>
-  """
+  # Returns an `xsd:integer` equal to the length in characters of the lexical form of a literal.
+  # - <https://www.w3.org/TR/sparql11-query/#func-strlen>
+  # - <http://www.w3.org/TR/xpath-functions/#func-string-length>
   def call(:STRLEN, [%Literal{literal: %datatype{}} = literal], _)
       when datatype in [XSD.String, RDF.LangString],
       do: literal |> to_string() |> String.length() |> XSD.integer()
   def call(:STRLEN, _, _), do: :error
 
-  @doc """
-  Returns a portion of a string .
-
-  The arguments startingLoc and length may be derived types of `xsd:integer`. The
-  index of the first character in a strings is 1.
-
-  Returns a literal of the same kind (simple literal, literal with language tag,
-  xsd:string typed literal) as the source input parameter but with a lexical form
-  formed from the substring of the lexical form of the source.
-
-  The substr function corresponds to the XPath `fn:substring` function.
-
-  see:
-  - <https://www.w3.org/TR/sparql11-query/#func-substr>
-  - <http://www.w3.org/TR/xpath-functions/#func-substring>
-  """
+  # Returns a portion of a string .
+  #
+  # The arguments startingLoc and length may be derived types of `xsd:integer`. The
+  # index of the first character in a strings is 1.
+  #
+  # Returns a literal of the same kind (simple literal, literal with language tag,
+  # xsd:string typed literal) as the source input parameter but with a lexical form
+  # formed from the substring of the lexical form of the source.
+  #
+  # The substr function corresponds to the XPath `fn:substring` function.
+  #
+  # - <https://www.w3.org/TR/sparql11-query/#func-substr>
+  # - <http://www.w3.org/TR/xpath-functions/#func-substring>
   def call(:SUBSTR, [%Literal{literal: %source_datatype{}} = source, %Literal{} = starting_loc], _)
       when source_datatype in [XSD.String, RDF.LangString] do
     if XSD.Integer.valid?(starting_loc) do
@@ -406,15 +313,12 @@ defmodule SPARQL.Functions.Builtins do
 
   def call(:SUBSTR, _, _), do: :error
 
-  @doc """
-  Returns a string literal whose lexical form is the upper case of the lexcial form of the argument.
-
-  The UCASE function corresponds to the XPath `fn:upper-case` function.
-
-  see:
-  - <https://www.w3.org/TR/sparql11-query/#func-ucase>
-  - <http://www.w3.org/TR/xpath-functions/#func-upper-case>
-  """
+  # Returns a string literal whose lexical form is the upper case of the lexcial form of the argument.
+  #
+  # The UCASE function corresponds to the XPath `fn:upper-case` function.
+  #
+  # - <https://www.w3.org/TR/sparql11-query/#func-ucase>
+  # - <http://www.w3.org/TR/xpath-functions/#func-upper-case>
   def call(:UCASE, [%Literal{literal: %datatype{}} = str], _)
       when datatype in [XSD.String, RDF.LangString] do
     Literal.update(str, &String.upcase/1)
@@ -422,15 +326,12 @@ defmodule SPARQL.Functions.Builtins do
 
   def call(:UCASE, _, _), do: :error
 
-  @doc """
-  Returns a string literal whose lexical form is the lower case of the lexcial form of the argument.
-
-  The LCASE function corresponds to the XPath `fn:lower-case` function.
-
-  see:
-  - <https://www.w3.org/TR/sparql11-query/#func-lcase>
-  - <http://www.w3.org/TR/xpath-functions/#func-lower-case>
-  """
+  # Returns a string literal whose lexical form is the lower case of the lexcial form of the argument.
+  #
+  # The LCASE function corresponds to the XPath `fn:lower-case` function.
+  #
+  # - <https://www.w3.org/TR/sparql11-query/#func-lcase>
+  # - <http://www.w3.org/TR/xpath-functions/#func-lower-case>
   def call(:LCASE, [%Literal{literal: %datatype{}} = str], _)
       when datatype in [XSD.String, RDF.LangString] do
     Literal.update(str, &String.downcase/1)
@@ -438,17 +339,14 @@ defmodule SPARQL.Functions.Builtins do
 
   def call(:LCASE, _, _), do: :error
 
-  @doc """
-  Returns true if the lexical form of arg1 starts with the lexical form of arg2, otherwise it returns false.
-
-  The STRSTARTS function corresponds to the XPath `fn:starts-with` function.
-
-  The arguments must be `compatible_arguments?/2` otherwise `:error` is returned.
-
-  see:
-  - <https://www.w3.org/TR/sparql11-query/#func-strstarts>
-  - <http://www.w3.org/TR/xpath-functions/#func-starts-with>
-  """
+  # Returns true if the lexical form of arg1 starts with the lexical form of arg2, otherwise it returns false.
+  #
+  # The STRSTARTS function corresponds to the XPath `fn:starts-with` function.
+  #
+  # The arguments must be `compatible_arguments?/2` otherwise `:error` is returned.
+  #
+  # - <https://www.w3.org/TR/sparql11-query/#func-strstarts>
+  # - <http://www.w3.org/TR/xpath-functions/#func-starts-with>
   def call(:STRSTARTS, [arg1, arg2], _) do
     if compatible_arguments?(arg1, arg2) do
       if arg1 |> to_string() |> String.starts_with?(to_string(arg2)) do
@@ -463,17 +361,14 @@ defmodule SPARQL.Functions.Builtins do
 
   def call(:STRSTARTS, _, _), do: :error
 
-  @doc """
-  Returns true if the lexical form of arg1 ends with the lexical form of arg2, otherwise it returns false.
-
-  The STRENDS function corresponds to the XPath `fn:ends-with` function.
-
-  The arguments must be `compatible_arguments?/2` otherwise `:error` is returned.
-
-  see:
-  - <https://www.w3.org/TR/sparql11-query/#func-strends>
-  - <http://www.w3.org/TR/xpath-functions/#func-ends-with>
-  """
+  # Returns true if the lexical form of arg1 ends with the lexical form of arg2, otherwise it returns false.
+  #
+  # The STRENDS function corresponds to the XPath `fn:ends-with` function.
+  #
+  # The arguments must be `compatible_arguments?/2` otherwise `:error` is returned.
+  #
+  # - <https://www.w3.org/TR/sparql11-query/#func-strends>
+  # - <http://www.w3.org/TR/xpath-functions/#func-ends-with>
   def call(:STRENDS, [arg1, arg2], _) do
     if compatible_arguments?(arg1, arg2) do
       if arg1 |> to_string() |> String.ends_with?(to_string(arg2)) do
@@ -488,17 +383,14 @@ defmodule SPARQL.Functions.Builtins do
 
   def call(:STRENDS, _, _), do: :error
 
-  @doc """
-  Returns true if the lexical form of arg1 contains the lexical form of arg2, otherwise it returns false.
-
-  The CONTAINS function corresponds to the XPath `fn:contains` function.
-
-  The arguments must be `compatible_arguments?/2` otherwise `:error` is returned.
-
-  see:
-  - <https://www.w3.org/TR/sparql11-query/#func-contains>
-  - <http://www.w3.org/TR/xpath-functions/#func-contains>
-  """
+  # Returns true if the lexical form of arg1 contains the lexical form of arg2, otherwise it returns false.
+  #
+  # The CONTAINS function corresponds to the XPath `fn:contains` function.
+  #
+  # The arguments must be `compatible_arguments?/2` otherwise `:error` is returned.
+  #
+  # - <https://www.w3.org/TR/sparql11-query/#func-contains>
+  # - <http://www.w3.org/TR/xpath-functions/#func-contains>
   def call(:CONTAINS, [arg1, arg2], _) do
     if compatible_arguments?(arg1, arg2) do
       if arg1 |> to_string() |> String.contains?(to_string(arg2)) do
@@ -513,28 +405,25 @@ defmodule SPARQL.Functions.Builtins do
 
   def call(:CONTAINS, _, _), do: :error
 
-  @doc """
-  Returns the substring of the lexical form of arg1 that precedes the first occurrence of the lexical form of arg2.
-
-  The STRBEFORE function corresponds to the XPath `fn:substring-before` function.
-
-  The arguments must be `compatible_arguments?/2` otherwise `:error` is returned.
-
-  For compatible arguments, if the lexical part of the second argument occurs as
-  a substring of the lexical part of the first argument, the function returns a
-  literal of the same kind as the first argument arg1 (simple literal, plain
-  literal same language tag, xsd:string). The lexical form of the result is the
-  substring of the lexical form of arg1 that precedes the first occurrence of
-  the lexical form of arg2. If the lexical form of arg2 is the empty string,
-  this is considered to be a match and the lexical form of the result is the
-  empty string.
-
-  If there is no such occurrence, an empty simple literal is returned.
-
-  see:
-  - <https://www.w3.org/TR/sparql11-query/#func-strbefore>
-  - <http://www.w3.org/TR/xpath-functions/#func-substring-before>
-  """
+  # Returns the substring of the lexical form of arg1 that precedes the first occurrence of the lexical form of arg2.
+  #
+  # The STRBEFORE function corresponds to the XPath `fn:substring-before` function.
+  #
+  # The arguments must be `compatible_arguments?/2` otherwise `:error` is returned.
+  #
+  # For compatible arguments, if the lexical part of the second argument occurs as
+  # a substring of the lexical part of the first argument, the function returns a
+  # literal of the same kind as the first argument arg1 (simple literal, plain
+  # literal same language tag, xsd:string). The lexical form of the result is the
+  # substring of the lexical form of arg1 that precedes the first occurrence of
+  # the lexical form of arg2. If the lexical form of arg2 is the empty string,
+  # this is considered to be a match and the lexical form of the result is the
+  # empty string.
+  #
+  # If there is no such occurrence, an empty simple literal is returned.
+  #
+  # - <https://www.w3.org/TR/sparql11-query/#func-strbefore>
+  # - <http://www.w3.org/TR/xpath-functions/#func-substring-before>
   def call(:STRBEFORE, [arg1, arg2], _) do
     cond do
       not compatible_arguments?(arg1, arg2) -> :error
@@ -549,28 +438,25 @@ defmodule SPARQL.Functions.Builtins do
 
   def call(:STRBEFORE, _, _), do: :error
 
-  @doc """
-  Returns the substring of the lexical form of arg1 that follows the first occurrence of the lexical form of arg2.
-
-  The STRAFTER function corresponds to the XPath `fn:substring-before` function.
-
-  The arguments must be `compatible_arguments?/2` otherwise `:error` is returned.
-
-  For compatible arguments, if the lexical part of the second argument occurs as
-  a substring of the lexical part of the first argument, the function returns a
-  literal of the same kind as the first argument arg1 (simple literal, plain
-  literal same language tag, xsd:string). The lexical form of the result is the
-  substring of the lexical form of arg1 that precedes the first occurrence of
-  the lexical form of arg2. If the lexical form of arg2 is the empty string,
-  this is considered to be a match and the lexical form of the result is the
-  lexical form of arg1.
-
-  If there is no such occurrence, an empty simple literal is returned.
-
-  see:
-  - <https://www.w3.org/TR/sparql11-query/#func-strafter>
-  - <http://www.w3.org/TR/xpath-functions/#func-substring-after>
-  """
+  # Returns the substring of the lexical form of arg1 that follows the first occurrence of the lexical form of arg2.
+  #
+  # The STRAFTER function corresponds to the XPath `fn:substring-before` function.
+  #
+  # The arguments must be `compatible_arguments?/2` otherwise `:error` is returned.
+  #
+  # For compatible arguments, if the lexical part of the second argument occurs as
+  # a substring of the lexical part of the first argument, the function returns a
+  # literal of the same kind as the first argument arg1 (simple literal, plain
+  # literal same language tag, xsd:string). The lexical form of the result is the
+  # substring of the lexical form of arg1 that precedes the first occurrence of
+  # the lexical form of arg2. If the lexical form of arg2 is the empty string,
+  # this is considered to be a match and the lexical form of the result is the
+  # lexical form of arg1.
+  #
+  # If there is no such occurrence, an empty simple literal is returned.
+  #
+  # - <https://www.w3.org/TR/sparql11-query/#func-strafter>
+  # - <http://www.w3.org/TR/xpath-functions/#func-substring-after>
   def call(:STRAFTER, [arg1, arg2], _) do
     cond do
       not compatible_arguments?(arg1, arg2) -> :error
@@ -585,15 +471,12 @@ defmodule SPARQL.Functions.Builtins do
 
   def call(:STRAFTER, _, _), do: :error
 
-  @doc """
-  Returns a simple literal with the lexical form obtained from the lexical form of its input after translating reserved characters according to the fn:encode-for-uri function.
-
-  The ENCODE_FOR_URI function corresponds to the XPath `fn:encode-for-uri` function.
-
-  see:
-  - <https://www.w3.org/TR/sparql11-query/#func-encode>
-  - <http://www.w3.org/TR/xpath-functions/#func-encode-for-uri>
-  """
+  # Returns a simple literal with the lexical form obtained from the lexical form of its input after translating reserved characters according to the fn:encode-for-uri function.
+  #
+  # The ENCODE_FOR_URI function corresponds to the XPath `fn:encode-for-uri` function.
+  #
+  # - <https://www.w3.org/TR/sparql11-query/#func-encode>
+  # - <http://www.w3.org/TR/xpath-functions/#func-encode-for-uri>
   def call(:ENCODE_FOR_URI, [%Literal{literal: %datatype{}} = str], _)
       when datatype in [XSD.String, RDF.LangString] do
     str
@@ -604,20 +487,17 @@ defmodule SPARQL.Functions.Builtins do
 
   def call(:ENCODE_FOR_URI, _, _), do: :error
 
-  @doc """
-  Returns a string literal with the lexical form being obtained by concatenating the lexical forms of its inputs.
-
-  If all input literals are typed literals of type `xsd:string`, then the returned
-  literal is also of type `xsd:string`, if all input literals are plain literals
-  with identical language tag, then the returned literal is a plain literal with
-  the same language tag, in all other cases, the returned literal is a simple literal.
-
-  The CONCAT function corresponds to the XPath `fn:concat` function.
-
-  see:
-  - <https://www.w3.org/TR/sparql11-query/#func-concat>
-  - <http://www.w3.org/TR/xpath-functions/#func-concat>
-  """
+  # Returns a string literal with the lexical form being obtained by concatenating the lexical forms of its inputs.
+  #
+  # If all input literals are typed literals of type `xsd:string`, then the returned
+  # literal is also of type `xsd:string`, if all input literals are plain literals
+  # with identical language tag, then the returned literal is a plain literal with
+  # the same language tag, in all other cases, the returned literal is a simple literal.
+  #
+  # The CONCAT function corresponds to the XPath `fn:concat` function.
+  #
+  # - <https://www.w3.org/TR/sparql11-query/#func-concat>
+  # - <http://www.w3.org/TR/xpath-functions/#func-concat>
   def call(:CONCAT, [], _), do: XSD.string("")
   def call(:CONCAT, [%Literal{literal: %datatype{}} = first |rest], _)
       when datatype in [XSD.String, RDF.LangString] do
@@ -646,17 +526,15 @@ defmodule SPARQL.Functions.Builtins do
 
   def call(:CONCAT, _, _), do: :error
 
-  @doc """
-  Checks if a language tagged string literal or language tag matches a language range.
-
-  The check is performed per the basic filtering scheme defined in
-  [RFC4647](http://www.ietf.org/rfc/rfc4647.txt) section 3.3.1.
-  A language range is a basic language range per _Matching of Language Tags_ in
-  RFC4647 section 2.1.
-  A language range of `"*"` matches any non-empty language-tag string.
-
-  see <https://www.w3.org/TR/sparql11-query/#func-langMatches>
-  """
+  # Checks if a language tagged string literal or language tag matches a language range.
+  #
+  # The check is performed per the basic filtering scheme defined in
+  # [RFC4647](http://www.ietf.org/rfc/rfc4647.txt) section 3.3.1.
+  # A language range is a basic language range per _Matching of Language Tags_ in
+  # RFC4647 section 2.1.
+  # A language range of `"*"` matches any non-empty language-tag string.
+  #
+  # - <https://www.w3.org/TR/sparql11-query/#func-langMatches>
   def call(:LANGMATCHES, [%Literal{literal: %XSD.String{value: language_tag}},
                           %Literal{literal: %XSD.String{value: language_range}}], _) do
     if RDF.LangString.match_language?(language_tag, language_range) do
@@ -668,196 +546,149 @@ defmodule SPARQL.Functions.Builtins do
 
   def call(:LANGMATCHES, _, _), do: :error
 
-  @doc """
-  Matches text against a regular expression pattern.
-
-  The regular expression language is defined in _XQuery 1.0 and XPath 2.0 Functions and Operators_.
-
-  see
-  - <https://www.w3.org/TR/sparql11-query/#func-regex>
-  - <https://www.w3.org/TR/xpath-functions/#func-matches>
-  """
+  # Matches text against a regular expression pattern.
+  #
+  # The regular expression language is defined in _XQuery 1.0 and XPath 2.0 Functions and Operators_.
+  #
+  # - <https://www.w3.org/TR/sparql11-query/#func-regex>
+  # - <https://www.w3.org/TR/xpath-functions/#func-matches>
   def call(:REGEX, [text, pattern], _),        do: match_regex(text, pattern, XSD.string(""))
   def call(:REGEX, [text, pattern, flags], _), do: match_regex(text, pattern, flags)
   def call(:REGEX, _, _),                      do: :error
 
-  @doc """
-  Replaces each non-overlapping occurrence of the regular expression pattern with the replacement string.
-
-  Regular expression matching may involve modifier flags. See REGEX.
-
-  see
-  - <https://www.w3.org/TR/sparql11-query/#func-replace>
-  - <http://www.w3.org/TR/xpath-functions/#func-replace>
-  """
+  # Replaces each non-overlapping occurrence of the regular expression pattern with the replacement string.
+  #
+  # Regular expression matching may involve modifier flags. See REGEX.
+  #
+  # - <https://www.w3.org/TR/sparql11-query/#func-replace>
+  # - <http://www.w3.org/TR/xpath-functions/#func-replace>
   def call(:REPLACE, [text, pattern, replacement], _),
     do: replace_regex(text, pattern, replacement, XSD.string(""))
   def call(:REPLACE, [text, pattern, replacement, flags], _),
     do: replace_regex(text, pattern, replacement, flags)
   def call(:REPLACE, _, _), do: :error
 
-  @doc """
-  Returns the absolute value of the argument.
-
-  If the argument is not a numeric value `:error` is returned.
-
-  see
-  - <https://www.w3.org/TR/sparql11-query/#func-abs>
-  - <http://www.w3.org/TR/xpath-functions/#func-abs>
-  """
+  # Returns the absolute value of the argument.
+  #
+  # If the argument is not a numeric value `:error` is returned.
+  #
+  # - <https://www.w3.org/TR/sparql11-query/#func-abs>
+  # - <http://www.w3.org/TR/xpath-functions/#func-abs>
   def call(:ABS, [%Literal{} = literal], _) do
     XSD.Numeric.abs(literal) || :error
   end
 
   def call(:ABS, _, _), do: :error
 
-  @doc """
-  Rounds a value to a specified number of decimal places, rounding upwards if two such values are equally near.
-
-  The function returns the nearest (that is, numerically closest) value to the
-  given literal value that is a multiple of ten to the power of minus `precision`.
-  If two such values are equally near (for example, if the fractional part in the
-  literal value is exactly .5), the function returns the one that is closest to
-  positive infinity.
-
-  If the argument is not a numeric value `:error` is returned.
-
-  see
-  - <https://www.w3.org/TR/sparql11-query/#func-round>
-  - <http://www.w3.org/TR/xpath-functions/#func-round>
-  """
+  # Rounds a value to a specified number of decimal places, rounding upwards if two such values are equally near.
+  #
+  # The function returns the nearest (that is, numerically closest) value to the
+  # given literal value that is a multiple of ten to the power of minus `precision`.
+  # If two such values are equally near (for example, if the fractional part in the
+  # literal value is exactly .5), the function returns the one that is closest to
+  # positive infinity.
+  #
+  # If the argument is not a numeric value `:error` is returned.
+  #
+  # - <https://www.w3.org/TR/sparql11-query/#func-round>
+  # - <http://www.w3.org/TR/xpath-functions/#func-round>
   def call(:ROUND, [%Literal{} = literal], _) do
     XSD.Numeric.round(literal) || :error
   end
 
   def call(:ROUND, _, _), do: :error
 
-  @doc """
-  Rounds a numeric value upwards to a whole number.
-
-  If the argument is not a numeric value `:error` is returned.
-
-  see
-  - <https://www.w3.org/TR/sparql11-query/#func-ceil>
-  - <http://www.w3.org/TR/xpath-functions/#func-ceil>
-  """
+  # Rounds a numeric value upwards to a whole number.
+  #
+  # If the argument is not a numeric value `:error` is returned.
+  #
+  # - <https://www.w3.org/TR/sparql11-query/#func-ceil>
+  # - <http://www.w3.org/TR/xpath-functions/#func-ceil>
   def call(:CEIL, [%Literal{} = literal], _) do
     XSD.Numeric.ceil(literal) || :error
   end
 
   def call(:CEIL, _, _), do: :error
 
-  @doc """
-  Rounds a numeric value downwards to a whole number.
-
-  If the argument is not a numeric value `:error` is returned.
-
-  see
-  - <https://www.w3.org/TR/sparql11-query/#func-floor>
-  - <http://www.w3.org/TR/xpath-functions/#func-floor>
-  """
+  # Rounds a numeric value downwards to a whole number.
+  #
+  # If the argument is not a numeric value `:error` is returned.
+  #
+  # - <https://www.w3.org/TR/sparql11-query/#func-floor>
+  # - <http://www.w3.org/TR/xpath-functions/#func-floor>
   def call(:FLOOR, [%Literal{} = literal], _) do
     XSD.Numeric.floor(literal) || :error
   end
 
   def call(:FLOOR, _, _), do: :error
 
-  @doc """
-  Returns a pseudo-random number between 0 (inclusive) and 1.0e0 (exclusive).
-
-  see <https://www.w3.org/TR/sparql11-query/#idp2130040>
-  """
+  # Returns a pseudo-random number between 0 (inclusive) and 1.0e0 (exclusive).
+  # - <https://www.w3.org/TR/sparql11-query/#idp2130040>
   def call(:RAND, [], _) do
     :rand.uniform() |> XSD.double()
   end
 
   def call(:RAND, _, _), do: :error
 
-  @doc """
-  Returns an XSD dateTime value for the current query execution.
-
-  All calls to this function in any one query execution return the same value.
-
-  see <https://www.w3.org/TR/sparql11-query/#func-now>
-  """
+  # Returns an XSD dateTime value for the current query execution.
+  #
+  # All calls to this function in any one query execution return the same value.
+  #
+  # - <https://www.w3.org/TR/sparql11-query/#func-now>
   def call(:NOW, [], %{time: time}) do
     XSD.date_time(time)
   end
 
   def call(:NOW, _, _), do: :error
 
-  @doc """
-  Returns the year part of the given datetime as an integer.
-
-  see
-  - <https://www.w3.org/TR/sparql11-query/#func-year>
-  - <https://www.w3.org/TR/xpath-functions/#func-year-from-dateTime>
-  """
+  # Returns the year part of the given datetime as an integer.
+  # - <https://www.w3.org/TR/sparql11-query/#func-year>
+  # - <https://www.w3.org/TR/xpath-functions/#func-year-from-dateTime>
   def call(:YEAR, [%Literal{literal: %XSD.DateTime{} = literal}], _) do
     naive_datetime_part(literal, :year)
   end
 
   def call(:YEAR, _, _), do: :error
 
-  @doc """
-  Returns the month part of the given datetime as an integer.
-
-  see
-  - <https://www.w3.org/TR/sparql11-query/#func-month>
-  - <https://www.w3.org/TR/xpath-functions/#func-month-from-dateTime>
-  """
+  # Returns the month part of the given datetime as an integer.
+  # - <https://www.w3.org/TR/sparql11-query/#func-month>
+  # - <https://www.w3.org/TR/xpath-functions/#func-month-from-dateTime>
   def call(:MONTH, [%Literal{literal: %XSD.DateTime{} = literal}], _) do
     naive_datetime_part(literal, :month)
   end
 
   def call(:MONTH, _, _), do: :error
 
-  @doc """
-  Returns the day part of the given datetime as an integer.
-
-  see
-  - <https://www.w3.org/TR/sparql11-query/#func-day>
-  - <https://www.w3.org/TR/xpath-functions/#func-day-from-dateTime>
-  """
+  # Returns the day part of the given datetime as an integer.
+  # - <https://www.w3.org/TR/sparql11-query/#func-day>
+  # - <https://www.w3.org/TR/xpath-functions/#func-day-from-dateTime>
   def call(:DAY, [%Literal{literal: %XSD.DateTime{} = literal}], _) do
     naive_datetime_part(literal, :day)
   end
 
   def call(:DAY, _, _), do: :error
 
-  @doc """
-  Returns the hours part of the given datetime as an integer.
-
-  see
-  - <https://www.w3.org/TR/sparql11-query/#func-hours>
-  - <https://www.w3.org/TR/xpath-functions/#func-hours-from-dateTime>
-  """
+  # Returns the hours part of the given datetime as an integer.
+  # - <https://www.w3.org/TR/sparql11-query/#func-hours>
+  # - <https://www.w3.org/TR/xpath-functions/#func-hours-from-dateTime>
   def call(:HOURS, [%Literal{literal: %XSD.DateTime{} = literal}], _) do
     naive_datetime_part(literal, :hour)
   end
 
   def call(:HOURS, _, _), do: :error
 
-  @doc """
-  Returns the minutes part of the given datetime as an integer.
-
-  see
-  - <https://www.w3.org/TR/sparql11-query/#func-minutes>
-  - <https://www.w3.org/TR/xpath-functions/#func-minutes-from-dateTime>
-  """
+  # Returns the minutes part of the given datetime as an integer.
+  # - <https://www.w3.org/TR/sparql11-query/#func-minutes>
+  # - <https://www.w3.org/TR/xpath-functions/#func-minutes-from-dateTime>
   def call(:MINUTES, [%Literal{literal: %XSD.DateTime{} = literal}], _) do
     naive_datetime_part(literal, :minute)
   end
 
   def call(:MINUTES, _, _), do: :error
 
-  @doc """
-  Returns the seconds part of the given datetime as a decimal.
-
-  see
-  - <https://www.w3.org/TR/sparql11-query/#func-seconds>
-  - <https://www.w3.org/TR/xpath-functions/#func-seconds-from-dateTime>
-  """
+  # Returns the seconds part of the given datetime as a decimal.
+  # - <https://www.w3.org/TR/sparql11-query/#func-seconds>
+  # - <https://www.w3.org/TR/xpath-functions/#func-seconds-from-dateTime>
   def call(:SECONDS, [%Literal{literal: %XSD.DateTime{} = literal}], _) do
     if XSD.DateTime.valid?(literal) do
       case literal.value.microsecond do
@@ -881,15 +712,12 @@ defmodule SPARQL.Functions.Builtins do
 
   def call(:SECONDS, _, _), do: :error
 
-  @doc """
-  Returns the timezone part of the given datetime as an `xsd:dayTimeDuration` literal.
-
-  Returns `:error` if there is no timezone.
-
-  see
-  - <https://www.w3.org/TR/sparql11-query/#func-timezone>
-  - <http://www.w3.org/TR/xpath-functions/#func-timezone-from-dateTime>
-  """
+  # Returns the timezone part of the given datetime as an `xsd:dayTimeDuration` literal.
+  #
+  # Returns `:error` if there is no timezone.
+  #
+  # - <https://www.w3.org/TR/sparql11-query/#func-timezone>
+  # - <http://www.w3.org/TR/xpath-functions/#func-timezone-from-dateTime>
   def call(:TIMEZONE, [%Literal{literal: %XSD.DateTime{} = literal}], _) do
     literal
     |> XSD.DateTime.tz()
@@ -899,13 +727,8 @@ defmodule SPARQL.Functions.Builtins do
 
   def call(:TIMEZONE, _, _), do: :error
 
-  @doc """
-  Returns the timezone part of a given datetime as a simple literal.
-
-  Returns the empty string if there is no timezone.
-
-  see <https://www.w3.org/TR/sparql11-query/#func-tz>
-  """
+  # Returns the timezone part of a given datetime as a simple literal or the empty string if there is no timezone.
+  # - <https://www.w3.org/TR/sparql11-query/#func-tz>
   def call(:TZ, [%Literal{literal: %XSD.DateTime{} = literal}], _) do
     if tz = XSD.DateTime.tz(literal) do
       XSD.string(tz)
@@ -916,22 +739,16 @@ defmodule SPARQL.Functions.Builtins do
 
   def call(:TZ, _, _), do: :error
 
-  @doc """
-  Returns the MD5 checksum, as a hex digit string.
-
-  see <https://www.w3.org/TR/sparql11-query/#func-md5>
-  """
+  # Returns the MD5 checksum, as a hex digit string.
+  # - <https://www.w3.org/TR/sparql11-query/#func-md5>
   def call(:MD5, [%Literal{literal: %XSD.String{}} = literal], _) do
     hash(:md5, Literal.value(literal))
   end
 
   def call(:MD5, _, _), do: :error
 
-  @doc """
-  Returns the SHA1 checksum, as a hex digit string.
-
-  see <https://www.w3.org/TR/sparql11-query/#func-sha1>
-  """
+  # Returns the SHA1 checksum, as a hex digit string.
+  # - <https://www.w3.org/TR/sparql11-query/#func-sha1>
   def call(:SHA1, [%Literal{literal: %XSD.String{}} = literal], _) do
     hash(:sha, Literal.value(literal))
   end
@@ -941,7 +758,7 @@ defmodule SPARQL.Functions.Builtins do
   @doc """
   Returns the SHA256 checksum, as a hex digit string.
 
-  see <https://www.w3.org/TR/sparql11-query/#func-sha256>
+  - <https://www.w3.org/TR/sparql11-query/#func-sha256>
   """
   def call(:SHA256, [%Literal{literal: %XSD.String{}} = literal], _) do
     hash(:sha256, Literal.value(literal))
@@ -949,22 +766,16 @@ defmodule SPARQL.Functions.Builtins do
 
   def call(:SHA256, _, _), do: :error
 
-  @doc """
-  Returns the SHA384 checksum, as a hex digit string.
-
-  see <https://www.w3.org/TR/sparql11-query/#fun  c-sha384>
-  """
+  # Returns the SHA384 checksum, as a hex digit string.
+  # - <https://www.w3.org/TR/sparql11-query/#fun  c-sha384>
   def call(:SHA384, [%Literal{literal: %XSD.String{}} = literal], _) do
     hash(:sha384, Literal.value(literal))
   end
 
   def call(:SHA384, _, _), do: :error
 
-  @doc """
-  Returns the SHA512 checksum, as a hex digit string.
-
-  see <https://www.w3.org/TR/sparql11-query/#func-sha512>
-  """
+  # Returns the SHA512 checksum, as a hex digit string.
+  # - <https://www.w3.org/TR/sparql11-query/#func-sha512>
   def call(:SHA512, [%Literal{literal: %XSD.String{}} = literal], _) do
     hash(:sha512, Literal.value(literal))
   end
