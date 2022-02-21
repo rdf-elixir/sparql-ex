@@ -67,9 +67,9 @@ Other features on the roadmap:
 see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 
-## Consulting and Partnership
+## Consulting
 
-If you need help with your Elixir and Linked Data projects, just contact <info@cokron.com> or visit <https://www.cokron.com/kontakt>
+If you need help with your Elixir and Linked Data projects, just contact [NinjaConcept](https://www.ninjaconcept.com/) via <contact@ninjaconcept.com>.
 
 
 ## License and Copyright
