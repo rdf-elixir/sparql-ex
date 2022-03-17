@@ -68,7 +68,7 @@ defmodule SPARQL.Mixfile do
 
   defp deps do
     [
-      {:rdf, "~> 0.8"},
+      rdf_ex_dep(:rdf, "~> 0.8"),
       {:jason, "~> 1.0"},
       {:nimble_csv, "~> 0.6"},
       {:sweet_xml, "~> 0.6"},
@@ -82,6 +82,13 @@ defmodule SPARQL.Mixfile do
       {:excoveralls, "~> 0.14", only: :test},
       {:multiset, "~> 0.0.4",   only: :test},
     ]
+  end
+
+  defp rdf_ex_dep(dep, version) do
+    case System.get_env("RDF_EX_PACKAGES_SRC") do
+      "LOCAL" -> {dep, path: "../#{dep}"}
+      _ -> {dep, version}
+    end
   end
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]
