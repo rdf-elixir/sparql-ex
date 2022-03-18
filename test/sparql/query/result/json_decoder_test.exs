@@ -122,6 +122,53 @@ defmodule SPARQL.Query.Result.JSON.DecoderTest do
            }
   end
 
+  test "quoted triples" do
+    assert Query.Result.JSON.decode("""
+             {
+               "head" : {
+                 "vars" : [
+                   "triple"
+                 ]
+               },
+               "results" : {
+                 "bindings" : [
+                   {
+                     "triple" : {
+                       "type": "triple",
+                       "value": {
+                          "subject": {
+                            "type": "uri",
+                            "value": "http://example.org/alice"
+                          },
+                          "predicate": {
+                            "type": "uri",
+                            "value": "http://example.org/name"
+                          },
+                          "object": {
+                            "type": "literal",
+                            "value": "Alice",
+                            "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                          }
+                        }
+                     }
+                   }
+                 ]
+               }
+             }
+           """) == {:ok,
+             %Query.Result{
+               variables: ["triple"],
+               results: [%{
+                 "triple" =>
+                    {
+                      RDF.iri("http://example.org/alice"),
+                      RDF.iri("http://example.org/name"),
+                      XSD.string("Alice")
+                    }
+               }]}
+           }
+  end
+
   test "ASK result with non-boolean value" do
     assert Query.Result.JSON.decode(~S[{"boolean": "foo"}]) ==
       {:error, ~S[invalid boolean: "foo"]}

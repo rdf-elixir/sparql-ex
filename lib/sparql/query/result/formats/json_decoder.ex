@@ -56,6 +56,14 @@ defmodule SPARQL.Query.Result.JSON.Decoder do
   defp decode_value(%{"type" => "bnode", "value" => value}),
     do: RDF.BlankNode.new(value)
 
+  defp decode_value(%{"type" => "triple", "value" => value}) do
+    {
+      decode_value(value["subject"]),
+      decode_value(value["predicate"]),
+      decode_value(value["object"])
+    }
+  end
+
   defp decode_value(value),
     do: raise "invalid query solution: #{inspect value}"
 
