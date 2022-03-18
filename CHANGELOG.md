@@ -9,6 +9,10 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 Elixir versions < 1.10 are no longer supported
 
+### Added
+
+- Support for SPARQL-star query results JSON and XML formats
+
 [Compare v0.3.6...HEAD](https://github.com/rdf-elixir/sparql-ex/compare/v0.3.6...HEAD)
 
 

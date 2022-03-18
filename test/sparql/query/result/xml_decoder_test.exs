@@ -203,6 +203,44 @@ defmodule SPARQL.Query.Result.XML.DecoderTest do
                   ]}}
   end
 
+  test "SELECT result with quoted triple" do
+    assert Query.Result.XML.decode("""
+           <sparql xmlns="http://www.w3.org/2005/sparql-results#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/sw/DataAccess/rf1/result2.xsd">
+             <head>
+               <variable name="triple"/>
+             </head>
+             <results>
+               <result>
+                 <binding name="triple">
+                   <triple>
+                     <subject>
+                       <uri>http://example.org/alice</uri>
+                     </subject>
+                     <predicate>
+                       <uri>http://example.org/name</uri>
+                     </predicate>
+                     <object>
+                       <literal datatype='http://www.w3.org/2001/XMLSchema#string'>Alice</literal>
+                     </object>
+                   </triple>
+                 </binding>
+               </result>
+             </results>
+           </sparql>
+           """) == {:ok,
+             %Query.Result{
+               variables: ["triple"],
+               results: [%{
+                 "triple" =>
+                   {
+                     RDF.iri("http://example.org/alice"),
+                     RDF.iri("http://example.org/name"),
+                     XSD.string("Alice")
+                   }
+               }]}
+           }
+  end
+
   test "ASK result" do
     assert Query.Result.XML.decode("""
       <sparql xmlns="http://www.w3.org/2005/sparql-results#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/sw/DataAccess/rf1/result2.xsd">

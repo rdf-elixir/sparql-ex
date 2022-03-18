@@ -89,6 +89,14 @@ defmodule SPARQL.Query.Result.XML.Decoder do
   defp decode_value(node) when elem(node, 1) == :bnode,
     do: node |> xpath(~x"./text()"s) |> RDF.BlankNode.new()
 
+  defp decode_value(node) when elem(node, 1) == :triple do
+    {
+      decode_value(xpath(node, ~x"./subject/*")),
+      decode_value(xpath(node, ~x"./predicate/*")),
+      decode_value(xpath(node, ~x"./object/*"))
+    }
+  end
+
   defp decode_value(value),
     do: raise "Invalid query result: #{inspect value}"
 
