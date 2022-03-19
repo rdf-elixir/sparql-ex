@@ -57,10 +57,11 @@ defmodule SPARQL.Query.Result.JSON.Decoder do
     do: RDF.BlankNode.new(value)
 
   defp decode_value(%{"type" => "triple", "value" => value}) do
+    # the spo-fallbacks are for some non-spec-compliant implementations out there (like GraphDB)
     {
-      decode_value(value["subject"]),
-      decode_value(value["predicate"]),
-      decode_value(value["object"])
+      decode_value(value["subject"] || value["s"] || raise("'subject' missing in triple value: #{value}")),
+      decode_value(value["predicate"] || value["p"] || raise("'predicate' missing in triple value: #{value}")),
+      decode_value(value["object"] || value["o"] || raise("'object' missing in triple value: #{value}"))
     }
   end
 
