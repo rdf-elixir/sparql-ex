@@ -70,7 +70,7 @@ defmodule SPARQL.Mixfile do
     [
       rdf_ex_dep(:rdf, "~> 0.11"),
       {:jason, "~> 1.0"},
-      {:nimble_csv, "~> 0.6"},
+      {:nimble_csv, "~> 1.0"},
       {:sweet_xml, "~> 0.6"},
       {:elixir_uuid, "~> 1.2"},
       {:protocol_ex, "~> 0.4"},
@@ -78,7 +78,7 @@ defmodule SPARQL.Mixfile do
       # Development
       {:dialyxir, "~> 1.1",     only: [:dev, :test], runtime: false},
       {:credo, "~> 1.6",        only: [:dev, :test], runtime: false},
-      {:ex_doc, "~> 0.26",      only: :dev, runtime: false},
+      {:ex_doc, "~> 0.28",      only: :dev, runtime: false},
       {:excoveralls, "~> 0.14", only: :test},
       {:multiset, "~> 0.0.4",   only: :test},
     ]
