@@ -17,7 +17,9 @@ defmodule SPARQL.Processor do
   end
 
   def query(data, %Query{expr: expr, base: base, prefixes: prefixes}, _options) do
-    {:ok, generator} = RDF.BlankNode.Generator.start_link(RDF.BlankNode.Increment, prefix: "b")
+    {:ok, generator} =
+      RDF.BlankNode.Generator.start_link(algorithm: RDF.BlankNode.Increment, prefix: "b")
+
     try do
       Algebra.Expression.evaluate(expr, data, execution_context(base, prefixes, generator))
       |> query_post_processing()

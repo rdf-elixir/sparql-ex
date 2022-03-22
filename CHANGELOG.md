@@ -7,6 +7,8 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 ## Unreleased
 
+Upgrades to RDF.ex 0.11. Earlier version won't work with RDF.ex >= 0.11. 
+
 Elixir versions < 1.10 are no longer supported
 
 ### Added
