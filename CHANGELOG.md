@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## Unreleased
+## v0.3.7 - 2022-03-22
 
 Upgrades to RDF.ex 0.11. Earlier version won't work with RDF.ex >= 0.11. 
 
@@ -15,7 +15,7 @@ Elixir versions < 1.10 are no longer supported
 
 - Support for SPARQL-star query results JSON and XML formats
 
-[Compare v0.3.6...HEAD](https://github.com/rdf-elixir/sparql-ex/compare/v0.3.6...HEAD)
+[Compare v0.3.6...v0.3.7](https://github.com/rdf-elixir/sparql-ex/compare/v0.3.6...v0.3.7)
 
 
 
