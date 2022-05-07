@@ -6,7 +6,7 @@ defmodule SPARQL.Algebra.Construct do
 
   def result(%SPARQL.Query.Result{results: results}, template, generator, prefixes) do
     template_bnodes = template_bnodes(template)
-    prefixes = if Enum.empty?((prefixes)), do: nil, else: prefixes
+    prefixes = if Enum.empty?(prefixes), do: nil, else: prefixes
     Enum.reduce results, RDF.Graph.new(prefixes: prefixes), fn result, graph ->
       template_for_solution =
         template_bnodes

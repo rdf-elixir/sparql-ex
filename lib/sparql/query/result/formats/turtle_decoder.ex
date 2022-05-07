@@ -51,18 +51,18 @@ defmodule SPARQL.Query.Result.Turtle.Decoder do
   end
 
   defp solution(solution_resource, graph) do
-    with solution_description = Graph.description(graph, solution_resource) do
-      {
-        Description.first(solution_description, RS.index),
-        solution_description
-        |> Description.get(RS.binding)
-        |> Enum.reduce(%{}, fn binding_resource, bindings ->
-              binding = Graph.description(graph, binding_resource)
-              Map.put bindings,
-                binding |> Description.first(RS.variable) |> to_string(),
-                binding |> Description.first(RS.value)
-           end)
-      }
-    end
+    solution_description = Graph.description(graph, solution_resource)
+
+    {
+      Description.first(solution_description, RS.index),
+      solution_description
+      |> Description.get(RS.binding)
+      |> Enum.reduce(%{}, fn binding_resource, bindings ->
+            binding = Graph.description(graph, binding_resource)
+            Map.put bindings,
+              binding |> Description.first(RS.variable) |> to_string(),
+              binding |> Description.first(RS.value)
+         end)
+    }
   end
 end
