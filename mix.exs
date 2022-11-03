@@ -9,7 +9,7 @@ defmodule SPARQL.Mixfile do
     [
       app: :sparql,
       version: @version,
-      elixir: "~> 1.10",
+      elixir: "~> 1.11",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
       deps: deps(),
@@ -68,7 +68,7 @@ defmodule SPARQL.Mixfile do
 
   defp deps do
     [
-      rdf_ex_dep(:rdf, "~> 0.11"),
+      rdf_ex_dep(:rdf, "~> 1.0"),
       {:jason, "~> 1.0"},
       {:nimble_csv, "~> 1.0"},
       {:sweet_xml, "~> 0.6"},

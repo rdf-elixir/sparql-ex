@@ -941,7 +941,7 @@ defmodule SPARQL.Functions.BuiltinsTest do
 
   describe "BNODE function" do
     test "without args" do
-      {:ok, generator} = BlankNode.Generator.start_link(BlankNode.Increment)
+      {:ok, generator} = BlankNode.Generator.start_link(BlankNode.Generator.Increment)
       execution = %{bnode_generator: generator, solution_id: @example_solution_id}
       assert %BlankNode{} = bnode1 = Builtins.call(:BNODE, [], execution)
       assert %BlankNode{} = bnode2 = Builtins.call(:BNODE, [], execution)
@@ -953,7 +953,7 @@ defmodule SPARQL.Functions.BuiltinsTest do
     end
 
     test "with a string" do
-      {:ok, generator} = BlankNode.Generator.start_link(BlankNode.Increment)
+      {:ok, generator} = BlankNode.Generator.start_link(BlankNode.Generator.Increment)
       execution = %{bnode_generator: generator, solution_id: @example_solution_id}
       assert %BlankNode{} = bnode1 = Builtins.call(:BNODE, [~L"foo"], execution)
       assert %BlankNode{} = bnode2 = Builtins.call(:BNODE, [~L"bar"], execution)
