@@ -30,10 +30,10 @@ defmodule SPARQL.W3C.TestSuite.Case do
     assert %SPARQL.Query.Result{} = actual_result =
              SPARQL.Processor.query(data, query)
 
-    assert Multiset.equal? Multiset.new(actual_result.variables),
-                           Multiset.new(expected_result.variables)
-    assert Multiset.equal? Multiset.new(actual_result.results),
-                           Multiset.new(expected_result.results)
+    assert Enum.sort(actual_result.variables),
+           Enum.sort(expected_result.variables)
+    assert Enum.sort(actual_result.results),
+           Enum.sort(expected_result.results)
   end
 
   defp assert_query_evaluation_case_result(:construct, query, data, expected_result) do

@@ -80,7 +80,6 @@ defmodule SPARQL.Mixfile do
       {:credo, "~> 1.6",        only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.29",      only: :dev, runtime: false},
       {:excoveralls, "~> 0.15", only: :test},
-      {:multiset, "~> 0.0.4",   only: :test},
     ]
   end
 
