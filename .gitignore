@@ -19,7 +19,7 @@ erl_crash.dump
 # Also ignore archive artifacts (built via "mix archive.build").
 *.ez
 
-/src/lexer.erl
-/src/parser.erl
+/src/sparql_lexer.erl
+/src/sparql_parser.erl
 
 .tool-versions*

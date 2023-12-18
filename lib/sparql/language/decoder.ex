@@ -22,19 +22,19 @@ defmodule SPARQL.Language.Decoder do
          {:ok, ast}       <- parse(tokens) do
       {:ok, ast}
     else
-      {:error, {error_line, :lexer, error_descriptor}, _error_line_again} ->
+      {:error, {error_line, :sparql_lexer, error_descriptor}, _error_line_again} ->
         {:error, "SPARQL language scanner error on line #{error_line}: #{inspect error_descriptor}"}
-      {:error, {error_line, :parser, error_descriptor}} ->
+      {:error, {error_line, :sparql_parser, error_descriptor}} ->
         {:error, "SPARQL language parser error on line #{error_line}: #{inspect error_descriptor}"}
     end
   end
 
 
-  defp tokenize(content), do: content |> to_charlist |> :lexer.string
+  defp tokenize(content), do: content |> to_charlist |> :sparql_lexer.string
 
 
   defp parse([]),     do: {:ok, []}
-  defp parse(tokens), do: tokens |> :parser.parse
+  defp parse(tokens), do: tokens |> :sparql_parser.parse
 
 
   defp build({:query, {prologue, form, values}}, default_base) do

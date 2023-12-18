@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
+## Unreleased
+
+### Fixed
+
+- The internal SPARQL lexer and parser were renamed more uniquely.
+  The potential for collision came to light after switching to
+  Elixir 1.15 were the new compilation behaviour was causing sometimes
+  interferences with another generically named parser, namely the one
+  from erlex (a dependency of dialyxir).
+
+[Compare v0.3.8...HEAD](https://github.com/rdf-elixir/sparql-ex/compare/v0.3.8...HEAD)
+
+
+
 ## v0.3.8 - 2022-11-03
 
 This version is just upgraded to RDF.ex 1.0.
