@@ -12,8 +12,8 @@ defmodule SPARQL.Algebra.Project do
 
   def solution(bindings, variables) do
     bindings
-    |> Stream.filter(fn {var, value} -> var in variables end)
-    |> Map.new
+    |> Stream.filter(fn {var, _value} -> var in variables end)
+    |> Map.new()
   end
 
   defimpl Expression do

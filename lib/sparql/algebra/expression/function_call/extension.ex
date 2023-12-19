@@ -22,7 +22,7 @@ defmodule SPARQL.Algebra.FunctionCall.Extension do
       end
     end
 
-    def variables(function_call) do
+    def variables(_function_call) do
       # TODO: return used and/or introduced variables???
     end
   end

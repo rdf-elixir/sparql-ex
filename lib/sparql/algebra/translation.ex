@@ -707,7 +707,7 @@ defmodule SPARQL.Algebra.Translation do
   end
 
 
-  defp select_items(["*"], vs) do
+  defp select_items(["*"], _vs) do
 #    {:ok, vs, []} # TODO: The spec says PV := VS; but this would produce project() expression when they aren't needed (and not generated in other implementations)
     {:ok, [], []}
   end
@@ -784,15 +784,6 @@ defmodule SPARQL.Algebra.Translation do
   ############################################################################
   # Helpers
 
-  @doc !"""
-  Turns a multiset into a sequence with the same elements and cardinality.
-
-  There is no implied ordering to the sequence; duplicates need not be adjacent.
-  """
-  defp to_list(pattern) do
-    pattern # TODO
-  end
-
   defp visible_variables(pattern) do
 # TODO: remove this conditional which is currently needed to work with the unfinished algebra expression
 #       there are similar conditionals in Join.variables/1 which should be removed together
@@ -802,14 +793,6 @@ defmodule SPARQL.Algebra.Translation do
       []
     end
   end
-
-  @doc !"""
-  https://www.w3.org/TR/sparql11-query/#variableScope
-  """
-  defp variable_in_scope?(expr) do
-
-  end
-
 
   defp map(ast, state \\ %{}, fun)
 

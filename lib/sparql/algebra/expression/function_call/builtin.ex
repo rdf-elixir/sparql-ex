@@ -147,7 +147,7 @@ defmodule SPARQL.Algebra.FunctionCall.Builtin do
       FunctionCall.Builtin.invoke(name, arguments, data, execution)
     end
 
-    def variables(function_call) do
+    def variables(_function_call) do
       # TODO: return used and/or introduced variables???
     end
   end

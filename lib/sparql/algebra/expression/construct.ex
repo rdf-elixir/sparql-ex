@@ -79,7 +79,7 @@ defmodule SPARQL.Algebra.Construct do
   defp set_solution_bnode(%BlankNode{} = bnode, solution_bnodes), do: solution_bnodes[bnode]
   defp set_solution_bnode(node, _), do: node
 
-  defp replace_solved_bnode(%BlankNode{} = bnode, %{__id__: solution_id}, generator) do
+  defp replace_solved_bnode(%BlankNode{} = bnode, %{__id__: _solution_id}, generator) do
     BlankNode.Generator.generate_for(generator, {:construct, bnode})
   end
 

@@ -5,9 +5,7 @@ defmodule SPARQL.Language do
   see <https://www.w3.org/TR/sparql11-query/>
   """
 
-  alias SPARQL.Query
   alias SPARQL.Language.Decoder
-
 
   @file_extension "rq"
   @media_type     "application/sparql-query"
@@ -15,10 +13,5 @@ defmodule SPARQL.Language do
   def file_extension, do: @file_extension
   def media_type,     do: @media_type
 
-
-  def parse(string, opts \\ [])
-
-  def parse(string, opts),
-    do: Decoder.decode(string, opts)
-
+  def parse(string, opts \\ []), do: Decoder.decode(string, opts)
 end

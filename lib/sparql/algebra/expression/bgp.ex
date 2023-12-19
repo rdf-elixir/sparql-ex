@@ -2,7 +2,7 @@ defmodule SPARQL.Algebra.BGP do
   defstruct [:triples]
 
   alias SPARQL.Query.Result
-  alias RDF.{Dataset, Graph, Description, BlankNode}
+  alias RDF.{Graph, Description, BlankNode}
 
   @blank_node_prefix "_:"
 
