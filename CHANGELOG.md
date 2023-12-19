@@ -7,6 +7,8 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 ## Unreleased
 
+Elixir versions < 1.12 are no longer supported
+
 ### Fixed
 
 - The internal SPARQL lexer and parser were renamed more uniquely.
