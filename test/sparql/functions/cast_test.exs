@@ -61,20 +61,20 @@ defmodule SPARQL.Functions.CastTest do
   test "xsd:float" do
     float_literal = fn (value) -> XSD.float(value) end
     [
-      {XSD.true,  float_literal.("1.0")},
-      {XSD.false, float_literal.("0.0")},
+      {XSD.true,  float_literal.(1.0)},
+      {XSD.false, float_literal.(0.0)},
 
-      {XSD.integer(1),  float_literal.("1.0")},
-      {XSD.integer(42), float_literal.("42.0")},
-      {XSD.integer(0),  float_literal.("0.0")},
+      {XSD.integer(1),  float_literal.(1.0)},
+      {XSD.integer(42), float_literal.(42.0)},
+      {XSD.integer(0),  float_literal.(0.0)},
 
-      {XSD.decimal(3.14), float_literal.("3.14")},
-      {XSD.decimal(0.0),  float_literal.("0.0")},
+      {XSD.decimal(3.14), float_literal.(3.14)},
+      {XSD.decimal(0.0),  float_literal.(0.0)},
 
-      {XSD.double(3.14), float_literal.("3.14")},
-      {XSD.double(0.0),  float_literal.("0.0")},
+      {XSD.double(3.14), float_literal.(3.14)},
+      {XSD.double(0.0),  float_literal.(0.0)},
 
-      {XSD.string("3.14"), float_literal.("3.14")},
+      {XSD.string("3.14"), float_literal.(3.14)},
 
       {XSD.boolean("42"), :error},
       {XSD.DateTime.now(), :error},
