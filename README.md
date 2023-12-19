@@ -74,7 +74,7 @@ If you need help with your Elixir and Linked Data projects, just contact [NinjaC
 
 ## License and Copyright
 
-(c) 2018-2020 Marcel Otto. MIT Licensed, see [LICENSE](LICENSE.md) for details.
+(c) 2017-present Marcel Otto. MIT Licensed, see [LICENSE](LICENSE.md) for details.
 
 
 [SPARQL]:               http://www.w3.org/TR/sparql11-overview/
