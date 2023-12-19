@@ -5,19 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## Unreleased
+## v0.3.9- 2023-12-19
 
 Elixir versions < 1.12 are no longer supported
 
 ### Fixed
 
 - The internal SPARQL lexer and parser were renamed more uniquely.
-  The potential for collision came to light after switching to
-  Elixir 1.15 were the new compilation behaviour was causing sometimes
+  A potential for collisions came to light after switching to
+  Elixir v1.15 where the new compilation behaviour was causing sometimes
   interferences with another generically named parser, namely the one
   from erlex (a dependency of dialyxir).
 
-[Compare v0.3.8...HEAD](https://github.com/rdf-elixir/sparql-ex/compare/v0.3.8...HEAD)
+[Compare v0.3.8...v0.3.9](https://github.com/rdf-elixir/sparql-ex/compare/v0.3.8...v0.3.9)
 
 
 
