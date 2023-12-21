@@ -2,7 +2,7 @@
 
 # SPARQL.ex
 
-[![CI](https://github.com/rdf-elixir/sparql-ex/workflows/CI/badge.svg?branch=master)](https://github.com/rdf-elixir/sparql-ex/actions?query=branch%3Amaster+workflow%3ACI)
+[![CI](https://github.com/rdf-elixir/sparql-ex/actions/workflows/ci.yml/badge.svg)](https://github.com/rdf-elixir/sparql-ex/actions/workflows/ci.yml)
 [![Hex.pm](https://img.shields.io/hexpm/v/sparql.svg?style=flat-square)](https://hex.pm/packages/sparql)
 
 
