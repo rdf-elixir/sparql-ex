@@ -19,6 +19,7 @@ defmodule SPARQL.W3C.TestSuite do
   alias NS.{MF, QT}
 
   alias RDF.{Turtle, Graph, Description, IRI, BlankNode}
+  alias RDF.NS.RDFS
 
   import RDF.Sigils
 
@@ -73,6 +74,7 @@ defmodule SPARQL.W3C.TestSuite do
       test_suite |> Tuple.to_list |> Enum.join(",")
     })
   end
+
   defp test_suite(manifest_graph) do
     manifest_graph
     |> Graph.description(manifest_document_url())
@@ -110,10 +112,7 @@ defmodule SPARQL.W3C.TestSuite do
   def test_name(test_case), do: value(test_case, MF.name)
 
   def test_title(test_case),
-# Unfortunately OTP < 20 doesn't support unicode characters in atoms,
-# so we can't put the description in the test name
-#    do: test_name(test_case) <> ": " <> value(test_case, RDFS.comment)
-    do: test_name(test_case)
+    do: test_name(test_case) <> ": " <> value(test_case, RDFS.comment)
 
   def test_input_file(test_case),
     do: test_case |> Description.first(MF.action) |> IRI.parse

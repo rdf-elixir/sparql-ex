@@ -9,6 +9,8 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 This version is just upgraded to RDF.ex v2.0.
 
+Elixir versions < 1.13 and OTP version < 23 are no longer supported
+
 ### Changed
 - 
 - Replacement of `elixir_uuid` with `uniq` dependency
