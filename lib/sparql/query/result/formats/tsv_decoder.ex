@@ -59,7 +59,7 @@ defmodule SPARQL.Query.Result.TSV.Decoder do
     with {:ok, tokens, _} <- RDF.Turtle.Decoder.tokenize(value) do
       {variable, do_decode_value(tokens)}
     else
-      {:error, {_, :turtle_lexer, error}, _} ->
+      {:error, {_, :turtle_trig_lexer, error}, _} ->
         error
         |> Tuple.to_list()
         |> Enum.map(&to_string/1)
@@ -68,7 +68,7 @@ defmodule SPARQL.Query.Result.TSV.Decoder do
     end
   end
 
-  # TODO: This should rely completely on the Turtle parser (not the interal token structure of the lexer)
+  # TODO: This should rely completely on the Turtle parser (not the internal token structure of the lexer)
   defp do_decode_value(tokens)
 
   defp do_decode_value([{:iriref, _, iri}]),

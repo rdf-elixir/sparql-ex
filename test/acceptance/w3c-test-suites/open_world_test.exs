@@ -10,7 +10,7 @@ defmodule SPARQL.W3C.TestSuite.OpenWorldTest do
   @test_suite {"1.0", "open-world"}
   @manifest_graph TestSuite.manifest_graph(@test_suite)
 
-  TestSuite.test_cases(@test_suite, MF.QueryEvaluationTest)
+  TestSuite.test_cases(@manifest_graph, MF.QueryEvaluationTest)
   |> Enum.each(fn test_case ->
        [
          "open-eq-07",

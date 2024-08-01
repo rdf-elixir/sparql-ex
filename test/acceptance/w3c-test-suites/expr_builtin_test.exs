@@ -10,7 +10,7 @@ defmodule SPARQL.W3C.TestSuite.ExprBuiltinTest do
   @test_suite {"1.0", "expr-builtin"}
   @manifest_graph TestSuite.manifest_graph(@test_suite)
 
-  TestSuite.test_cases(@test_suite, MF.QueryEvaluationTest)
+  TestSuite.test_cases(@manifest_graph, MF.QueryEvaluationTest)
   |> Enum.filter(fn test_case ->
     # In SPARQL 1.1 datatype() of language tagged string returns a result
     not (test_case.subject |> to_string() |> String.ends_with?("dawg-datatype-2"))

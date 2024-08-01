@@ -10,7 +10,7 @@ defmodule SPARQL.W3C.TestSuite.BasicTest do
   @test_suite {"1.0", "basic"}
   @manifest_graph TestSuite.manifest_graph(@test_suite)
 
-  TestSuite.test_cases(@test_suite, MF.QueryEvaluationTest)
+  TestSuite.test_cases(@manifest_graph, MF.QueryEvaluationTest)
   |> Enum.filter(fn test_case ->
        # Decimal format changed in SPARQL 1.1
        not (test_case.subject |> to_string() |> String.ends_with?("term-6")) and

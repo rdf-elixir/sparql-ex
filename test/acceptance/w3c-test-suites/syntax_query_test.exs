@@ -13,8 +13,9 @@ defmodule SPARQL.W3C.TestSuite.SyntaxQueryTest do
 
   describe "SPARQL 1.1 syntax-query test suite" do
     @test_suite {"1.1", "syntax-query"}
+    @manifest_graph TestSuite.manifest_graph(@test_suite)
 
-    TestSuite.test_cases(@test_suite, MF.PositiveSyntaxTest11)
+    TestSuite.test_cases(@manifest_graph, MF.PositiveSyntaxTest11)
     |> Enum.each(fn test_case ->
          @tag test_case: test_case
          test TestSuite.test_title(test_case), %{test_case: test_case} do
@@ -27,7 +28,7 @@ defmodule SPARQL.W3C.TestSuite.SyntaxQueryTest do
          end
        end)
 
-    TestSuite.test_cases(@test_suite, MF.NegativeSyntaxTest11)
+    TestSuite.test_cases(@manifest_graph, MF.NegativeSyntaxTest11)
     |> Enum.each(fn test_case ->
          @tag test_case: test_case
          [
@@ -55,8 +56,9 @@ defmodule SPARQL.W3C.TestSuite.SyntaxQueryTest do
 
   describe "SPARQL 1.0 syntax-query test suite part 1" do
     @test_suite {"1.0", "syntax-sparql1"}
+    @manifest_graph TestSuite.manifest_graph(@test_suite)
 
-    TestSuite.test_cases(@test_suite, MF.PositiveSyntaxTest)
+    TestSuite.test_cases(@manifest_graph, MF.PositiveSyntaxTest)
     |> Enum.filter(fn test_case ->
          # Decimal format changed in SPARQL 1.1
          not (test_case.subject |> to_string() |> String.ends_with?("syntax-lit-08"))
@@ -76,8 +78,9 @@ defmodule SPARQL.W3C.TestSuite.SyntaxQueryTest do
 
   describe "SPARQL 1.0 syntax-query test suite part 2" do
     @test_suite {"1.0", "syntax-sparql2"}
+    @manifest_graph TestSuite.manifest_graph(@test_suite)
 
-    TestSuite.test_cases(@test_suite, MF.PositiveSyntaxTest)
+    TestSuite.test_cases(@manifest_graph, MF.PositiveSyntaxTest)
     |> Enum.filter(fn test_case ->
          # PNAME_LN changed in SPARQL 1.1
          not (test_case.subject |> to_string() |> String.ends_with?("syntax-esc-04") or
@@ -98,8 +101,9 @@ defmodule SPARQL.W3C.TestSuite.SyntaxQueryTest do
 
   describe "SPARQL 1.0 syntax-query test suite part 3" do
     @test_suite {"1.0", "syntax-sparql3"}
+    @manifest_graph TestSuite.manifest_graph(@test_suite)
 
-    TestSuite.test_cases(@test_suite, MF.PositiveSyntaxTest)
+    TestSuite.test_cases(@manifest_graph, MF.PositiveSyntaxTest)
     |> Enum.each(fn test_case ->
          @tag test_case: test_case
          test TestSuite.test_title(test_case), %{test_case: test_case} do
@@ -112,7 +116,7 @@ defmodule SPARQL.W3C.TestSuite.SyntaxQueryTest do
          end
        end)
 
-    TestSuite.test_cases(@test_suite, MF.NegativeSyntaxTest)
+    TestSuite.test_cases(@manifest_graph, MF.NegativeSyntaxTest)
     |> Enum.each(fn test_case ->
          @tag test_case: test_case
          [
@@ -136,8 +140,9 @@ defmodule SPARQL.W3C.TestSuite.SyntaxQueryTest do
 
   describe "SPARQL 1.0 syntax-query test suite part 4" do
     @test_suite {"1.0", "syntax-sparql4"}
+    @manifest_graph TestSuite.manifest_graph(@test_suite)
 
-    TestSuite.test_cases(@test_suite, MF.PositiveSyntaxTest)
+    TestSuite.test_cases(@manifest_graph, MF.PositiveSyntaxTest)
     |> Enum.each(fn test_case ->
          @tag test_case: test_case
          test TestSuite.test_title(test_case), %{test_case: test_case} do
@@ -151,7 +156,7 @@ defmodule SPARQL.W3C.TestSuite.SyntaxQueryTest do
        end)
 
 # TODO: all failing
-#    TestSuite.test_cases(@test_suite, MF.NegativeSyntaxTest)
+#    TestSuite.test_cases(@manifest_graph, MF.NegativeSyntaxTest)
 #    |> Enum.each(fn test_case ->
 #         @tag test_case: test_case
 #         test TestSuite.test_title(test_case), %{test_case: test_case} do
@@ -166,8 +171,9 @@ defmodule SPARQL.W3C.TestSuite.SyntaxQueryTest do
 
   describe "SPARQL 1.0 syntax-query test suite part 5" do
     @test_suite {"1.0", "syntax-sparql5"}
+    @manifest_graph TestSuite.manifest_graph(@test_suite)
 
-    TestSuite.test_cases(@test_suite, MF.PositiveSyntaxTest)
+    TestSuite.test_cases(@manifest_graph, MF.PositiveSyntaxTest)
     |> Enum.each(fn test_case ->
          @tag test_case: test_case
          test TestSuite.test_title(test_case), %{test_case: test_case} do

@@ -68,11 +68,11 @@ defmodule SPARQL.Mixfile do
 
   defp deps do
     [
-      rdf_ex_dep(:rdf, "~> 1.0"),
+      rdf_ex_dep(:rdf, "~> 2.0"),
       {:jason, "~> 1.0"},
       {:nimble_csv, "~> 1.0"},
       {:sweet_xml, "~> 0.6"},
-      {:elixir_uuid, "~> 1.2"},
+      {:uniq, "~> 0.6"},
       {:protocol_ex, "~> 0.4"},
 
       # Development

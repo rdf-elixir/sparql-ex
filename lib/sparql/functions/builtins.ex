@@ -3,6 +3,7 @@ defmodule SPARQL.Functions.Builtins do
   require Logger
 
   alias RDF.{IRI, BlankNode, Literal, XSD, NS}
+  alias Uniq.UUID
 
   # Value equality
   # - <https://www.w3.org/TR/sparql11-query/#OperatorMapping>

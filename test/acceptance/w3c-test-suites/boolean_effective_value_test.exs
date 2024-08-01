@@ -10,7 +10,7 @@ defmodule SPARQL.W3C.TestSuite.BooleanEffectiveValueTest do
   @test_suite {"1.0", "boolean-effective-value"}
   @manifest_graph TestSuite.manifest_graph(@test_suite)
 
-  TestSuite.test_cases(@test_suite, MF.QueryEvaluationTest)
+  TestSuite.test_cases(@manifest_graph, MF.QueryEvaluationTest)
   |> Enum.each(fn test_case ->
        @tag test_case: test_case
        test TestSuite.test_title(test_case), %{test_case: test_case} do

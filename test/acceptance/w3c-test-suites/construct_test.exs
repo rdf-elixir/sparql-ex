@@ -10,7 +10,7 @@ defmodule SPARQL.W3C.TestSuite.ConstructTest do
   @test_suite {"1.0", "construct"}
   @manifest_graph TestSuite.manifest_graph(@test_suite)
 
-  TestSuite.test_cases(@test_suite, MF.QueryEvaluationTest)
+  TestSuite.test_cases(@manifest_graph, MF.QueryEvaluationTest)
   |> Enum.each(fn test_case ->
        ["construct-1", "construct-2", "construct-3", "construct-4"]
        |> Enum.each(fn test_subject ->

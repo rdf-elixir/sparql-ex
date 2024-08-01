@@ -5,7 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## v0.3.9- 2023-12-19
+## Unreleased
+
+This version is just upgraded to RDF.ex v2.0.
+
+### Changed
+- 
+- Replacement of `elixir_uuid` with `uniq` dependency
+
+
+[Compare v0.3.9...HEAD](https://github.com/rdf-elixir/sparql-ex/compare/v0.3.9...HEAD)
+
+
+
+## v0.3.9 - 2023-12-19
 
 Elixir versions < 1.12 are no longer supported
 
