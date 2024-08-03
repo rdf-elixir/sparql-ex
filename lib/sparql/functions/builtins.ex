@@ -293,7 +293,7 @@ defmodule SPARQL.Functions.Builtins do
       when source_datatype in [XSD.String, RDF.LangString] do
     if XSD.Integer.valid?(starting_loc) do
       Literal.update(source, fn source_string ->
-        String.slice(source_string, (XSD.Integer.value(starting_loc) - 1) .. -1)
+        String.slice(source_string, (XSD.Integer.value(starting_loc) - 1)..-1//1)
       end)
     else
       :error
