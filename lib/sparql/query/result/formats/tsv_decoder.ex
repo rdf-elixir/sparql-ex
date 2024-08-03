@@ -20,7 +20,7 @@ defmodule SPARQL.Query.Result.TSV.Decoder do
       error in [NimbleCSV.ParseError] ->
         {:error, error}
       error ->
-        {:error, error.message}
+        {:error, Exception.message(error)}
     end
   end
 

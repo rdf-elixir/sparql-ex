@@ -10,9 +10,9 @@ defmodule SPARQL do
     SPARQL.Query.Result.CSV
   ]
 
-  @result_format_by_name       @result_formats |> Enum.map(&{&1.name, &1}) |> Map.new
-  @result_format_by_media_type @result_formats |> Enum.map(&{&1.media_type, &1}) |> Map.new
-  @result_format_by_extension  @result_formats |> Enum.map(&{&1.extension, &1}) |> Map.new
+  @result_format_by_name       @result_formats |> Enum.map(&{&1.name(), &1}) |> Map.new
+  @result_format_by_media_type @result_formats |> Enum.map(&{&1.media_type(), &1}) |> Map.new
+  @result_format_by_extension  @result_formats |> Enum.map(&{&1.extension(), &1}) |> Map.new
 
   @doc """
   The list of all support `SPARQL.Query.Result.Format`s.

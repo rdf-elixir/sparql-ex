@@ -1,8 +1,8 @@
 defmodule SPARQL.Language.ParseHelper do
   alias RDF.Literal
 
-  def variable('?' ++ name), do: List.to_string(name)
-  def variable('$' ++ name), do: List.to_string(name)
+  def variable(~c"?" ++ name), do: List.to_string(name)
+  def variable(~c"$" ++ name), do: List.to_string(name)
 
   # TODO: Literal construction should not happen in the lexer, but during parsing;
   #       grammars and RDF.Serialization.ParseHelper should be rewritten accordingly

@@ -11,7 +11,7 @@ defmodule SPARQL.Query.Result.JSON.Decoder do
       end
     rescue
       error ->
-        {:error, error.message}
+        {:error, Exception.message(error)}
     end
   end
 
