@@ -26,7 +26,13 @@ defmodule SPARQL.Mixfile do
         main: "SPARQL",
         source_url: @repo_url,
         source_ref: "v#{@version}",
-        extras: ["CHANGELOG.md"],
+        extras: [
+          {:"README.md", [title: "About"]},
+          {:"CHANGELOG.md", [title: "CHANGELOG"]},
+          {:"CONTRIBUTING.md", [title: "CONTRIBUTING"]},
+          {:"LICENSE.md", [title: "License"]}
+        ],
+        skip_undefined_reference_warnings_on: ["CHANGELOG.md"]
       ],
 
       # ExCoveralls
