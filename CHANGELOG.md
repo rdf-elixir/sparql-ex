@@ -5,18 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## Unreleased
+## v0.3.10 - 2024-08-07
 
 This version is just upgraded to RDF.ex v2.0.
 
 Elixir versions < 1.13 and OTP version < 23 are no longer supported
 
 ### Changed
-- 
+
 - Replacement of `elixir_uuid` with `uniq` dependency
 
 
-[Compare v0.3.9...HEAD](https://github.com/rdf-elixir/sparql-ex/compare/v0.3.9...HEAD)
+[Compare v0.3.9...v0.3.10](https://github.com/rdf-elixir/sparql-ex/compare/v0.3.9...v0.3.10)
 
 
 
