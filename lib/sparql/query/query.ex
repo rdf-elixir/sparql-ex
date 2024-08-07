@@ -35,7 +35,7 @@ defmodule SPARQL.Query do
   @doc """
   Creates a `SPARQL.Query` struct from a SPARQL language string.
 
-  By default the configured `RDF.default_prefixes/0` will be automatically
+  By default, the configured `RDF.default_prefixes/0` will be automatically
   defined for the query, so that you can use these prefixes without having them
   defined manually in your query.
   You can overwrite these default prefixes and define another set of prefixes
