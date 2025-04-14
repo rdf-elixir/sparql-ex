@@ -4,6 +4,14 @@ defmodule SPARQL.Language.ParseHelper do
   def variable(~c"?" ++ name), do: List.to_string(name)
   def variable(~c"$" ++ name), do: List.to_string(name)
 
+  def to_absolute_or_relative_iri(iri) do
+    case RDF.Serialization.ParseHelper.to_absolute_or_relative_iri(iri) do
+      {:ok, iri} -> iri
+      {:relative_iri, _} = relative_iri -> relative_iri
+      {:error, error} -> raise error
+    end
+  end
+
   # TODO: Literal construction should not happen in the lexer, but during parsing;
   #       grammars and RDF.Serialization.ParseHelper should be rewritten accordingly
   def extract_literal({_, _, literal}), do: literal

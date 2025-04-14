@@ -595,7 +595,7 @@ blankNode -> anon             : to_bnode('$1') .
 Erlang code.
 
 to_iri_string(IRIREF) -> 'Elixir.RDF.Serialization.ParseHelper':to_iri_string(IRIREF) .
-to_iri(IRIREF) -> 'Elixir.RDF.Serialization.ParseHelper':to_absolute_or_relative_iri(IRIREF) .
+to_iri(IRIREF) -> 'Elixir.SPARQL.Language.ParseHelper':to_absolute_or_relative_iri(IRIREF) .
 to_bnode(BLANK_NODE) -> 'Elixir.RDF.Serialization.ParseHelper':to_bnode(BLANK_NODE).
 to_literal(STRING) -> 'Elixir.RDF.Serialization.ParseHelper':to_literal(STRING).
 to_literal(STRING, Type) -> 'Elixir.RDF.Serialization.ParseHelper':to_literal(STRING, Type).
