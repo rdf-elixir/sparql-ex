@@ -22,7 +22,7 @@ defmodule SPARQL.Query.Result.JSON.Decoder do
     do: raise "invalid boolean: #{inspect invalid}"
 
   defp decode_results(%{"head" => %{"vars" => variables}} = object) do
-    %Result{Map.delete(object, "head") |> decode_results() |
+    %{Map.delete(object, "head") |> decode_results() |
       variables: variables
     }
   end

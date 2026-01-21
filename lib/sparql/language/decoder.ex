@@ -13,7 +13,7 @@ defmodule SPARQL.Language.Decoder do
          default_base  = Map.get(opts, :base, RDF.IRI.default_base()),
          {:ok, query} <- build(ast, default_base)
     do
-      {:ok, %Query{query| query_string: content}}
+      {:ok, %{query| query_string: content}}
     end
   end
 

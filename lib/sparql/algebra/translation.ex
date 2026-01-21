@@ -487,8 +487,9 @@ defmodule SPARQL.Algebra.Translation do
     %GroupGraphPattern{group_pattern | expr:
       Enum.reduce(patterns, @zero_bgp, fn
         %OptionalGraphPattern{} = optional_graph_pattern, g ->
-          %SPARQL.Algebra.LeftJoin{
-            translate_graph_pattern(optional_graph_pattern, state) | expr1: g}
+          %SPARQL.Algebra.LeftJoin{} = left_join =
+            translate_graph_pattern(optional_graph_pattern, state)
+          %SPARQL.Algebra.LeftJoin{left_join | expr1: g}
 
         %SPARQL.Algebra.BGP{} = e, g ->
           %SPARQL.Algebra.Join{expr1: g, expr2: e}

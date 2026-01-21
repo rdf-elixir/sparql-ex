@@ -23,7 +23,7 @@ defmodule SPARQL.Algebra.Project do
     end
 
     def variables(project) do
-      Expression.variables(project.expression)
+      Expression.variables(project.expr)
     end
   end
 end

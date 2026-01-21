@@ -42,14 +42,14 @@ defmodule SPARQL.Query.Result do
 
 
   @doc false
-  def add_identity(result) do
+  def add_identity(%__MODULE__{} = result) do
     %__MODULE__{result | results:
       Enum.map(result.results, &SolutionMapping.add_identity/1)
     }
   end
 
   @doc false
-  def remove_identity(result) do
+  def remove_identity(%__MODULE__{} = result) do
     %__MODULE__{result | results:
       Enum.map(result.results, &SolutionMapping.remove_identity/1)
     }

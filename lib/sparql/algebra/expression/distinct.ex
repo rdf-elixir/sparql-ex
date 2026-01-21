@@ -19,7 +19,7 @@ defmodule SPARQL.Algebra.Distinct do
     end
 
     def variables(distinct) do
-      Expression.variables(distinct.expression)
+      Expression.variables(distinct.expr)
     end
   end
 end
