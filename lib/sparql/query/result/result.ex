@@ -1,10 +1,10 @@
 defmodule SPARQL.Query.Result do
-
   defstruct variables: nil, results: []
 
-  @type t :: module
-
   alias SPARQL.Query.Result.SolutionMapping
+
+  @type solution_mapping :: map
+  @type t :: %__MODULE__{variables: [String.t], results: [solution_mapping]}
 
   def new(results, variables \\ nil) do
     %__MODULE__{
