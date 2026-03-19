@@ -79,7 +79,7 @@ defmodule SPARQL.Mixfile do
 
   defp deps do
     [
-      rdf_ex_dep(:rdf, "~> 2.1"),
+      rdf_ex_dep(:rdf, "~> 3.0"),
       {:jason, "~> 1.0"},
       {:nimble_csv, "~> 1.0"},
       {:sweet_xml, "~> 0.6"},
@@ -89,7 +89,7 @@ defmodule SPARQL.Mixfile do
       # Development
       {:dialyxir, "~> 1.4",     only: [:dev, :test], runtime: false},
       {:credo, "~> 1.7",        only: [:dev, :test], runtime: false},
-      {:ex_doc, "~> 0.34",      only: :dev, runtime: false},
+      {:ex_doc, "~> 0.40",      only: :dev, runtime: false},
       {:excoveralls, "~> 0.18", only: :test},
       # This dependency is needed for ExCoveralls when OTP < 25
       {:castore, "~> 1.0",      only: :test},
