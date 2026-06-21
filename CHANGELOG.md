@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
+## Unreleased
+
+Elixir versions < 1.16 are no longer supported.
+
+[Compare v0.3.12...HEAD](https://github.com/rdf-elixir/sparql-ex/compare/v0.3.12...HEAD)
+
+
+
 ## v0.3.12 - 2026-03-19
 
 This version is just upgraded to RDF.ex v3.0.
